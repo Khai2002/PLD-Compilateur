@@ -1,0 +1,5 @@
+asm-ifcc.s: Messages de l'assembleur:
+asm-ifcc.s:3: Erreur: rebuts « :42 » après l'expression
+asm-ifcc.s:3: Erreur: non concordance de la taille d'opérande pour « int »
+
+exit status: 1
