@@ -1,8 +1,14 @@
 
 .vscode/
+generated/
 **/*.exe
 **/*.o
 **/*.s
+**/*.d
 **/a.out
+
+**/ifcc
+
+ret42aff.c
 
 macos.mk

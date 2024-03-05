@@ -17,4 +17,6 @@ public:
 protected:
         unordered_map<string, int> adrTable;
         int cur_pointer;
+        bool isVarDeclared(const string& name);
+
 };
