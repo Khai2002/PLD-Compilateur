@@ -1,7 +1,7 @@
-int main() {
+int main()
+{
     int x;
-    int y;
-    int t;
-    int z = x+y*t;
+    x = y;
+
     return x;
 }
