@@ -1,8 +1,8 @@
 
 .vscode/
-*.exe
-*.o
-*.s
-a.out
+**/*.exe
+**/*.o
+**/*.s
+**/a.out
 
 macos.mk
