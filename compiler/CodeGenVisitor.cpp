@@ -26,8 +26,9 @@ antlrcpp::Any CodeGenVisitor::visitVar_decl(ifccParser::Var_declContext *ctx)
     Type *type = new Type(typeName);
     //auto expr = visitChildren(ctx);
     if (ctx->expr() != nullptr){
-       // cout<<"movl " ; 
+        cout<<"movl " ; 
         auto expr = visitChildren(ctx);
+        
         cout << this->adrTable[id].index << "(%rbp)"<<endl ;
     }
     return 0;
