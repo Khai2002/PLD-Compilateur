@@ -24,11 +24,30 @@ antlrcpp::Any CodeGenVisitor::visitVar_decl(ifccParser::Var_declContext *ctx)
     string typeName = ctx->type()->getText();
     string id = ctx->ID()->getText();
     Type *type = new Type(typeName);
-    auto expr = visitChildren(ctx);
-
+    //auto expr = visitChildren(ctx);
+    if (ctx->expr() != nullptr){
+        cout<<"movl " ; 
+        auto expr = visitChildren(ctx);
+        cout << this->adrTable[id].index << "(%rbp)"<<endl ;
+    }
     return 0;
     // return new VarDecl(id, type, nullptr);
 }
+
+antlrcpp::Any CodeGenVisitor::visitVar_ass(ifccParser::Var_assContext *ctx)
+{
+    cout<<"movl " ; 
+    auto expr = visitChildren(ctx);
+    string name = ctx->ID()->getText();
+    cout << this->adrTable[name].index << "(%rbp) " <<endl ;
+    
+    return 0;
+    // return new VarDecl(id, type, nullptr);
+}
+
+
+
+
 /*
 antlrcpp::Any CodeGenVisitor::visitReturnVar(ifccParser::ReturnVarContext *ctx)
 {
@@ -137,7 +156,7 @@ antlrcpp::Any CodeGenVisitor::visitMultDivModExpr(ifccParser::MultDivModExprCont
 antlrcpp::Any CodeGenVisitor::visitIntConst(ifccParser::IntConstContext *ctx)
 {
     int value = stoi(ctx->INT_CONST()->getText());
-    cout << "$" << value;
+    cout << "$" << value << " ";
     return (Expr *)(new IntConst(value, ctx->start->getLine()));
 }
 

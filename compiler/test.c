@@ -1,9 +1,9 @@
 int main()
 {
-    int x = 3;
+    int x = 3+2;
     int y ; 
-    y = 5 ; 
+    y = 3 ; 
 
 
-    return  Z ; 
+    return  3 ; 
 }
