@@ -156,6 +156,31 @@ antlrcpp::Any CodeGenVisitor::visitCharConst(ifccParser::CharConstContext *ctx)
     return (Expr *)(new CharConst(value, ctx->start->getLine()));
 }
 
+antlrcpp::Any CodeGenVisitor::visitUnaire(ifccParser::UnaireExprContext *ctx)
+{
+    auto operand = ctx->expr(0);
+    string op = ctx->UNAIRE()->getText();
+
+    if (op == "-")
+    {
+        cout << "    movl ";
+        visit(operand);
+        cout << ", %eax\n";
+        cout << "    negl %eax" << endl;
+    }
+    else if (op == "!")
+    {
+        cout << "    movl ";
+        visit(operand);
+        cout << ", %eax\n";
+        cout << "    cmpl $0, %eax\n";
+        cout << "    sete %al\n";
+        cout << "    movzbl %al, %eax" << endl;
+    }
+
+    return 0;
+}
+
 /*antlrcpp::Any CodeGenVisitor::visitVarAss(ifccParser::VarAssContext *ctx)
 {
     string name1 = ctx->ID(0)->getText();
