@@ -44,6 +44,17 @@ antlrcpp::Any CodeGenVisitor::visitVar_ass(ifccParser::Var_assContext *ctx)
 }
 
 
+antlrcpp::Any CodeGenVisitor::visitReturn_stmt(ifccParser::Return_stmtContext *ctx)
+{
+    if(ctx->expr()){
+        int value = visit(ctx->expr());
+        cout << "    movl "  << value << "(%rbp), "<< " %eax" << endl ;
+    }
+    
+    return 0;
+}
+
+
 antlrcpp::Any CodeGenVisitor::visitIntConst(ifccParser::IntConstContext *ctx)
 {
     int value = stoi(ctx->INT_CONST()->getText());

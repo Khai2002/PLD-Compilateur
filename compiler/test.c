@@ -5,5 +5,5 @@ int main()
     int y = 1;
     int t = x * y + x;
 
-    return 4;
+    return 0;
 }
