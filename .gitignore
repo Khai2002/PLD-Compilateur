@@ -3,7 +3,11 @@
 
 compiler/generated/
 compiler/build/
+
 compiler/ifcc
+
+tests/ifcc-test-output/
+
 
 **/*.exe
 **/*.o

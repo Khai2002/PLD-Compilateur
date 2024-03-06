@@ -20,6 +20,7 @@ expr : expr MULT_DIV_MOD expr           # MultDivModExpr
     | expr AND expr                     # AndExpr
     | expr XOR expr                     # XorExpr
     | expr OR expr                      # OrExpr
+    | UNAIRE expr                       # Unaire
     | ID                                # Var
     | INT_CONST                         # IntConst
     | CHAR_CONST                        # CharConst
@@ -34,6 +35,7 @@ EQ_NEQ : '==' | '!=';
 AND : '&';
 XOR : '^';
 OR : '|';
+UNAIRE : '!' | '-';
 RETURN : 'return' ; 
 INT_CONST : [0-9]+ ;
 CHAR_CONST : '\'' .*? '\'' ; 
