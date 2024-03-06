@@ -8,14 +8,10 @@ stmt : var_decl | var_ass | return_stmt ;
 
 var_decl : type ID ('=' expr)? ';' ;
 
-var_ass: ID '=' ID ';'  #VarAss
-        |ID '=' expr ';'      #ExprAss
-        ; 
+var_ass: ID '=' expr ';' ; 
 
 
-return_stmt: RETURN ID ';' #ReturnVar
-            | RETURN (expr)? ';' #ReturnExp
-            ;
+return_stmt: RETURN (expr)? ';' ;
 
 expr : expr MULT_DIV_MOD expr           # MultDivModExpr
     | expr ADD_SUB expr                 # AddSubExpr
