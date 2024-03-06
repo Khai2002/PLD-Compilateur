@@ -29,7 +29,7 @@ antlrcpp::Any CodeGenVisitor::visitVar_decl(ifccParser::Var_declContext *ctx)
     return 0;
     // return new VarDecl(id, type, nullptr);
 }
-
+/*
 antlrcpp::Any CodeGenVisitor::visitReturnVar(ifccParser::ReturnVarContext *ctx)
 {
     string name = ctx->ID()->getText();
@@ -38,8 +38,10 @@ antlrcpp::Any CodeGenVisitor::visitReturnVar(ifccParser::ReturnVarContext *ctx)
     cout << ", %eax\n";
 
     return ReturnStmt(ctx->start->getLine());
-}
-antlrcpp::Any CodeGenVisitor::visitReturnExp(ifccParser::ReturnExpContext *ctx)
+}*/
+
+
+/*antlrcpp::Any CodeGenVisitor::visitReturnExp(ifccParser::ReturnExpContext *ctx)
 {
 
     if (ctx->expr())
@@ -50,7 +52,7 @@ antlrcpp::Any CodeGenVisitor::visitReturnExp(ifccParser::ReturnExpContext *ctx)
     }
 
     return ReturnStmt(ctx->start->getLine());
-}
+}*/
 
 //  movl	-12(%rbp), %edx
 // 	movl	-8(%rbp), %eax
@@ -154,7 +156,7 @@ antlrcpp::Any CodeGenVisitor::visitCharConst(ifccParser::CharConstContext *ctx)
     return (Expr *)(new CharConst(value, ctx->start->getLine()));
 }
 
-antlrcpp::Any CodeGenVisitor::visitVarAss(ifccParser::VarAssContext *ctx)
+/*antlrcpp::Any CodeGenVisitor::visitVarAss(ifccParser::VarAssContext *ctx)
 {
     string name1 = ctx->ID(0)->getText();
     string name2 = ctx->ID(1)->getText();
@@ -162,11 +164,13 @@ antlrcpp::Any CodeGenVisitor::visitVarAss(ifccParser::VarAssContext *ctx)
     cout << this->adrTable[name2].index << "(%rbp) ";
     cout << this->adrTable[name1].index << "(%rbp) " << endl;
     return 0;
-}
+}*/
 
-antlrcpp::Any CodeGenVisitor::visitExprAss(ifccParser::ExprAssContext *ctx)
+
+/*antlrcpp::Any CodeGenVisitor::visitExprAss(ifccParser::ExprAssContext *ctx)
 {
     auto left = ctx->expr();
     auto var = ctx->ID()->getText();
     return 0 ; 
 }
+*/

@@ -40,7 +40,8 @@ antlrcpp::Any VarCheckVisitor::visitProg(ifccParser::ProgContext *ctx)
     }
     return 0;
 }
-antlrcpp::Any VarCheckVisitor::visitVarAss(ifccParser::VarAssContext *ctx)
+
+/*antlrcpp::Any VarCheckVisitor::visitVarAss(ifccParser::VarAssContext *ctx)
 {
     string name1 = ctx->ID(0)->getText();
     string name2 = ctx->ID(1)->getText();
@@ -63,8 +64,10 @@ antlrcpp::Any VarCheckVisitor::visitVarAss(ifccParser::VarAssContext *ctx)
 
     return 0;
 }
+*/
 
-antlrcpp::Any VarCheckVisitor::visitExprAss(ifccParser::ExprAssContext *ctx)
+
+/*antlrcpp::Any VarCheckVisitor::visitExprAss(ifccParser::ExprAssContext *ctx)
 {
     string name = ctx->ID()->getText();
     auto it = this->adrTable.find(name);
@@ -79,8 +82,9 @@ antlrcpp::Any VarCheckVisitor::visitExprAss(ifccParser::ExprAssContext *ctx)
 
     return 0;
 }
+*/
 
-antlrcpp::Any VarCheckVisitor::visitReturnVar(ifccParser::ReturnVarContext *ctx)
+/*antlrcpp::Any VarCheckVisitor::visitReturnVar(ifccParser::ReturnVarContext *ctx)
 {
     string name = ctx->ID()->getText();
     auto it = this->adrTable.find(name);
@@ -95,3 +99,5 @@ antlrcpp::Any VarCheckVisitor::visitReturnVar(ifccParser::ReturnVarContext *ctx)
 
     return 0;
 }
+*/
+

@@ -27,13 +27,9 @@ public:
 
     virtual antlrcpp::Any visitVar_decl(ifccParser::Var_declContext *context) = 0;
 
-    virtual antlrcpp::Any visitVarAss(ifccParser::VarAssContext *context) = 0;
+    virtual antlrcpp::Any visitVar_ass(ifccParser::Var_assContext *context) = 0;
 
-    virtual antlrcpp::Any visitExprAss(ifccParser::ExprAssContext *context) = 0;
-
-    virtual antlrcpp::Any visitReturnVar(ifccParser::ReturnVarContext *context) = 0;
-
-    virtual antlrcpp::Any visitReturnExp(ifccParser::ReturnExpContext *context) = 0;
+    virtual antlrcpp::Any visitReturn_stmt(ifccParser::Return_stmtContext *context) = 0;
 
     virtual antlrcpp::Any visitAndExpr(ifccParser::AndExprContext *context) = 0;
 

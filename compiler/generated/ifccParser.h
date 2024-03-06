@@ -100,32 +100,12 @@ public:
   class  Var_assContext : public antlr4::ParserRuleContext {
   public:
     Var_assContext(antlr4::ParserRuleContext *parent, size_t invokingState);
-   
-    Var_assContext() = default;
-    void copyFrom(Var_assContext *context);
-    using antlr4::ParserRuleContext::copyFrom;
-
     virtual size_t getRuleIndex() const override;
-
-   
-  };
-
-  class  VarAssContext : public Var_assContext {
-  public:
-    VarAssContext(Var_assContext *ctx);
-
-    std::vector<antlr4::tree::TerminalNode *> ID();
-    antlr4::tree::TerminalNode* ID(size_t i);
-    virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
-  };
-
-  class  ExprAssContext : public Var_assContext {
-  public:
-    ExprAssContext(Var_assContext *ctx);
-
     antlr4::tree::TerminalNode *ID();
     ExprContext *expr();
+
     virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+   
   };
 
   Var_assContext* var_ass();
@@ -133,32 +113,12 @@ public:
   class  Return_stmtContext : public antlr4::ParserRuleContext {
   public:
     Return_stmtContext(antlr4::ParserRuleContext *parent, size_t invokingState);
-   
-    Return_stmtContext() = default;
-    void copyFrom(Return_stmtContext *context);
-    using antlr4::ParserRuleContext::copyFrom;
-
     virtual size_t getRuleIndex() const override;
-
-   
-  };
-
-  class  ReturnVarContext : public Return_stmtContext {
-  public:
-    ReturnVarContext(Return_stmtContext *ctx);
-
-    antlr4::tree::TerminalNode *RETURN();
-    antlr4::tree::TerminalNode *ID();
-    virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
-  };
-
-  class  ReturnExpContext : public Return_stmtContext {
-  public:
-    ReturnExpContext(Return_stmtContext *ctx);
-
     antlr4::tree::TerminalNode *RETURN();
     ExprContext *expr();
+
     virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+   
   };
 
   Return_stmtContext* return_stmt();
