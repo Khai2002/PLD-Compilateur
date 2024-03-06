@@ -4,11 +4,18 @@ axiom : prog EOF ;
 
 prog : 'int' 'main' '(' ')' '{' stmt* return_stmt '}';
 
-stmt : var_decl | return_stmt ;
+stmt : var_decl | var_ass | return_stmt ;
 
 var_decl : type ID ('=' expr)? ';' ;
 
-return_stmt: RETURN (expr)? ';' ;
+var_ass: ID '=' ID ';'  #VarAss
+        |ID '=' expr ';'      #ExprAss
+        ; 
+
+
+return_stmt: RETURN ID ';' #ReturnVar
+            | RETURN (expr)? ';' #ReturnExp
+            ;
 
 expr : expr MULT_DIV_MOD expr           # MultDivModExpr
     | expr ADD_SUB expr                 # AddSubExpr
