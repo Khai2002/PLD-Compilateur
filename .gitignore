@@ -1,5 +1,14 @@
 
 .vscode/
+antlr.tmp/
+
+compiler/.antlr/
+compiler/build/
+compiler/generated/
+compiler/ifcc
+
+tests/ifcc-test-output/
+
 **/*.exe
 **/*.o
 **/*.s
