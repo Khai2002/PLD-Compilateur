@@ -1,5 +1,10 @@
 
 .vscode/
+
+compiler/generated/
+compiler/build/
+compiler/ifcc
+
 **/*.exe
 **/*.o
 **/*.s
