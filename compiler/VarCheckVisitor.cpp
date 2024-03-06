@@ -41,6 +41,42 @@ antlrcpp::Any VarCheckVisitor::visitProg(ifccParser::ProgContext *ctx)
     return 0;
 }
 
+antlrcpp::Any VarCheckVisitor::visitVar_ass(ifccParser::Var_assContext *ctx){
+    // cout<<"Je rentre ici "<<endl ; 
+    string name1 = ctx->ID()->getText();
+   
+    auto it1 = this->adrTable.find(name1);
+    if (it1 == this->adrTable.end())
+    {
+        cout << "Erreur : Variable '" << name1 << "' n'a pas été déclarée." << endl;
+        return 0;
+    }
+    auto expr = visitChildren(ctx); 
+    it1->second.callCount++;
+    return 0 ; 
+} 
+
+antlrcpp::Any VarCheckVisitor::visitVar(ifccParser::VarContext *ctx) 
+{
+    string name = ctx->ID()->getText();
+   
+    auto it = this->adrTable.find(name);
+    if (it == this->adrTable.end())
+    {
+        cout << "Erreur : Variable '" << name << "' n'a pas été déclarée." << endl;
+        return 0;
+    }
+    auto expr = visitChildren(ctx); 
+    it->second.callCount++;
+    return 0 ; 
+}
+
+antlrcpp::Any VarCheckVisitor::visitReturn_stmt(ifccParser::Return_stmtContext *ctx)
+{
+    auto expr = visitChildren(ctx);  
+    return 0;
+}
+
 /*antlrcpp::Any VarCheckVisitor::visitVarAss(ifccParser::VarAssContext *ctx)
 {
     string name1 = ctx->ID(0)->getText();

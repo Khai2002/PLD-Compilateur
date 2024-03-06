@@ -1,5 +1,5 @@
 
-// Generated from ifcc.g4 by ANTLR 4.7.2
+// Generated from ifcc.g4 by ANTLR 4.13.1
 
 #pragma once
 
@@ -15,71 +15,71 @@
 class  ifccBaseVisitor : public ifccVisitor {
 public:
 
-  virtual antlrcpp::Any visitAxiom(ifccParser::AxiomContext *ctx) override {
+  virtual std::any visitAxiom(ifccParser::AxiomContext *ctx) override {
     return visitChildren(ctx);
   }
 
-  virtual antlrcpp::Any visitProg(ifccParser::ProgContext *ctx) override {
+  virtual std::any visitProg(ifccParser::ProgContext *ctx) override {
     return visitChildren(ctx);
   }
 
-  virtual antlrcpp::Any visitStmt(ifccParser::StmtContext *ctx) override {
+  virtual std::any visitStmt(ifccParser::StmtContext *ctx) override {
     return visitChildren(ctx);
   }
 
-  virtual antlrcpp::Any visitVar_decl(ifccParser::Var_declContext *ctx) override {
+  virtual std::any visitVar_decl(ifccParser::Var_declContext *ctx) override {
     return visitChildren(ctx);
   }
 
-  virtual antlrcpp::Any visitVar_ass(ifccParser::Var_assContext *ctx) override {
+  virtual std::any visitVar_ass(ifccParser::Var_assContext *ctx) override {
     return visitChildren(ctx);
   }
 
-  virtual antlrcpp::Any visitReturn_stmt(ifccParser::Return_stmtContext *ctx) override {
+  virtual std::any visitReturn_stmt(ifccParser::Return_stmtContext *ctx) override {
     return visitChildren(ctx);
   }
 
-  virtual antlrcpp::Any visitAndExpr(ifccParser::AndExprContext *ctx) override {
+  virtual std::any visitAndExpr(ifccParser::AndExprContext *ctx) override {
     return visitChildren(ctx);
   }
 
-  virtual antlrcpp::Any visitCharConst(ifccParser::CharConstContext *ctx) override {
+  virtual std::any visitCharConst(ifccParser::CharConstContext *ctx) override {
     return visitChildren(ctx);
   }
 
-  virtual antlrcpp::Any visitEqualExpr(ifccParser::EqualExprContext *ctx) override {
+  virtual std::any visitEqualExpr(ifccParser::EqualExprContext *ctx) override {
     return visitChildren(ctx);
   }
 
-  virtual antlrcpp::Any visitMultDivModExpr(ifccParser::MultDivModExprContext *ctx) override {
+  virtual std::any visitMultDivModExpr(ifccParser::MultDivModExprContext *ctx) override {
     return visitChildren(ctx);
   }
 
-  virtual antlrcpp::Any visitXorExpr(ifccParser::XorExprContext *ctx) override {
+  virtual std::any visitXorExpr(ifccParser::XorExprContext *ctx) override {
     return visitChildren(ctx);
   }
 
-  virtual antlrcpp::Any visitVar(ifccParser::VarContext *ctx) override {
+  virtual std::any visitVar(ifccParser::VarContext *ctx) override {
     return visitChildren(ctx);
   }
 
-  virtual antlrcpp::Any visitIntConst(ifccParser::IntConstContext *ctx) override {
+  virtual std::any visitIntConst(ifccParser::IntConstContext *ctx) override {
     return visitChildren(ctx);
   }
 
-  virtual antlrcpp::Any visitAddSubExpr(ifccParser::AddSubExprContext *ctx) override {
+  virtual std::any visitAddSubExpr(ifccParser::AddSubExprContext *ctx) override {
     return visitChildren(ctx);
   }
 
-  virtual antlrcpp::Any visitMoreLessExpr(ifccParser::MoreLessExprContext *ctx) override {
+  virtual std::any visitMoreLessExpr(ifccParser::MoreLessExprContext *ctx) override {
     return visitChildren(ctx);
   }
 
-  virtual antlrcpp::Any visitOrExpr(ifccParser::OrExprContext *ctx) override {
+  virtual std::any visitOrExpr(ifccParser::OrExprContext *ctx) override {
     return visitChildren(ctx);
   }
 
-  virtual antlrcpp::Any visitType(ifccParser::TypeContext *ctx) override {
+  virtual std::any visitType(ifccParser::TypeContext *ctx) override {
     return visitChildren(ctx);
   }
 

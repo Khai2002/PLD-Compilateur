@@ -1,5 +1,5 @@
 
-// Generated from ifcc.g4 by ANTLR 4.7.2
+// Generated from ifcc.g4 by ANTLR 4.13.1
 
 #pragma once
 
@@ -19,39 +19,39 @@ public:
   /**
    * Visit parse trees produced by ifccParser.
    */
-    virtual antlrcpp::Any visitAxiom(ifccParser::AxiomContext *context) = 0;
+    virtual std::any visitAxiom(ifccParser::AxiomContext *context) = 0;
 
-    virtual antlrcpp::Any visitProg(ifccParser::ProgContext *context) = 0;
+    virtual std::any visitProg(ifccParser::ProgContext *context) = 0;
 
-    virtual antlrcpp::Any visitStmt(ifccParser::StmtContext *context) = 0;
+    virtual std::any visitStmt(ifccParser::StmtContext *context) = 0;
 
-    virtual antlrcpp::Any visitVar_decl(ifccParser::Var_declContext *context) = 0;
+    virtual std::any visitVar_decl(ifccParser::Var_declContext *context) = 0;
 
-    virtual antlrcpp::Any visitVar_ass(ifccParser::Var_assContext *context) = 0;
+    virtual std::any visitVar_ass(ifccParser::Var_assContext *context) = 0;
 
-    virtual antlrcpp::Any visitReturn_stmt(ifccParser::Return_stmtContext *context) = 0;
+    virtual std::any visitReturn_stmt(ifccParser::Return_stmtContext *context) = 0;
 
-    virtual antlrcpp::Any visitAndExpr(ifccParser::AndExprContext *context) = 0;
+    virtual std::any visitAndExpr(ifccParser::AndExprContext *context) = 0;
 
-    virtual antlrcpp::Any visitCharConst(ifccParser::CharConstContext *context) = 0;
+    virtual std::any visitCharConst(ifccParser::CharConstContext *context) = 0;
 
-    virtual antlrcpp::Any visitEqualExpr(ifccParser::EqualExprContext *context) = 0;
+    virtual std::any visitEqualExpr(ifccParser::EqualExprContext *context) = 0;
 
-    virtual antlrcpp::Any visitMultDivModExpr(ifccParser::MultDivModExprContext *context) = 0;
+    virtual std::any visitMultDivModExpr(ifccParser::MultDivModExprContext *context) = 0;
 
-    virtual antlrcpp::Any visitXorExpr(ifccParser::XorExprContext *context) = 0;
+    virtual std::any visitXorExpr(ifccParser::XorExprContext *context) = 0;
 
-    virtual antlrcpp::Any visitVar(ifccParser::VarContext *context) = 0;
+    virtual std::any visitVar(ifccParser::VarContext *context) = 0;
 
-    virtual antlrcpp::Any visitIntConst(ifccParser::IntConstContext *context) = 0;
+    virtual std::any visitIntConst(ifccParser::IntConstContext *context) = 0;
 
-    virtual antlrcpp::Any visitAddSubExpr(ifccParser::AddSubExprContext *context) = 0;
+    virtual std::any visitAddSubExpr(ifccParser::AddSubExprContext *context) = 0;
 
-    virtual antlrcpp::Any visitMoreLessExpr(ifccParser::MoreLessExprContext *context) = 0;
+    virtual std::any visitMoreLessExpr(ifccParser::MoreLessExprContext *context) = 0;
 
-    virtual antlrcpp::Any visitOrExpr(ifccParser::OrExprContext *context) = 0;
+    virtual std::any visitOrExpr(ifccParser::OrExprContext *context) = 0;
 
-    virtual antlrcpp::Any visitType(ifccParser::TypeContext *context) = 0;
+    virtual std::any visitType(ifccParser::TypeContext *context) = 0;
 
 
 };
