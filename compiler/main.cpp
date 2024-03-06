@@ -46,8 +46,10 @@ int main(int argn, const char **argv)
 
   VarCheckVisitor varCheckVisitor;
   varCheckVisitor.visit(tree);
-  CodeGenVisitor v(varCheckVisitor.getAdrTable());
+  CodeGenVisitor v(varCheckVisitor.getAdrTable(), varCheckVisitor.getCurPointer());
   v.visit(tree);
+  cout << v.getVarMap().size()<< endl;
+  cout << v.getCurPointer() << endl;
 
   return 0;
 }

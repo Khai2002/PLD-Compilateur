@@ -1,8 +1,9 @@
 int main()
 {
+    
     int x = 3;
-    int y = x / 2; 
-    int z;
+    int y = 1;
+    int t = x * y + x;
 
     return 4;
 }
