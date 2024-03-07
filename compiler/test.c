@@ -1,9 +1,5 @@
 int main()
 {
-    
-    int x = 3;
-    int y = 1;
-    int t = x * y + x;
-
-    return 0;
+    int x;
+    return 42;
 }
