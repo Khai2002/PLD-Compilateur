@@ -1,3 +1,2 @@
-Variable 'x' déclarée mais non utilisée
 
 exit status: 0
