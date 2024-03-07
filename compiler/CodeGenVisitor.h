@@ -23,9 +23,9 @@ public:
         virtual antlrcpp::Any visitVar(ifccParser::VarContext *ctx) override;
         virtual antlrcpp::Any visitAddSubExpr(ifccParser::AddSubExprContext *ctx) override;
         virtual antlrcpp::Any visitMultDivModExpr(ifccParser::MultDivModExprContext *ctx) override;
-        virtual antlrcpp::Any CodeGenVisitor::visitUnaire(ifccParser::UnaireExprContext *ctx) override;
-        // virtual antlrcpp::Any visitVarAss(ifccParser::VarAssContext *ctx) override;
-        // virtual antlrcpp::Any visitExprAss(ifccParser::ExprAssContext *ctx) override;
+        // virtual antlrcpp::Any visitUnaire(ifccParser::UnaireExprContext *ctx) override;
+        //  virtual antlrcpp::Any visitVarAss(ifccParser::VarAssContext *ctx) override;
+        //  virtual antlrcpp::Any visitExprAss(ifccParser::ExprAssContext *ctx) override;
 
 protected:
         unordered_map<string, VariableInfo> adrTable;

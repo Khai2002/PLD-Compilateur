@@ -40,7 +40,6 @@ antlrcpp::Any CodeGenVisitor::visitReturnVar(ifccParser::ReturnVarContext *ctx)
     return ReturnStmt(ctx->start->getLine());
 }*/
 
-
 /*antlrcpp::Any CodeGenVisitor::visitReturnExp(ifccParser::ReturnExpContext *ctx)
 {
 
@@ -156,7 +155,7 @@ antlrcpp::Any CodeGenVisitor::visitCharConst(ifccParser::CharConstContext *ctx)
     return (Expr *)(new CharConst(value, ctx->start->getLine()));
 }
 
-antlrcpp::Any CodeGenVisitor::visitUnaire(ifccParser::UnaireExprContext *ctx)
+/*antlrcpp::Any CodeGenVisitor::visitUnaire(ifccParser::UnaireExprContext *ctx)
 {
     auto operand = ctx->expr(0);
     string op = ctx->UNAIRE()->getText();
@@ -179,7 +178,7 @@ antlrcpp::Any CodeGenVisitor::visitUnaire(ifccParser::UnaireExprContext *ctx)
     }
 
     return 0;
-}
+}*/
 
 /*antlrcpp::Any CodeGenVisitor::visitVarAss(ifccParser::VarAssContext *ctx)
 {
@@ -191,11 +190,10 @@ antlrcpp::Any CodeGenVisitor::visitUnaire(ifccParser::UnaireExprContext *ctx)
     return 0;
 }*/
 
-
 /*antlrcpp::Any CodeGenVisitor::visitExprAss(ifccParser::ExprAssContext *ctx)
 {
     auto left = ctx->expr();
     auto var = ctx->ID()->getText();
-    return 0 ; 
+    return 0 ;
 }
 */
