@@ -1,4 +1,0 @@
-asm-ifcc.s: Assembler messages:
-asm-ifcc.s:15: Error: too many memory references for `mov'
-
-exit status: 1

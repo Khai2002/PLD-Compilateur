@@ -30,7 +30,10 @@ antlrcpp::Any CodeGenVisitor::visitVar_decl(ifccParser::Var_declContext *ctx)
     if (ctx->expr())
     {
         int adr = visit(ctx->expr());
-        cout << "    movl " << adr << "(%rbp), " << this->adrTable[name].index << "(%rbp)" << endl;
+        cout << "    movl " << adr << "(%rbp), "
+             << "%eax" << endl;
+        cout << "    movl "
+             << "%eax, " << this->adrTable[name].index << "(%rbp)" << endl;
     }
 
     return 0;
@@ -42,7 +45,10 @@ antlrcpp::Any CodeGenVisitor::visitVar_ass(ifccParser::Var_assContext *ctx)
     // auto expr = visitChildren(ctx);
     string name = ctx->ID()->getText();
     int adr = visit(ctx->expr());
-    cout << "    movl " << adr << "(%rbp), " << this->adrTable[name].index << "(%rbp)" << endl;
+    cout << "    movl " << adr << "(%rbp), "
+         << "%eax" << endl;
+    cout << "    movl "
+         << "%eax, " << this->adrTable[name].index << "(%rbp)" << endl;
     return 0;
 }
 

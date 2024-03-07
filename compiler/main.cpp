@@ -44,15 +44,14 @@ int main(int argn, const char **argv)
     exit(1);
   }
 
-   VarCheckVisitor varCheckVisitor;
+  VarCheckVisitor varCheckVisitor;
   varCheckVisitor.visit(tree);
-  /*if (varCheckVisitor.getNumber_errors() == 0)
+  // cout << "nombre d'erreurs " << varCheckVisitor.getNumber_errors() << endl;
+  if (varCheckVisitor.getNumber_errors() == 0)
   {
     CodeGenVisitor v(varCheckVisitor.getAdrTable(), varCheckVisitor.getCurPointer());
     v.visit(tree);
-  }*/
-  CodeGenVisitor v(varCheckVisitor.getAdrTable(), varCheckVisitor.getCurPointer());
-  v.visit(tree);
+  }
   // cout << v.getVarMap().size()<< endl;
   // cout << v.getCurPointer() << endl;
 
