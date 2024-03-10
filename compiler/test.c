@@ -1,6 +1,6 @@
 int main()
 {
     int x;
-    x = 8 * (3 + 7);
+    x = 8 * 3;
     return 42;
 }
