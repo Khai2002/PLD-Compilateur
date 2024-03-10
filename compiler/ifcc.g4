@@ -12,7 +12,8 @@ var_ass: ID '=' expr ';' ;
 
 return_stmt: RETURN (expr)? ';' ;
 
-expr : expr MULT_DIV_MOD expr           # MultDivModExpr
+expr :  '(' expr ')'                    #ParExpr
+    | expr MULT_DIV_MOD expr            # MultDivModExpr
     | expr ADD_SUB expr                 # AddSubExpr
     | expr MORE_LESS expr               # MoreLessExpr
     | expr EQ_NEQ expr                  # EqualExpr
