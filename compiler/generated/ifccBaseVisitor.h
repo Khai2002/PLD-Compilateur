@@ -55,7 +55,15 @@ public:
     return visitChildren(ctx);
   }
 
+  virtual antlrcpp::Any visitUnaire(ifccParser::UnaireContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
   virtual antlrcpp::Any visitXorExpr(ifccParser::XorExprContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual antlrcpp::Any visitParExpr(ifccParser::ParExprContext *ctx) override {
     return visitChildren(ctx);
   }
 

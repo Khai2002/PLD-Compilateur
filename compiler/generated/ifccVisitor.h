@@ -39,7 +39,11 @@ public:
 
     virtual antlrcpp::Any visitMultDivModExpr(ifccParser::MultDivModExprContext *context) = 0;
 
+    virtual antlrcpp::Any visitUnaire(ifccParser::UnaireContext *context) = 0;
+
     virtual antlrcpp::Any visitXorExpr(ifccParser::XorExprContext *context) = 0;
+
+    virtual antlrcpp::Any visitParExpr(ifccParser::ParExprContext *context) = 0;
 
     virtual antlrcpp::Any visitVar(ifccParser::VarContext *context) = 0;
 

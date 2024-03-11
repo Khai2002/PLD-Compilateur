@@ -14,8 +14,9 @@ public:
   enum {
     T__0 = 1, T__1 = 2, T__2 = 3, T__3 = 4, T__4 = 5, T__5 = 6, T__6 = 7, 
     T__7 = 8, T__8 = 9, MULT_DIV_MOD = 10, ADD_SUB = 11, MORE_LESS = 12, 
-    EQ_NEQ = 13, AND = 14, XOR = 15, OR = 16, RETURN = 17, INT_CONST = 18, 
-    CHAR_CONST = 19, COMMENT = 20, DIRECTIVE = 21, ID = 22, WS = 23
+    EQ_NEQ = 13, AND = 14, XOR = 15, OR = 16, UNAIRE = 17, RETURN = 18, 
+    INT_CONST = 19, CHAR_CONST = 20, COMMENT = 21, DIRECTIVE = 22, ID = 23, 
+    WS = 24
   };
 
   enum {
@@ -174,6 +175,15 @@ public:
     virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
   };
 
+  class  UnaireContext : public ExprContext {
+  public:
+    UnaireContext(ExprContext *ctx);
+
+    antlr4::tree::TerminalNode *UNAIRE();
+    ExprContext *expr();
+    virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+  };
+
   class  XorExprContext : public ExprContext {
   public:
     XorExprContext(ExprContext *ctx);
@@ -181,6 +191,14 @@ public:
     std::vector<ExprContext *> expr();
     ExprContext* expr(size_t i);
     antlr4::tree::TerminalNode *XOR();
+    virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+  };
+
+  class  ParExprContext : public ExprContext {
+  public:
+    ParExprContext(ExprContext *ctx);
+
+    ExprContext *expr();
     virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
   };
 

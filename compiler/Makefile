@@ -26,6 +26,7 @@ OBJECTS=build/ifccBaseVisitor.o \
 	build/main.o \
 	build/CodeGenVisitor.o \
 	build/VarCheckVisitor.o \
+	build/IR.o \
 	build/ast.o
 
 ifcc: $(OBJECTS)

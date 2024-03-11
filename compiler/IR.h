@@ -5,15 +5,39 @@
 #include <string>
 #include <iostream>
 #include <initializer_list>
+#include <map>
+
+using namespace std;
 
 // Declarations from the parser -- replace with your own
-#include "type.h"
-#include "symbole.h"
+//#include "symbole.h"
 
 class BasicBlock;
 class CFG;
 class DefFonction;
 
+class Type {
+public:
+    // Enum definition
+    enum TypeEnum {
+        INT,
+        CHAR,
+        VOID
+    };
+
+    // Constructor
+    Type(TypeEnum type) : type_(type) {}
+	Type() : type_(TypeEnum::INT) {}
+
+    // Getter for the type
+    TypeEnum getType() const {
+        return type_;
+    }
+
+protected:
+    // Protected member variable to store the enum value
+    TypeEnum type_;
+};
 
 //! The class for one 3-address instruction
 class IRInstr {
@@ -34,20 +58,62 @@ class IRInstr {
 		cmp_le
 	} Operation;
 
+	string operationToString(Operation op)  ;
+    
 
 	/**  constructor */
-	IRInstr(BasicBlock* bb_, Operation op, Type t, vector<string> params);
+	IRInstr(BasicBlock* bb, Operation op, Type t, vector<string> params) : bb(bb), op(op), t(t), params(params) {};
 	
 	/** Actual code generation */
-	void gen_asm(ostream &o); /**< x86 assembly code generation for this IR instruction */
-	
- private:
+	virtual void gen_asm(ostream &o)  ; /**< x86 assembly code generation for this IR instruction */
+	void print_IRInstr() ; 
+private:
 	BasicBlock* bb; /**< The BB this instruction belongs to, which provides a pointer to the CFG this instruction belong to */
 	Operation op;
 	Type t;
 	vector<string> params; /**< For 3-op instrs: d, x, y; for ldconst: d, c;  For call: label, d, params;  for wmem and rmem: choose yourself */
 	// if you subclass IRInstr, each IRInstr subclass has its parameters and the previous (very important) comment becomes useless: it would be a better design. 
 };
+
+class IRInstrAdd : public IRInstr {
+public:
+    IRInstrAdd(BasicBlock* bb, Operation op, Type t, vector<string> params) : IRInstr(bb, op, t, params) {};
+	void gen_asm(ostream &o);  
+	
+	
+};
+
+class IRInstrCopy : public IRInstr {
+public:
+    virtual void gen_asm(ostream &o) override;  
+	
+	
+};
+
+class IRInstrMul : public IRInstr {
+public:
+    void gen_asm(ostream &o) override;  
+	
+	
+};
+
+class IRInstrConst : public IRInstr {
+public:
+	
+    void gen_asm(ostream &o) override;  
+	
+	
+};
+
+class IRInstrDiv : public IRInstr {
+public:
+    void gen_asm(ostream &o) override;  
+	
+	
+};
+
+
+
 
 
 
@@ -86,14 +152,14 @@ class BasicBlock {
 	void gen_asm(ostream &o); /**< x86 assembly code generation for this basic block (very simple) */
 
 	void add_IRInstr(IRInstr::Operation op, Type t, vector<string> params);
-
-	// No encapsulation whatsoever here. Feel free to do better.
+	void printBB() ; 
+ 	// No encapsulation whatsoever here. Feel free to do better.
 	BasicBlock* exit_true;  /**< pointer to the next basic block, true branch. If nullptr, return from procedure */ 
 	BasicBlock* exit_false; /**< pointer to the next basic block, false branch. If null_ptr, the basic block ends with an unconditional jump */
 	string label; /**< label of the BB, also will be the label in the generated code */
 	CFG* cfg; /** < the CFG where this block belongs */
 	vector<IRInstr*> instrs; /** < the instructions themselves. */
-  string test_var_name;  /** < when generating IR code for an if(expr) or while(expr) etc,
+  	string test_var_name;  /** < when generating IR code for an if(expr) or while(expr) etc,
 													 store here the name of the variable that holds the value of expr */
  protected:
 
@@ -114,9 +180,7 @@ class BasicBlock {
  */
 class CFG {
  public:
-	CFG(DefFonction* ast);
-
-	DefFonction* ast; /**< The AST this CFG comes from */
+	CFG(string funcName) : funcName(funcName), nextFreeSymbolIndex(0), nextBBnumber(0) {};
 	
 	void add_bb(BasicBlock* bb); 
 
@@ -131,6 +195,13 @@ class CFG {
 	string create_new_tempvar(Type t);
 	int get_var_index(string name);
 	Type get_var_type(string name);
+	int get_type_size(Type type);
+
+	map <string, Type> getSymbolType() {return SymbolType;}
+	map <string, int> getSymbolIndex() {return SymbolIndex;}
+	int getNextFreeSymbolIndex() { return nextFreeSymbolIndex; }
+	int getBBNumber() {return nextBBnumber; }
+	string getFuncName() {return funcName; }
 
 	// basic block management
 	string new_BB_name();
@@ -141,6 +212,7 @@ class CFG {
 	map <string, int> SymbolIndex; /**< part of the symbol table  */
 	int nextFreeSymbolIndex; /**< to allocate new symbols in the symbol table */
 	int nextBBnumber; /**< just for naming */
+	string funcName;
 	
 	vector <BasicBlock*> bbs; /**< all the basic blocks of this CFG*/
 };
