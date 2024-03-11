@@ -6,6 +6,9 @@ compiler/.antlr/
 compiler/build/
 compiler/generated/
 compiler/ifcc
+antlr/
+compiler/config.mk
+install-antlr.sh
 
 tests/ifcc-test-output/
 
