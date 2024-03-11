@@ -1,0 +1,5 @@
+input.c:1:9: warning: #pragma once in main file
+    1 | #pragma once
+      |         ^~~~
+
+exit status: 0

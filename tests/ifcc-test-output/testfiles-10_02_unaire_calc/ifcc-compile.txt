@@ -1,0 +1,4 @@
+line 5:11 no viable alternative at input 'return -'
+error: syntax error during parsing
+
+exit status: 1

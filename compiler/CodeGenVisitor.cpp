@@ -116,15 +116,15 @@ antlrcpp::Any CodeGenVisitor::visitAddSubExpr(ifccParser::AddSubExprContext *ctx
     if (op == "+")
     {
         cout << "    addl ";
+        cout << "%edx, %eax" << endl;
     }
     else if (op == "-")
     {
         cout << "    subl ";
+        cout << "%eax, %edx" << endl;
     }
 
-    cout << "%edx, %eax" << endl;
-
-    this->cur_pointer -= 4;
+        this->cur_pointer -= 4;
     int tmpAdr = this->cur_pointer;
     cout << "    movl "
          << "%eax, " << tmpAdr << "(%rbp)\n";
@@ -173,7 +173,7 @@ antlrcpp::Any CodeGenVisitor::visitMultDivModExpr(ifccParser::MultDivModExprCont
     else
     {
         cout << "    cltd" << endl;
-        cout << "    idivl " << rvalue << "%(rbp)\n";
+        cout << "    idivl " << rvalue << "(%rbp)\n";
 
         this->cur_pointer -= 4;
         tmpAdr = this->cur_pointer;

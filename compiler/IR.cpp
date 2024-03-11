@@ -12,196 +12,281 @@ using namespace std;
 
 // Method implementation for gen_asm
 
-void IRInstr::gen_asm(ostream &o) {
+void IRInstr::gen_asm(ostream &o)
+{
     // Since we're returning 0, we don't need to do anything
     int indDest;
     int indParam1;
     int indParam2;
 
-    
-    switch(this->op) {
-        case ldconst:
+    switch (this->op)
+    {
+    case ldconst:
         /*
             movq	 $8, -4(%rbp)
         */
-            
 
-
-            cout << "Loading constant.\n";
-            break;
-        case copy:
+        cout << "Loading constant.\n";
+        break;
+    case copy:
         /*
             movq	-8(%rbp), %rax
-	        movq	%rax, -4(%rbp)
+            movq	%rax, -4(%rbp)
         */
-            cout << "Copying value.\n";
-            break;
-        case add:
+        cout << "Copying value.\n";
+        break;
+    case add:
         /*
             movq	[param1], %rdx
             movq	[param2], %rax
             addq	%rdx, %rax
             movq	%rax, [dest]
         */
-            cout << "Adding values.\n";
-            break;
-        case sub:
+        cout << "Adding values.\n";
+        break;
+    case sub:
         /*
             movq	-16(%rbp), %rax
             subq	-12(%rbp), %rax
             movq	%rax, -8(%rbp)
         */
-            cout << "Subtracting values.\n";
-            break;
-        case mul:
+        cout << "Subtracting values.\n";
+        break;
+    case mul:
         /*
             movq	-16(%rbp), %rax
             imulq	-12(%rbp), %rax
             movq	%rax, -4(%rbp)
         */
-            cout << "Multiplying values.\n";
-            break;
-        case rmem:
-            cout << "Reading from memory.\n";
-            break;
-        case wmem:
-            cout << "Writing to memory.\n";
-            break;
-        case call:
-            cout << "Calling a function.\n";
-            break;
-        case cmp_eq:
-            cout << "Comparing for equality.\n";
-            break;
-        case cmp_lt:
-            cout << "Comparing for less than.\n";
-            break;
-        case cmp_le:
-            cout << "Comparing for less than or equal to.\n";
-            break;
-        default:
-            cout << "Unknown operation.\n";
-            break;
+        cout << "Multiplying values.\n";
+        break;
+    case rmem:
+        cout << "Reading from memory.\n";
+        break;
+    case wmem:
+        cout << "Writing to memory.\n";
+        break;
+    case call:
+        cout << "Calling a function.\n";
+        break;
+    case cmp_eq:
+        cout << "Comparing for equality.\n";
+        break;
+    case cmp_lt:
+        cout << "Comparing for less than.\n";
+        break;
+    case cmp_le:
+        cout << "Comparing for less than or equal to.\n";
+        break;
+    default:
+        cout << "Unknown operation.\n";
+        break;
     }
 }
 
+void IRInstr::print_IRInstr()
+{
 
-void IRInstr::print_IRInstr(){
-    
-    cout<<operationToString(this->op) << "params = "<<endl ; 
-    for (auto it = params.begin(); it != params.end(); ++it) {
-        cout << *it <<  endl;
+    cout << operationToString(this->op) << "params = " << endl;
+    for (auto it = params.begin(); it != params.end(); ++it)
+    {
+        cout << *it << endl;
     }
 }
 
-string IRInstr::operationToString(Operation op) {
-    switch (op) {
-        case ldconst: return "ldconst";
-        case copy: return "copy";
-        case add: return "add";
-        case sub: return "sub";
-        case mul: return "mul";
-        case rmem: return "rmem";
-        case wmem: return "wmem";
-        case call: return "call";
-        case cmp_eq: return "cmp_eq";
-        case cmp_lt: return "cmp_lt";
-        case cmp_le: return "cmp_le";
-        default: return "Unknown Operation";
+string IRInstr::operationToString(Operation op)
+{
+    switch (op)
+    {
+    case ldconst:
+        return "ldconst";
+    case copy:
+        return "copy";
+    case add:
+        return "add";
+    case sub:
+        return "sub";
+    case mul:
+        return "mul";
+    case rmem:
+        return "rmem";
+    case wmem:
+        return "wmem";
+    case call:
+        return "call";
+    case cmp_eq:
+        return "cmp_eq";
+    case cmp_lt:
+        return "cmp_lt";
+    case cmp_le:
+        return "cmp_le";
+    default:
+        return "Unknown Operation";
     }
 }
-
-
 
 // ==============================================================================================================
 
+// ============ Subclasses of IRInstr ============================================================================
+
+void IRInstrConst::gen_asm(ostream &o)
+{
+    int indexDest = this->bb->cfg->get_var_index(params[0]);
+    o << "movl  $" << params[1] << "," << indexDest << "(%rbp)" << endl;
+}
+
+void IRInstrCopy::gen_asm(ostream &o)
+{
+
+    int indexLvalue = bb->cfg->get_var_index(params[0]);
+    int indexRValue = bb->cfg->get_var_index(params[1]);
+    o << "movq " << indexRValue << "(%rbp), %rax" << endl;
+    o << "movq %rax, " << indexLvalue << "(%rbp)" << endl;
+}
+
+void IRInstrAdd::gen_asm(ostream &o)
+{
+    int indexDest = bb->cfg->get_var_index(params[0]);
+    int indexParam1 = bb->cfg->get_var_index(params[1]);
+    int indexParam2 = bb->cfg->get_var_index(params[2]);
+
+    o << "movq " << indexParam1 << "(%rbp), %rax" << endl;
+    o << "addq " << indexParam2 << "(%rbp), %rax" << endl;
+    o << "movq %rax, " << indexDest << "(%rbp)" << endl;
+}
+
+void IRInstrSub::gen_asm(ostream &o)
+{
+    int indexDest = bb->cfg->get_var_index(params[0]);
+    int indexParam1 = bb->cfg->get_var_index(params[1]);
+    int indexParam2 = bb->cfg->get_var_index(params[2]);
+    o << "movq " << indexParam1 << "(%rbp), %rax" << endl;
+    o << "subq " << indexParam2 << "(%rbp), %rax" << endl;
+    o << "movq %rax, " << indexDest << "(%rbp)" << endl;
+}
+
+void IRInstrMul::gen_asm(ostream &o)
+{
+    int indexDest = bb->cfg->get_var_index(params[0]);
+    int indexParam1 = bb->cfg->get_var_index(params[1]);
+    int indexParam2 = bb->cfg->get_var_index(params[2]);
+    o << "movq " << indexParam1 << "(%rbp), %rax" << endl;
+    o << "imulq " << indexParam2 << "(%rbp), %rax" << endl;
+    o << "movq %rax, " << indexDest << "(%rbp)" << endl;
+}
 
 // ======== BasicBlock ==========================================================================================
 
 // Method implementation for gen_asm
-void BasicBlock::gen_asm(ostream &o) {
+void BasicBlock::gen_asm(ostream &o)
+{
     // Very simple assembly code generation for this basic block
     // This is a placeholder implementation. Actual implementation will depend on your specific requirements.
     o << "BasicBlock " << label << ":\n";
-    if (label == cfg->getFuncName()) {
+    if (label == cfg->getFuncName())
+    {
         cfg->gen_asm_prologue(o);
     }
-    for (IRInstr* instr : instrs) {
-        instr->gen_asm(o); 
+    for (IRInstr *instr : instrs)
+    {
+        instr->gen_asm(o);
     }
 
-    if(this->exit_true) {
+    if (this->exit_true)
+    {
         o << "jmp " << this->exit_true->label << endl;
     }
 
-    if(!(this->exit_true && this->exit_false)){
+    if (!(this->exit_true && this->exit_false))
+    {
         cfg->gen_asm_epilogue(o);
     }
-
 }
 
 // Method implementation for add_IRInstr
-void BasicBlock::add_IRInstr(IRInstr::Operation op, Type t, vector<string> params) {
+void BasicBlock::add_IRInstr(IRInstr::Operation op, Type t, vector<string> params)
+{
     // Create a new IRInstr and add it to the instrs vector
-    IRInstr* newInstr;
-    switch(op) {
-        case IRInstr::Operation::add:
-            newInstr = new IRInstrAdd(this, op, t, params);
+    IRInstr *newInstr;
+    switch (op)
+    {
 
+    case IRInstr::Operation::ldconst:
+        newInstr = new IRInstrConst(this, op, t, params);
+        break;
+    case IRInstr::Operation::copy:
+        newInstr = new IRInstrCopy(this, op, t, params);
+        break;
+    case IRInstr::Operation::add:
+        newInstr = new IRInstrAdd(this, op, t, params);
+        break;
+    case IRInstr::Operation::sub:
+        newInstr = new IRInstr(this, op, t, params);
+        break;
+    case IRInstr::Operation::mul:
+        newInstr = new IRInstrAdd(this, op, t, params);
+        break;
     }
-    newInstr = new IRInstr(this, op, t, params); // Assuming IRInstr constructor takes BasicBlock* as first argument
-
+    // newInstr = new IRInstr(this, op, t, params); // Assuming IRInstr constructor takes BasicBlock* as first argument
 
     instrs.push_back(newInstr);
 }
 
-void BasicBlock::printBB() {
+void BasicBlock::printBB()
+{
     // Create a new IRInstr and add it to the instrs vector
-    for (IRInstr* instr : instrs) {
-        if (instr != nullptr){
-            instr->print_IRInstr() ;
+    for (IRInstr *instr : instrs)
+    {
+        if (instr != nullptr)
+        {
+            instr->print_IRInstr();
         }
     }
 }
 
 // ==============================================================================================================
 
-
 // ========= CFG ================================================================================================
 
 // Method implementation for add_bb
-void CFG::add_bb(BasicBlock* bb) {
+void CFG::add_bb(BasicBlock *bb)
+{
     bbs.push_back(bb);
     // Optionally, set the current_bb to the newly added bb if needed
     current_bb = bb;
 }
 
 // Method implementation for gen_asm
-void CFG::gen_asm(ostream& o) {
+void CFG::gen_asm(ostream &o)
+{
     // Placeholder for x86 code generation
     // This method should generate assembly code for the entire CFG
     // Actual implementation will depend on your specific requirements
-    for(auto bb : bbs) {
+    for (auto bb : bbs)
+    {
         bb->gen_asm(o);
     }
 }
 
 // Method implementation for IR_reg_to_asm
-string CFG::IR_reg_to_asm(string reg) {
+string CFG::IR_reg_to_asm(string reg)
+{
     // Placeholder for converting IR register to assembly register
     // Actual implementation will depend on your specific requirements
     return "-24(%rbp)"; // Example return value
 }
 
 // Method implementation for gen_asm_prologue
-void CFG::gen_asm_prologue(ostream& o) {
+void CFG::gen_asm_prologue(ostream &o)
+{
     // Placeholder for generating assembly code prologue
     // Actual implementation will depend on your specific requirements
     int alloc_size = 0;
-    for (auto var : this->SymbolType) {
+    for (auto var : this->SymbolType)
+    {
         alloc_size += get_type_size(var.second);
     }
-    
+
     alloc_size += 16 - (alloc_size % 16);
 
     o << "pushq  %rbp" << endl;
@@ -211,62 +296,68 @@ void CFG::gen_asm_prologue(ostream& o) {
 }
 
 // Method implementation for gen_asm_epilogue
-void CFG::gen_asm_epilogue(ostream& o) {
+void CFG::gen_asm_epilogue(ostream &o)
+{
     // Placeholder for generating assembly code epilogue
     // Actual implementation will depend on your specific requirements
     o << endl;
     o << "leave" << endl;
     o << "ret" << endl;
-
 }
 
 // Method implementation for add_to_symbol_table
-void CFG::add_to_symbol_table(string name, Type t) {
+void CFG::add_to_symbol_table(string name, Type t)
+{
     nextFreeSymbolIndex -= get_type_size(t);
     SymbolType[name] = t;
-    SymbolIndex[name] = nextFreeSymbolIndex ;
+    SymbolIndex[name] = nextFreeSymbolIndex;
 }
 
 // Method implementation for create_new_tempvar
-string CFG::create_new_tempvar(Type t) {
+string CFG::create_new_tempvar(Type t)
+{
     string tempName = "temp" + to_string(nextFreeSymbolIndex);
     add_to_symbol_table(tempName, t);
     return tempName;
 }
 
 // Method implementation for get_var_index
-int CFG::get_var_index(string name) {
-    if (SymbolIndex.find(name) != SymbolIndex.end()) {
+int CFG::get_var_index(string name)
+{
+    if (SymbolIndex.find(name) != SymbolIndex.end())
+    {
         return SymbolIndex[name];
     }
     return -1; // Return -1 if the variable is not found
 }
 
 // Method implementation for get_var_type
-Type CFG::get_var_type(string name) {
-    if (SymbolType.find(name) != SymbolType.end()) {
+Type CFG::get_var_type(string name)
+{
+    if (SymbolType.find(name) != SymbolType.end())
+    {
         return SymbolType[name];
     }
     return Type(); // Return default Type if the variable is not found
 }
 
-int CFG::get_type_size(Type type) {
-    switch(type.getType()) {
-        case Type::TypeEnum::INT:
-            return 8;
-        case Type::TypeEnum::CHAR:
-            return 8;
-        case Type::TypeEnum::VOID:
-            return 0;
+int CFG::get_type_size(Type type)
+{
+    switch (type.getType())
+    {
+    case Type::TypeEnum::INT:
+        return 8;
+    case Type::TypeEnum::CHAR:
+        return 8;
+    case Type::TypeEnum::VOID:
+        return 0;
     }
     return 8;
 }
 
-
-
-
 // Method implementation for new_BB_name
-string CFG::new_BB_name() {
+string CFG::new_BB_name()
+{
     return "BB" + to_string(nextBBnumber++);
 }
 

@@ -1,0 +1,4 @@
+line 3:12 extraneous input '-' expecting {'(', UNAIRE, INT_CONST, CHAR_CONST, ID}
+error: syntax error during parsing
+
+exit status: 1

@@ -1,0 +1,8 @@
+input.c: In function ‘main’:
+input.c:3:22: error: invalid operands to binary * (have ‘int’ and ‘char *’)
+    3 |     int x = 'b'+'a'-4*"c";
+      |                      ^
+      |                      |
+      |                      char *
+
+exit status: 1

@@ -1,0 +1,4 @@
+line 3:22 token recognition error at: '"'
+line 3:24 token recognition error at: '"'
+
+exit status: 0
