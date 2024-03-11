@@ -12,7 +12,7 @@ var_ass: ID '=' expr ';' ;
 
 return_stmt: RETURN (expr)? ';' ;
 
-expr :  '(' expr ')'                    #ParExpr
+expr :  '(' expr ')'                    # ParExpr
     | expr MULT_DIV_MOD expr            # MultDivModExpr
     | expr ADD_SUB expr                 # AddSubExpr
     | expr MORE_LESS expr               # MoreLessExpr
@@ -39,7 +39,8 @@ UNAIRE : '!' | '-';
 RETURN : 'return' ; 
 INT_CONST : [0-9]+ ;
 CHAR_CONST : '\'' .*? '\'' ; 
-COMMENT : '/*' .*? '*/' -> skip ;
+BLOC_COMMENT : '/*' .*? '*/' -> skip ;
+LINE_COMMENT : '//' .*? '\n' -> skip ;
 DIRECTIVE : '#' .*? '\n' -> skip ;
 
 ID : [a-zA-Z_][a-zA-Z_0-9]* ;
