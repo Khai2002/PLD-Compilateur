@@ -38,7 +38,7 @@ OR : '|';
 UNAIRE : '!' | '-';
 RETURN : 'return' ; 
 INT_CONST : [0-9]+ ;
-CHAR_CONST : '\'' .*? '\'' ; 
+CHAR_CONST : '\'' . '\'' ; 
 BLOC_COMMENT : '/*' .*? '*/' -> skip ;
 LINE_COMMENT : '//' .*? '\n' -> skip ;
 DIRECTIVE : '#' .*? '\n' -> skip ;
