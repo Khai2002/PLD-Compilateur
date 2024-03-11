@@ -43,7 +43,7 @@ antlrcpp::Any VarCheckVisitor::visitProg(ifccParser::ProgContext *ctx)
         const VariableInfo &variable = entry.second;
         if (variable.callCount == 0)
         {
-            //cerr << "Variable '" << entry.first << "' déclarée mais non utilisée" << endl;
+            cerr << "# Variable '" << entry.first << "' déclarée mais non utilisée" << endl;
             this->number_warnings++;
         }
     }
