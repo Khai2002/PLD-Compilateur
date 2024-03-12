@@ -16,7 +16,6 @@ public:
     virtual antlrcpp::Any visitFunc_decl(ifccParser::Func_declContext *ctx) override;
     virtual antlrcpp::Any visitLine(ifccParser::LineContext *ctx) override;
     virtual antlrcpp::Any visitVar_decl(ifccParser::Var_declContext *ctx) override;
-    // 
     virtual antlrcpp::Any visitVar(ifccParser::VarContext *ctx) override;
     virtual antlrcpp::Any visitAddSubExpr(ifccParser::AddSubExprContext *ctx) override;
     virtual antlrcpp::Any visitMultDivModExpr(ifccParser::MultDivModExprContext *ctx) override;

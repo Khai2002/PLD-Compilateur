@@ -17,6 +17,10 @@ antlrcpp::Any IRVisitor::visitProg(ifccParser::ProgContext *ctx)
 antlrcpp::Any IRVisitor::visitFunc_decl(ifccParser::Func_declContext *ctx)
 {
     cout << "visiting function declarations..." << endl;
+
+    CFG* cfg  = new CFG(ctx->ID()->getText()) ;  
+    currentCFG = cfg;
+    cfgs.push_back(cfg);
     
     for (auto line : ctx->line()) {
         visit(line);
@@ -47,117 +51,103 @@ antlrcpp::Any IRVisitor::visitVar_decl(ifccParser::Var_declContext *ctx)
 {
     cout << "visiting variable declarations..." << endl;
 
-    CFG* cfg  = new cfg() ;  
-    currentCFG = cfg;
-    cfg.push_back(cfg) ; 
-    if (ctx->ID()) {
-        visit(ctx->ID());
-    } else if (ctx->expr()) {
-        visit(ctx->expr());
-    } else if (ctx->type()) {
-        visit(ctx->type());
-    }
+    string typeName = ctx->type()->getText();
+    string name = ctx->ID()->getText();
+ 
+    return 0;
 }
 
-antlrcpp::Any visitAddSubExpr(ifccParser::AddSubExprContext *ctx) 
+antlrcpp::Any IRVisitor::visitAddSubExpr(ifccParser::AddSubExprContext *ctx) 
 {
     
-    return visitChildren(ctx);
+    return 0;
 }
 
-antlrcpp::Any visitMultDivModExpr(ifccParser::MultDivModExprContext *ctx) 
+antlrcpp::Any IRVisitor::visitMultDivModExpr(ifccParser::MultDivModExprContext *ctx) 
 {
-    return visitChildren(ctx);
+    return 0;
 }
 
-antlrcpp::Any visitVar_ass(ifccParser::Var_assContext *ctx) 
+antlrcpp::Any IRVisitor::visitVar_ass(ifccParser::Var_assContext *ctx) 
 {
-    return visitChildren(ctx);
+    return 0;
 }
 
-antlrcpp::Any visitReturn_stmt(ifccParser::Return_stmtContext *ctx)
+antlrcpp::Any IRVisitor::visitReturn_stmt(ifccParser::Return_stmtContext *ctx)
 {
-    return visitChildren(ctx);
+    return 0;
 }
 
-antlrcpp::Any visitIntConst(ifccParser::IntConstContext *ctx) 
+antlrcpp::Any IRVisitor::visitVar(ifccParser::VarContext *ctx) 
 {
-    return visitChildren(ctx);
+    return 0;
 }
 
-antlrcpp::Any visitCharConst(ifccParser::CharConstContext *ctx) 
+antlrcpp::Any IRVisitor::visitIntConst(ifccParser::IntConstContext *ctx) 
 {
-    return visitChildren(ctx);
+    int value = stoi(ctx->INT_CONST()->getText());
+    int ind = currentCFG->getNextFreeSymbolIndex();
+    //currentCFG->add_to_symbol_table()
+    return 0;
 }
 
-antlrcpp::Any visitLine(ifccParser::LineContext *ctx) 
+antlrcpp::Any IRVisitor::visitCharConst(ifccParser::CharConstContext *ctx) 
 {
-    return visitChildren(ctx);
+    char value = ctx->CHAR_CONST()->getText()[1];
+    return 0;
 }
 
-antlrcpp::Any visitIf_block(ifccParser::If_blockContext *ctx)
+antlrcpp::Any IRVisitor::visitIf_block(ifccParser::If_blockContext *ctx)
 {
-    return visitChildren(ctx);
+    return 0;
 }
 
-antlrcpp::Any visitElse_block(ifccParser::Else_blockContext *ctx)
+antlrcpp::Any IRVisitor::visitElse_block(ifccParser::Else_blockContext *ctx)
 {
-    return visitChildren(ctx);
+    return 0;
 }
 
-antlrcpp::Any visitWhile_block(ifccParser::While_blockContext *ctx)
+antlrcpp::Any IRVisitor::visitWhile_block(ifccParser::While_blockContext *ctx)
 {
-    return visitChildren(ctx);
+    return 0;
 }
 
-antlrcpp::Any visitBlock(ifccParser::BlockContext *ctx) override {
-    return visitChildren(ctx);
+antlrcpp::Any IRVisitor::visitBlock(ifccParser::BlockContext *ctx)  {
+    return 0;
 }
 
-antlrcpp::Any visitIf_block(ifccParser::If_blockContext *ctx) override {
-    return visitChildren(ctx);
+antlrcpp::Any IRVisitor::visitStmt(ifccParser::StmtContext *ctx)  {
+    return 0;
 }
 
-antlrcpp::Any visitElse_block(ifccParser::Else_blockContext *ctx) override {
-    return visitChildren(ctx);
+antlrcpp::Any IRVisitor::visitAndExpr(ifccParser::AndExprContext *ctx)  {
+    return 0;
 }
 
-antlrcpp::Any visitWhile_block(ifccParser::While_blockContext *ctx) override {
-    return visitChildren(ctx);
+antlrcpp::Any IRVisitor::visitEqualExpr(ifccParser::EqualExprContext *ctx)  {
+    return 0;
 }
 
-antlrcpp::Any visitStmt(ifccParser::StmtContext *ctx) override {
-    return visitChildren(ctx);
+antlrcpp::Any IRVisitor::visitUnaire(ifccParser::UnaireContext *ctx)  {
+    return 0;
 }
 
-antlrcpp::Any visitAndExpr(ifccParser::AndExprContext *ctx) override {
-    return visitChildren(ctx);
+antlrcpp::Any IRVisitor::visitXorExpr(ifccParser::XorExprContext *ctx)  {
+    return 0;
 }
 
-antlrcpp::Any visitEqualExpr(ifccParser::EqualExprContext *ctx) override {
-    return visitChildren(ctx);
+antlrcpp::Any IRVisitor::visitParExpr(ifccParser::ParExprContext *ctx)  {
+    return 0;
 }
 
-antlrcpp::Any visitUnaire(ifccParser::UnaireContext *ctx) override {
-    return visitChildren(ctx);
+antlrcpp::Any IRVisitor::visitMoreLessExpr(ifccParser::MoreLessExprContext *ctx)  {
+    return 0;
 }
 
-antlrcpp::Any visitXorExpr(ifccParser::XorExprContext *ctx) override {
-    return visitChildren(ctx);
+antlrcpp::Any IRVisitor::visitOrExpr(ifccParser::OrExprContext *ctx)  {
+    return 0;
 }
 
-antlrcpp::Any visitParExpr(ifccParser::ParExprContext *ctx) override {
-    return visitChildren(ctx);
-}
-
-antlrcpp::Any visitMoreLessExpr(ifccParser::MoreLessExprContext *ctx) override {
-    return visitChildren(ctx);
-}
-
-antlrcpp::Any visitOrExpr(ifccParser::OrExprContext *ctx) override {
-    return visitChildren(ctx);
-}
-
-antlrcpp::Any visitType(ifccParser::TypeContext *ctx) override {
-    return visitChildren(ctx);
+antlrcpp::Any IRVisitor::visitType(ifccParser::TypeContext *ctx)  {
+    return 0;
 }

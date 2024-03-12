@@ -172,6 +172,7 @@ protected:
 class CFG
 {
 public:
+	
 	CFG(string funcName) : funcName(funcName), nextFreeSymbolIndex(0), nextBBnumber(0){};
 
 	void add_bb(BasicBlock *bb);
