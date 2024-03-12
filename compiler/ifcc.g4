@@ -8,7 +8,6 @@ prog: func_decl*;
 func_decl : type ID '(' ')' '{' line* return_stmt '}';
 
 line : stmt 
-    | expr ';' 
     | if_block 
     | while_block 
     ;

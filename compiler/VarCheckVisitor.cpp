@@ -36,8 +36,9 @@ antlrcpp::Any VarCheckVisitor::visitProg(ifccParser::ProgContext *ctx)
     // To be completed
     auto func_ctx = ctx->func_decl(0);
     
-    for (auto stmt : func_ctx->stmt())
+    for (auto line : func_ctx->line())
     {
+        auto stmt  = line->stmt();
         visit(stmt);
     }
     this->visit(func_ctx->return_stmt());

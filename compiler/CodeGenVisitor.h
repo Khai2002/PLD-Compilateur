@@ -2,7 +2,6 @@
 
 #include "antlr4-runtime.h"
 #include "generated/ifccBaseVisitor.h"
-#include "ast.h"
 #include <unordered_map>
 #include "util.h"
 using namespace std;

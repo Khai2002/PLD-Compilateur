@@ -12,11 +12,12 @@ antlrcpp::Any CodeGenVisitor::visitProg(ifccParser::ProgContext *ctx)
     // To be completed
     auto func_ctx = ctx->func_decl(0);
     
-    for (auto stmt : func_ctx->stmt())
+    for (auto line : func_ctx->line())
     {
+        auto stmt = line->stmt();
         visit(stmt);
     }
-    this->visit(func_ctx->return_stmt());
+    visit(func_ctx->return_stmt());
     cout << "    popq %rbp\n";
 
     cout << "    ret\n";
@@ -29,7 +30,7 @@ antlrcpp::Any CodeGenVisitor::visitVar_decl(ifccParser::Var_declContext *ctx)
 
     string typeName = ctx->type()->getText();
     string name = ctx->ID()->getText();
-    Type *type = new Type(typeName);
+    //Type *type = new Type(typeName);
     if (ctx->expr())
     {
         int adr = visit(ctx->expr());
