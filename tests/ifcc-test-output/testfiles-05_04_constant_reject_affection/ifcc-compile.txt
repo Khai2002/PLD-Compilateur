@@ -1,4 +1,0 @@
-line 3:4 mismatched input '1' expecting {'int', 'char', 'return', ID}
-error: syntax error during parsing
-
-exit status: 1

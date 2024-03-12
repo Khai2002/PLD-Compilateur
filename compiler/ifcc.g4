@@ -2,12 +2,26 @@ grammar ifcc;
 
 axiom : prog EOF ;
 
-//prog : 'int' 'main' '(' ')' '{' stmt* return_stmt '}';
 prog: func_decl*;
 
-stmt : var_decl | var_ass | return_stmt ;
 
-func_decl : type ID '(' ')' '{' stmt* return_stmt '}';
+func_decl : type ID '(' ')' '{' line* return_stmt '}';
+
+line : stmt 
+    | expr ';' 
+    | if_block 
+    | while_block 
+    ;
+
+if_block : 'if' '(' expr ')' (line | block) else_block? ;
+
+else_block : 'else' (line | block | if_block) ;
+
+while_block : 'while' '(' expr ')' (line | block);
+
+block : '{' line* '}' ;
+
+stmt : var_decl | var_ass | return_stmt ;
 
 var_decl : type ID ('=' expr)? ';' ;
 
