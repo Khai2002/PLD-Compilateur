@@ -10,6 +10,7 @@
 
 #include "CodeGenVisitor.h"
 #include "VarCheckVisitor.h"
+#include "IRVisitor.h"
 
 using namespace antlr4;
 using namespace std;
@@ -49,8 +50,11 @@ int main(int argn, const char **argv)
   // cout << "nombre d'erreurs " << varCheckVisitor.getNumber_errors() << endl;
   if (varCheckVisitor.getNumber_errors() == 0)
   {
-    CodeGenVisitor v(varCheckVisitor.getAdrTable(), varCheckVisitor.getCurPointer());
-    v.visit(tree);
+    // CodeGenVisitor v(varCheckVisitor.getAdrTable(), varCheckVisitor.getCurPointer());
+    // v.visit(tree);
+    IRVisitor irv;
+    irv.visit(tree);
+    
   }else{
     return 1 ; 
   }

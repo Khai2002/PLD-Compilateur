@@ -9,11 +9,14 @@ antlrcpp::Any CodeGenVisitor::visitProg(ifccParser::ProgContext *ctx)
     cout << "    pushq %rbp \n";
     cout << "    movq %rsp, %rbp\n";
 
-    for (auto stmt : ctx->stmt())
+    // To be completed
+    auto func_ctx = ctx->func_decl(0);
+    
+    for (auto stmt : func_ctx->stmt())
     {
         visit(stmt);
     }
-    this->visit(ctx->return_stmt());
+    this->visit(func_ctx->return_stmt());
     cout << "    popq %rbp\n";
 
     cout << "    ret\n";

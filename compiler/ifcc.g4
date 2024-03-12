@@ -2,9 +2,12 @@ grammar ifcc;
 
 axiom : prog EOF ;
 
-prog : 'int' 'main' '(' ')' '{' stmt* return_stmt '}';
+//prog : 'int' 'main' '(' ')' '{' stmt* return_stmt '}';
+prog: func_decl*;
 
 stmt : var_decl | var_ass | return_stmt ;
+
+func_decl : type ID '(' ')' '{' stmt* return_stmt '}';
 
 var_decl : type ID ('=' expr)? ';' ;
 
@@ -26,7 +29,7 @@ expr :  '(' expr ')'                    #ParExpr
     | CHAR_CONST                        # CharConst
     ;
 
-type : 'int' | 'char' ;
+type : 'int' | 'char' | 'void' ;
 
 MULT_DIV_MOD : '*'|'/'|'%' ;
 ADD_SUB : '+'|'-';

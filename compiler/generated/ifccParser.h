@@ -20,8 +20,8 @@ public:
   };
 
   enum {
-    RuleAxiom = 0, RuleProg = 1, RuleStmt = 2, RuleVar_decl = 3, RuleVar_ass = 4, 
-    RuleReturn_stmt = 5, RuleExpr = 6, RuleType = 7
+    RuleAxiom = 0, RuleProg = 1, RuleStmt = 2, RuleFunc_decl = 3, RuleVar_decl = 4, 
+    RuleVar_ass = 5, RuleReturn_stmt = 6, RuleExpr = 7, RuleType = 8
   };
 
   ifccParser(antlr4::TokenStream *input);
@@ -37,6 +37,7 @@ public:
   class AxiomContext;
   class ProgContext;
   class StmtContext;
+  class Func_declContext;
   class Var_declContext;
   class Var_assContext;
   class Return_stmtContext;
@@ -60,9 +61,8 @@ public:
   public:
     ProgContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
-    Return_stmtContext *return_stmt();
-    std::vector<StmtContext *> stmt();
-    StmtContext* stmt(size_t i);
+    std::vector<Func_declContext *> func_decl();
+    Func_declContext* func_decl(size_t i);
 
     virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
    
@@ -83,6 +83,22 @@ public:
   };
 
   StmtContext* stmt();
+
+  class  Func_declContext : public antlr4::ParserRuleContext {
+  public:
+    Func_declContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    virtual size_t getRuleIndex() const override;
+    TypeContext *type();
+    antlr4::tree::TerminalNode *ID();
+    Return_stmtContext *return_stmt();
+    std::vector<StmtContext *> stmt();
+    StmtContext* stmt(size_t i);
+
+    virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+   
+  };
+
+  Func_declContext* func_decl();
 
   class  Var_declContext : public antlr4::ParserRuleContext {
   public:

@@ -37,6 +37,16 @@ public interface ifccListener extends ParseTreeListener {
 	 */
 	void exitStmt(ifccParser.StmtContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link ifccParser#func_decl}.
+	 * @param ctx the parse tree
+	 */
+	void enterFunc_decl(ifccParser.Func_declContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ifccParser#func_decl}.
+	 * @param ctx the parse tree
+	 */
+	void exitFunc_decl(ifccParser.Func_declContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link ifccParser#var_decl}.
 	 * @param ctx the parse tree
 	 */

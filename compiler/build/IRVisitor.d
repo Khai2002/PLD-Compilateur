@@ -1,4 +1,5 @@
-build/main.o: main.cpp /usr/include/antlr4-runtime/antlr4-runtime.h \
+build/IRVisitor.o: IRVisitor.cpp IRVisitor.h \
+ /usr/include/antlr4-runtime/antlr4-runtime.h \
  /usr/include/antlr4-runtime/antlr4-common.h \
  /usr/include/antlr4-runtime/support/guid.h \
  /usr/include/antlr4-runtime/support/Declarations.h \
@@ -154,6 +155,5 @@ build/main.o: main.cpp /usr/include/antlr4-runtime/antlr4-runtime.h \
  /usr/include/antlr4-runtime/tree/xpath/XPathTokenElement.h \
  /usr/include/antlr4-runtime/tree/xpath/XPathWildcardAnywhereElement.h \
  /usr/include/antlr4-runtime/tree/xpath/XPathWildcardElement.h \
- generated/ifccLexer.h generated/ifccParser.h generated/ifccBaseVisitor.h \
- generated/ifccVisitor.h CodeGenVisitor.h ast.h util.h VarCheckVisitor.h \
- IRVisitor.h
+ generated/ifccBaseVisitor.h generated/ifccVisitor.h \
+ generated/ifccParser.h ast.h util.h
