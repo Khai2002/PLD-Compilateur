@@ -2,7 +2,23 @@ grammar ifcc;
 
 axiom : prog EOF ;
 
-prog : 'int' 'main' '(' ')' '{' stmt* return_stmt '}';
+prog : 'int' 'main' '(' ')' '{' line* return_stmt '}' ;
+
+line : stmt 
+    | expr ';' 
+    | if_block 
+    | while_block 
+    ;
+
+    
+if_block : 'if' '(' expr ')' (line | block) else_block? ;
+
+else_block : 'else' (line | block | if_block) ;
+
+while_block : 'while' '(' expr ')' (line | block);
+
+block : '{' line* '}' ;
+
 
 stmt : var_decl | var_ass | return_stmt ;
 
@@ -12,7 +28,7 @@ var_ass: ID '=' expr ';' ;
 
 return_stmt: RETURN (expr)? ';' ;
 
-expr :  '(' expr ')'                    #ParExpr
+expr :  '(' expr ')'                    # ParExpr
     | expr MULT_DIV_MOD expr            # MultDivModExpr
     | expr ADD_SUB expr                 # AddSubExpr
     | expr MORE_LESS expr               # MoreLessExpr
@@ -39,7 +55,8 @@ UNAIRE : '!' | '-';
 RETURN : 'return' ; 
 INT_CONST : [0-9]+ ;
 CHAR_CONST : '\'' .*? '\'' ; 
-COMMENT : '/*' .*? '*/' -> skip ;
+BLOCK_COMMENT : '/*' .*? '*/' -> skip ;
+SINGLE_COMMENT: '//' .*? '\n' -> skip;
 DIRECTIVE : '#' .*? '\n' -> skip ;
 
 ID : [a-zA-Z_][a-zA-Z_0-9]* ;

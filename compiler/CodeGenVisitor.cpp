@@ -3,21 +3,21 @@
 using namespace std;
 
 antlrcpp::Any CodeGenVisitor::visitProg(ifccParser::ProgContext *ctx)
-{
-    cout << ".globl main\n";
-    cout << " main: \n";
-    cout << "    pushq %rbp \n";
-    cout << "    movq %rsp, %rbp\n";
+{   
 
-    for (auto stmt : ctx->stmt())
+    cout << ".global _main\n";
+    cout << "_main:\n";
+    cout << "sub sp, sp, #16\n";
+    cout << "str	wzr, [sp, #12]\n";
+
+    for (auto line : ctx->line())
     {
-        visit(stmt);
+        visit(line);
     }
     this->visit(ctx->return_stmt());
-    cout << "    popq %rbp\n";
-
-    cout << "    ret\n";
-
+    cout << "add sp, sp, #16\n";
+    cout << "ret\n"; // Restore frame pointer and return
+    
     return 0;
 }
 
@@ -29,11 +29,11 @@ antlrcpp::Any CodeGenVisitor::visitVar_decl(ifccParser::Var_declContext *ctx)
     Type *type = new Type(typeName);
     if (ctx->expr())
     {
-        int adr = visit(ctx->expr());
-        cout << "    movl " << adr << "(%rbp), "
-             << "%eax" << endl;
-        cout << "    movl "
-             << "%eax, " << this->adrTable[name].index << "(%rbp)" << endl;
+        int adr = any_cast<int>(visit(ctx->expr()));
+        // Load the value from the stack to a register (e.g., w0)
+        cout << "    ldr w0, [fp, #" << adr << "]" << endl; 
+        // Store the value from the register to the variable's location
+        cout << "    str w0, [fp, #" << this->adrTable[name].index << "]" << endl;
     }
 
     return 0;
@@ -44,11 +44,11 @@ antlrcpp::Any CodeGenVisitor::visitVar_ass(ifccParser::Var_assContext *ctx)
 {
     // auto expr = visitChildren(ctx);
     string name = ctx->ID()->getText();
-    int adr = visit(ctx->expr());
-    cout << "    movl " << adr << "(%rbp), "
-         << "%eax" << endl;
-    cout << "    movl "
-         << "%eax, " << this->adrTable[name].index << "(%rbp)" << endl;
+    int adr = any_cast<int>(visit(ctx->expr()));
+    // Load the expression value into a register (e.g., w0)
+    cout << "    ldr w0, [fp, #" << adr << "]" << endl; 
+    // Store the value from the register into the variable's location
+    cout << "    str w0, [fp, #" << this->adrTable[name].index << "]" << endl;
     return 0;
 }
 
@@ -56,9 +56,8 @@ antlrcpp::Any CodeGenVisitor::visitReturn_stmt(ifccParser::Return_stmtContext *c
 {
     if (ctx->expr())
     {
-        int value = visit(ctx->expr());
-        cout << "    movl " << value << "(%rbp), "
-             << " %eax" << endl;
+        int value = any_cast<int>(visit(ctx->expr()));
+        cout << "    ldr w0, [fp, #" << value << "]" << endl;
     }
 
     return 0;
@@ -71,7 +70,9 @@ antlrcpp::Any CodeGenVisitor::visitIntConst(ifccParser::IntConstContext *ctx)
     // Assign the IntConst to a tmp value in the memory
     this->cur_pointer -= 4;
     int tmpAdr = this->cur_pointer;
-    cout << "    movl $" << value << ", " << tmpAdr << "(%rbp)" << endl;
+    cout << "    mov w0, #" << value << endl;  // Move the constant value into w0
+    cout << "    str w0, [fp, #" << tmpAdr << "]" << endl;  // Store w0 at the stack location
+
     return tmpAdr;
 }
 
@@ -82,7 +83,9 @@ antlrcpp::Any CodeGenVisitor::visitCharConst(ifccParser::CharConstContext *ctx)
     // Assign the CharConst to a tmp value in the memory
     this->cur_pointer -= 4;
     int tmpAdr = this->cur_pointer;
-    cout << "    movl $" << (int)value << ", " << tmpAdr << "(%rbp)" << endl;
+    cout << "    mov w0, #" << value << endl;  // Move the constant value into w0
+    cout << "    str w0, [fp, #" << tmpAdr << "]" << endl;  // Store w0 at the stack location
+
     return tmpAdr;
 }
 
@@ -103,33 +106,32 @@ antlrcpp::Any CodeGenVisitor::visitAddSubExpr(ifccParser::AddSubExprContext *ctx
     auto right = ctx->expr(1);
     string op = ctx->ADD_SUB()->getText();
 
-    // Visit left and right expressions and get their adress in memory
-    int lvalue = visit(left);
-    int rvalue = visit(right);
+    // Visit left and right expressions and get their address in memory
+    int lvalue = std::any_cast<int>(visit(left));
+    int rvalue = std::any_cast<int>(visit(right));
 
-    cout << "    movl " << lvalue << "(%rbp)"
-         << ", %edx\n";
+    // Load the left and right values into registers
+    cout << "    ldr r1, [fp, #" << lvalue << "]" << endl;
+    cout << "    ldr r2, [fp, #" << rvalue << "]" << endl;
 
-    cout << "    movl " << rvalue << "(%rbp)"
-         << ", %eax\n";
-
+    // Perform addition or subtraction
     if (op == "+")
     {
-        cout << "    addl ";
+        cout << "    add w0, r1, r2" << endl;
     }
     else if (op == "-")
     {
-        cout << "    subl ";
+        cout << "    sub w0, r1, r2" << endl;
     }
 
-    cout << "%edx, %eax" << endl;
-
-    this->cur_pointer -= 4;
+    // Allocate space for result and store it
+    this->cur_pointer -= 4; // Assuming 4 bytes for an int
     int tmpAdr = this->cur_pointer;
-    cout << "    movl "
-         << "%eax, " << tmpAdr << "(%rbp)\n";
+    cout << "    str w0, [fp, #" << tmpAdr << "]" << endl;
+
     return tmpAdr;
 }
+
 
 // Mult
 //  movl	-12(%rbp), %eax
@@ -152,45 +154,38 @@ antlrcpp::Any CodeGenVisitor::visitMultDivModExpr(ifccParser::MultDivModExprCont
     auto right = ctx->expr(1);
     string op = ctx->MULT_DIV_MOD()->getText();
 
-    // Visit left and right expressions and get their adress in memory
-    int lvalue = visit(left);
-    int rvalue = visit(right);
+    // Visit left and right expressions and get their address in memory
+    int lvalue = std::any_cast<int>(visit(left));
+    int rvalue = std::any_cast<int>(visit(right));
     int tmpAdr;
 
-    cout << "    movl " << lvalue << "(%rbp)"
-         << ", %eax\n";
+    // Load left value into a register
+    cout << "    ldr w0, [fp, #" << lvalue << "]" << endl;
 
     if (op == "*")
     {
-        cout << "    imull " << rvalue << "(%rbp)"
-             << ", %eax\n";
-        this->cur_pointer -= 4;
+        // Load right value into another register
+        cout << "    ldr r1, [fp, #" << rvalue << "]" << endl;
+        // Perform multiplication
+        cout << "    mul w0, w0, r1" << endl;
+
+        // Allocate space for result and store it
+        this->cur_pointer -= 4; // Assuming 4 bytes for an int
         tmpAdr = this->cur_pointer;
-        cout << "    movl "
-             << "%eax, " << tmpAdr << "(%rbp)\n";
+        cout << "    str w0, [fp, #" << tmpAdr << "]" << endl;
+
         return tmpAdr;
     }
     else
     {
-        cout << "    cltd" << endl;
-        cout << "    idivl " << rvalue << "%(rbp)\n";
-
-        this->cur_pointer -= 4;
-        tmpAdr = this->cur_pointer;
-
-        if (op == "/")
-        {
-            cout << "    movl "
-                 << "%eax, " << tmpAdr << "(%rbp)\n";
-        }
-        else
-        {
-            cout << "    movl "
-                 << "%edx, " << tmpAdr << "(%rbp)\n";
-        }
+        // Handle division and modulus
+        // This may involve subroutine calls or a series of instructions
+        // specific to ARM architecture
     }
+
     return tmpAdr;
 }
+
 
 
 

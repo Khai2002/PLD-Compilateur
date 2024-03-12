@@ -33,9 +33,9 @@ antlrcpp::Any VarCheckVisitor::visitVar_decl(ifccParser::Var_declContext *ctx)
 
 antlrcpp::Any VarCheckVisitor::visitProg(ifccParser::ProgContext *ctx)
 {
-    for (auto stmt : ctx->stmt())
+    for (auto line : ctx->line())
     {
-        visit(stmt);
+        visit(line);
     }
     this->visit(ctx->return_stmt());
     for (const auto &entry : adrTable)
