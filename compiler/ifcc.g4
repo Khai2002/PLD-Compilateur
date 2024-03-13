@@ -12,19 +12,21 @@ var_ass: ID '=' expr ';' ;
 
 return_stmt: RETURN (expr)? ';' ;
 
-expr :  '(' expr ')'                    # ParExpr
+expr :  
+    '(' expr ')'                        # ParExpr
+    | UNAIRE=('-'|'!') expr             # UnaireExpr
     | expr MULT_DIV_MOD expr            # MultDivModExpr
     | expr ADD_SUB expr                 # AddSubExpr
     | expr MORE_LESS expr               # MoreLessExpr
     | expr EQ_NEQ expr                  # EqualExpr
     | expr AND expr                     # AndExpr
     | expr XOR expr                     # XorExpr
-    | expr OR expr                      # OrExpr
-    | UNAIRE expr                       # Unaire
+    | expr OR expr                      # OrExpr    
     | ID                                # Var
     | INT_CONST                         # IntConst
     | CHAR_CONST                        # CharConst
     ;
+
 
 type : 'int' | 'char' ;
 
@@ -35,7 +37,6 @@ EQ_NEQ : '==' | '!=';
 AND : '&';
 XOR : '^';
 OR : '|';
-UNAIRE : '!' | '-';
 RETURN : 'return' ; 
 INT_CONST : [0-9]+ ;
 CHAR_CONST : '\'' . '\'' ; 
