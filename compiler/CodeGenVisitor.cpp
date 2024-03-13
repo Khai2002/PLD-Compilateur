@@ -106,6 +106,7 @@ antlrcpp::Any CodeGenVisitor::visitAddSubExpr(ifccParser::AddSubExprContext *ctx
     // Visit left and right expressions and get their adress in memory
     int lvalue = visit(left);
     int rvalue = visit(right);
+    int tmpAdr;
 
     cout << "    movl " << lvalue << "(%rbp)"
          << ", %edx\n";
@@ -117,17 +118,21 @@ antlrcpp::Any CodeGenVisitor::visitAddSubExpr(ifccParser::AddSubExprContext *ctx
     {
         cout << "    addl ";
         cout << "%edx, %eax" << endl;
+        this->cur_pointer -= 4;
+        tmpAdr = this->cur_pointer;
+        cout << "    movl "
+             << "%eax, " << tmpAdr << "(%rbp)\n";
     }
     else if (op == "-")
     {
         cout << "    subl ";
         cout << "%eax, %edx" << endl;
+        this->cur_pointer -= 4;
+        tmpAdr = this->cur_pointer;
+        cout << "    movl "
+             << "%edx, " << tmpAdr << "(%rbp)\n";
     }
 
-    this->cur_pointer -= 4;
-    int tmpAdr = this->cur_pointer;
-    cout << "    movl "
-         << "%eax, " << tmpAdr << "(%rbp)\n";
     return tmpAdr;
 }
 
