@@ -1,5 +1,6 @@
 int main()
 {
-    int x = 4/3;
+    int x;
+    x = 4/3;
     return x;
 }

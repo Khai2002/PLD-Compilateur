@@ -1,6 +1,7 @@
 int main()
 {
-    int x = 32;
-    int y = 12;
+    int x, y;
+    x = 32;
+    y = 12;
     return -x + y;
 }

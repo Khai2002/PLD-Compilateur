@@ -1,5 +1,6 @@
 int main()
 {
-    int x = 98%'a';
+    int x;
+    x = 98%'a';
     return x;
 }

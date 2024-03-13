@@ -1,9 +1,12 @@
 int main()
 {
-    int x = 3;
-    int y = 2;
-    int z = x + y;
-    int a = x - y;
-    int b = x * y;
+    int x, y, z, a, b;
+
+    x = 3;
+    y = 2;
+    z = x + y;
+    a = x - y;
+    b = x * y;
+
     return z + a + b;
 }

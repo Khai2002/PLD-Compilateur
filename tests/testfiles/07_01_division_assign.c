@@ -1,5 +1,6 @@
 int main()
 {
-    int x = 12/4;
+    int x;
+    x = 12/4;
     return x;
 }

@@ -1,5 +1,6 @@
 int main()
 {
-    int x = 'b'+'a'-4*'c';
+    int x;
+    x = 'b'+'a'-4*'c';
     return x;
 }

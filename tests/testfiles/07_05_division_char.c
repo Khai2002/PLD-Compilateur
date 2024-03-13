@@ -1,5 +1,6 @@
 int main()
 {
-    int x = 32/'a';
+    int x;
+    x = 32/'a';
     return x;
 }
