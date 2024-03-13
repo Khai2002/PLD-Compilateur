@@ -265,7 +265,7 @@ void BasicBlock::add_IRInstr(IRInstr::Operation op, Type t, vector<string> param
         newInstr = new IRInstrMul(this, op, t, params);
         break;
     case IRInstr::Operation::div:
-        newInstr = new IRInstrMul(this, op, t, params);
+        newInstr = new IRInstrDiv(this, op, t, params);
         break;
     case IRInstr::Operation::mod:
         newInstr = new IRInstrMod(this, op, t, params);
