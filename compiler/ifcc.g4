@@ -6,7 +6,7 @@ prog : 'int' 'main' '(' ')' '{' stmt* return_stmt '}';
 
 stmt : var_decl | var_ass | return_stmt ;
 
-var_decl : type ID ('=' expr)? ';' ;
+var_decl : type ID (',' ID)* ';' ;
 
 var_ass: ID '=' expr ';' ; 
 

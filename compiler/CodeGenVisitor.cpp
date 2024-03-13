@@ -23,10 +23,11 @@ antlrcpp::Any CodeGenVisitor::visitProg(ifccParser::ProgContext *ctx)
 
 antlrcpp::Any CodeGenVisitor::visitVar_decl(ifccParser::Var_declContext *ctx)
 {
-
+    /*
     string typeName = ctx->type()->getText();
     string name = ctx->ID()->getText();
     Type *type = new Type(typeName);
+    
     if (ctx->expr())
     {
         int adr = visit(ctx->expr());
@@ -35,6 +36,7 @@ antlrcpp::Any CodeGenVisitor::visitVar_decl(ifccParser::Var_declContext *ctx)
         cout << "    movl "
              << "%eax, " << this->adrTable[name].index << "(%rbp)" << endl;
     }
+    */
 
     return 0;
     // return new VarDecl(id, type, nullptr);
