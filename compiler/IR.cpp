@@ -87,11 +87,12 @@ void IRInstr::gen_asm(ostream &o)
 void IRInstr::print_IRInstr()
 {
 
-    cout << operationToString(this->op) << "params = " << endl;
+    cout << operationToString(this->op) << " < params = ";
     for (auto it = params.begin(); it != params.end(); ++it)
     {
-        cout << *it << endl;
+        cout << *it << ", ";
     }
+    cout << " >" << endl;
 }
 
 string IRInstr::operationToString(Operation op)
@@ -177,6 +178,9 @@ void IRInstrMul::gen_asm(ostream &o)
 
 // ======== BasicBlock ==========================================================================================
 
+// Constructor
+BasicBlock::BasicBlock(CFG *cfg, string entry_label) : cfg(cfg), label(entry_label) {}
+
 // Method implementation for gen_asm
 void BasicBlock::gen_asm(ostream &o)
 {
@@ -235,10 +239,12 @@ void BasicBlock::add_IRInstr(IRInstr::Operation op, Type t, vector<string> param
 void BasicBlock::printBB()
 {
     // Create a new IRInstr and add it to the instrs vector
+    cout << "BB Name: " << label << endl;
     for (IRInstr *instr : instrs)
     {
         if (instr != nullptr)
         {
+            cout << "   ";
             instr->print_IRInstr();
         }
     }
@@ -247,6 +253,25 @@ void BasicBlock::printBB()
 // ==============================================================================================================
 
 // ========= CFG ================================================================================================
+
+// Cosntructor
+
+CFG::CFG(string funcName) : funcName(funcName), nextFreeSymbolIndex(0), nextBBnumber(0) {
+    auto firstBB = new BasicBlock(this, funcName);
+    add_bb(firstBB);
+
+    auto lastBB = new BasicBlock(this, new_BB_name());
+    add_bb(lastBB);
+
+    firstBB->exit_false = nullptr;
+    firstBB->exit_true = lastBB;
+
+    lastBB->exit_false = nullptr;
+    lastBB->exit_true = nullptr;
+
+    current_bb = firstBB;
+
+}
 
 // Method implementation for add_bb
 void CFG::add_bb(BasicBlock *bb)
@@ -262,6 +287,7 @@ void CFG::gen_asm(ostream &o)
     // Placeholder for x86 code generation
     // This method should generate assembly code for the entire CFG
     // Actual implementation will depend on your specific requirements
+    
     for (auto bb : bbs)
     {
         bb->gen_asm(o);
@@ -281,13 +307,16 @@ void CFG::gen_asm_prologue(ostream &o)
 {
     // Placeholder for generating assembly code prologue
     // Actual implementation will depend on your specific requirements
-    int alloc_size = 0;
-    for (auto var : this->SymbolType)
+    int alloc_size = nextFreeSymbolIndex ;
+    /*for (auto var : this->SymbolType)
     {
         alloc_size += get_type_size(var.second);
-    }
+    }*/
 
-    alloc_size += 16 - (alloc_size % 16);
+    if (nextFreeSymbolIndex % 16 != 8){
+        alloc_size = nextFreeSymbolIndex + 8  ; 
+    }
+    //alloc_size += 16 - (alloc_size % 16);
 
     o << "pushq  %rbp" << endl;
     o << "movq  %rsp, %rbp" << endl;
@@ -308,15 +337,15 @@ void CFG::gen_asm_epilogue(ostream &o)
 // Method implementation for add_to_symbol_table
 void CFG::add_to_symbol_table(string name, Type t)
 {
-    nextFreeSymbolIndex -= get_type_size(t);
     SymbolType[name] = t;
     SymbolIndex[name] = nextFreeSymbolIndex;
+    nextFreeSymbolIndex -= get_type_size(t);
 }
 
 // Method implementation for create_new_tempvar
 string CFG::create_new_tempvar(Type t)
 {
-    string tempName = "temp" + to_string(nextFreeSymbolIndex);
+    string tempName = "temp" + to_string(-nextFreeSymbolIndex);
     add_to_symbol_table(tempName, t);
     return tempName;
 }
@@ -353,6 +382,17 @@ int CFG::get_type_size(Type type)
         return 0;
     }
     return 8;
+}
+
+void CFG::printCFG(){
+    cout<<"Print of every Basic Block : "<<endl  ; 
+    for (BasicBlock *BB : bbs)
+    {
+        if (BB != nullptr)
+        {
+            BB->printBB() ;
+        }
+    }
 }
 
 // Method implementation for new_BB_name

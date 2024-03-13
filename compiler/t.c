@@ -1,9 +1,7 @@
 int main(){
     int x = 2;
+    int y = 15;
+    int z ; 
+    z =  3+y ; 
     return 0;
-}
-
-int not_main(){
-    int y = 1;
-    return 1;
 }

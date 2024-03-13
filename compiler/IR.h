@@ -28,18 +28,18 @@ public:
 	};
 
 	// Constructor
-	Type(TypeEnum type) : type_(type) {}
-	Type() : type_(TypeEnum::INT) {}
+	Type(TypeEnum type) : type(type) {}
+	Type() : type(TypeEnum::INT) {}
 
 	// Getter for the type
 	TypeEnum getType() const
 	{
-		return type_;
+		return type;
 	}
 
 protected:
 	// Protected member variable to store the enum value
-	TypeEnum type_;
+	TypeEnum type;
 };
 
 //! The class for one 3-address instruction
@@ -55,12 +55,15 @@ public:
 		add,
 		sub,
 		mul,
+		div,
+		mod,
 		rmem,
 		wmem,
 		call,
 		cmp_eq,
 		cmp_lt,
-		cmp_le
+		cmp_le,
+		ret
 	} Operation;
 
 	string operationToString(Operation op);
@@ -173,7 +176,7 @@ class CFG
 {
 public:
 	
-	CFG(string funcName) : funcName(funcName), nextFreeSymbolIndex(0), nextBBnumber(0){};
+	CFG(string funcName);
 
 	void add_bb(BasicBlock *bb);
 
@@ -195,6 +198,7 @@ public:
 	int getNextFreeSymbolIndex() { return nextFreeSymbolIndex; }
 	int getBBNumber() { return nextBBnumber; }
 	string getFuncName() { return funcName; }
+	void printCFG() ; //function for debugging  
 
 	// basic block management
 	string new_BB_name();
