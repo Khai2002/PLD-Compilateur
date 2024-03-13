@@ -94,7 +94,7 @@ class IRInstrCopy : public IRInstr
 {
 public:
 	IRInstrCopy(BasicBlock *bb, Operation op, Type t, vector<string> params) : IRInstr(bb, op, t, params){};
-	virtual void gen_asm(ostream &o) override;
+	void gen_asm(ostream &o) override;
 };
 
 class IRInstrAdd : public IRInstr
@@ -118,13 +118,26 @@ public:
 	void gen_asm(ostream &o) override;
 };
 
+class IRInstrDiv : public IRInstr
+{
+public:
+	IRInstrDiv(BasicBlock *bb, Operation op, Type t, vector<string> params) : IRInstr(bb, op, t, params){};
+	void gen_asm(ostream &o) override;
+};
+
+class IRInstrMod : public IRInstr
+{
+public:
+	IRInstrMod(BasicBlock *bb, Operation op, Type t, vector<string> params) : IRInstr(bb, op, t, params){};
+	void gen_asm(ostream &o) override;
+};
+
 class IRInstrRet : public IRInstr
 {
 public:
 	IRInstrRet(BasicBlock *bb, Operation op, Type t, vector<string> params) : IRInstr(bb, op, t, params){};
 	void gen_asm(ostream &o) override;
 };
-
 
 /**  The class for a basic block */
 
@@ -183,7 +196,6 @@ protected:
 class CFG
 {
 public:
-	
 	CFG(string funcName);
 
 	void add_bb(BasicBlock *bb);
@@ -206,7 +218,7 @@ public:
 	int getNextFreeSymbolIndex() { return nextFreeSymbolIndex; }
 	int getBBNumber() { return nextBBnumber; }
 	string getFuncName() { return funcName; }
-	void printCFG() ; //function for debugging  
+	void printCFG(); // function for debugging
 
 	// basic block management
 	string new_BB_name();

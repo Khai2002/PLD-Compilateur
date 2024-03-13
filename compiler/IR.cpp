@@ -109,6 +109,8 @@ string IRInstr::operationToString(Operation op)
         return "sub";
     case mul:
         return "mul";
+    case div:
+        return "div";
     case ret:
         return "ret";
     case rmem:
@@ -178,6 +180,30 @@ void IRInstrMul::gen_asm(ostream &o)
     o << "movq %rax, " << indexDest << "(%rbp)" << endl;
 }
 
+void IRInstrDiv::gen_asm(ostream &o)
+{
+    int indexParam1 = bb->cfg->get_var_index(params[0]);
+    int indexParam2 = bb->cfg->get_var_index(params[1]);
+    int indexDest = bb->cfg->get_var_index(params[2]);
+
+    o << "movq " << indexParam1 << "(%rbp), %rax" << endl;
+    o << "    cltd" << endl;
+    o << "idivl " << indexParam2 << "(%rbp)" << endl;
+    o << "movq %rax, " << indexDest << "(%rbp)" << endl;
+}
+
+void IRInstrMod::gen_asm(ostream &o)
+{
+    int indexParam1 = bb->cfg->get_var_index(params[0]);
+    int indexParam2 = bb->cfg->get_var_index(params[1]);
+    int indexDest = bb->cfg->get_var_index(params[2]);
+
+    o << "movq " << indexParam1 << "(%rbp), %rax" << endl;
+    o << "    cltd" << endl;
+    o << "idivl " << indexParam2 << "(%rbp)" << endl;
+    o << "movq %rdx, " << indexDest << "(%rbp)" << endl;
+}
+
 void IRInstrRet::gen_asm(ostream &o)
 {
     int indexDest = bb->cfg->get_var_index(params[0]);
@@ -237,6 +263,12 @@ void BasicBlock::add_IRInstr(IRInstr::Operation op, Type t, vector<string> param
         break;
     case IRInstr::Operation::mul:
         newInstr = new IRInstrMul(this, op, t, params);
+        break;
+    case IRInstr::Operation::div:
+        newInstr = new IRInstrMul(this, op, t, params);
+        break;
+    case IRInstr::Operation::mod:
+        newInstr = new IRInstrMod(this, op, t, params);
         break;
 
     case IRInstr::Operation::ret:
