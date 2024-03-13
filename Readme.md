@@ -1,5 +1,7 @@
 # PLD Compilateur
 
+
+
 ## Description
 A compiler for a subset of C written in C++ using ANTLR4 for parsing.
 
@@ -49,3 +51,9 @@ Please note that the compiler currently only supports a minimal subset of the C 
 
 ## License
 MIT license
+
+## note 
+
+For those who are on WSL : please run this command before running all the tests : 
+
+dos2unix ifcc-wrapper.sh
