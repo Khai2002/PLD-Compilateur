@@ -176,6 +176,12 @@ void IRInstrMul::gen_asm(ostream &o)
     o << "movq %rax, " << indexDest << "(%rbp)" << endl;
 }
 
+void IRInstrRet::gen_asm(ostream &o)
+{
+    int indexDest = bb->cfg->get_var_index(params[0]);
+    o << "movl " << indexDest << "(%rbp), %eax" << endl;
+}
+
 // ======== BasicBlock ==========================================================================================
 
 // Constructor
@@ -186,7 +192,7 @@ void BasicBlock::gen_asm(ostream &o)
 {
     // Very simple assembly code generation for this basic block
     // This is a placeholder implementation. Actual implementation will depend on your specific requirements.
-    o << "BasicBlock " << label << ":\n";
+    o << label << ":\n";
     if (label == cfg->getFuncName())
     {
         cfg->gen_asm_prologue(o);
@@ -225,12 +231,17 @@ void BasicBlock::add_IRInstr(IRInstr::Operation op, Type t, vector<string> param
         newInstr = new IRInstrAdd(this, op, t, params);
         break;
     case IRInstr::Operation::sub:
-        newInstr = new IRInstr(this, op, t, params);
+        newInstr = new IRInstrSub(this, op, t, params);
         break;
     case IRInstr::Operation::mul:
         newInstr = new IRInstrAdd(this, op, t, params);
         break;
+
+    case IRInstr::Operation::ret:
+        newInstr = new IRInstrRet(this, op, t, params);
+        break;
     }
+
     // newInstr = new IRInstr(this, op, t, params); // Assuming IRInstr constructor takes BasicBlock* as first argument
 
     instrs.push_back(newInstr);
@@ -256,7 +267,8 @@ void BasicBlock::printBB()
 
 // Cosntructor
 
-CFG::CFG(string funcName) : funcName(funcName), nextFreeSymbolIndex(0), nextBBnumber(0) {
+CFG::CFG(string funcName) : funcName(funcName), nextFreeSymbolIndex(0), nextBBnumber(0)
+{
     auto firstBB = new BasicBlock(this, funcName);
     add_bb(firstBB);
 
@@ -270,7 +282,6 @@ CFG::CFG(string funcName) : funcName(funcName), nextFreeSymbolIndex(0), nextBBnu
     lastBB->exit_true = nullptr;
 
     current_bb = firstBB;
-
 }
 
 // Method implementation for add_bb
@@ -287,7 +298,8 @@ void CFG::gen_asm(ostream &o)
     // Placeholder for x86 code generation
     // This method should generate assembly code for the entire CFG
     // Actual implementation will depend on your specific requirements
-    
+    o << ".globl main\n";
+
     for (auto bb : bbs)
     {
         bb->gen_asm(o);
@@ -307,20 +319,21 @@ void CFG::gen_asm_prologue(ostream &o)
 {
     // Placeholder for generating assembly code prologue
     // Actual implementation will depend on your specific requirements
-    int alloc_size = nextFreeSymbolIndex ;
+    int alloc_size = nextFreeSymbolIndex;
     /*for (auto var : this->SymbolType)
     {
         alloc_size += get_type_size(var.second);
     }*/
 
-    if (nextFreeSymbolIndex % 16 != 8){
-        alloc_size = nextFreeSymbolIndex + 8  ; 
+    if (nextFreeSymbolIndex % 16 != 8)
+    {
+        alloc_size = nextFreeSymbolIndex + 8;
     }
-    //alloc_size += 16 - (alloc_size % 16);
+    // alloc_size += 16 - (alloc_size % 16);
 
     o << "pushq  %rbp" << endl;
     o << "movq  %rsp, %rbp" << endl;
-    o << "subq  $" << alloc_size << ", %rsp" << endl;
+    o << "subq  $" << -alloc_size << ", %rsp" << endl;
     o << endl;
 }
 
@@ -384,13 +397,14 @@ int CFG::get_type_size(Type type)
     return 8;
 }
 
-void CFG::printCFG(){
-    cout<<"Print of every Basic Block : "<<endl  ; 
+void CFG::printCFG()
+{
+    cout << "Print of every Basic Block : " << endl;
     for (BasicBlock *BB : bbs)
     {
         if (BB != nullptr)
         {
-            BB->printBB() ;
+            BB->printBB();
         }
     }
 }

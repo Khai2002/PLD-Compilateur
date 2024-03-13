@@ -118,6 +118,14 @@ public:
 	void gen_asm(ostream &o) override;
 };
 
+class IRInstrRet : public IRInstr
+{
+public:
+	IRInstrRet(BasicBlock *bb, Operation op, Type t, vector<string> params) : IRInstr(bb, op, t, params){};
+	void gen_asm(ostream &o) override;
+};
+
+
 /**  The class for a basic block */
 
 /* A few important comments.
