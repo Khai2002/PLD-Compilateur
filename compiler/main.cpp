@@ -54,11 +54,11 @@ int main(int argn, const char **argv)
     // v.visit(tree);
     IRVisitor irv;
     irv.visit(tree);
-    cout << endl;
+    /*cout << endl;
     cout << endl;
     irv.getCurrentCFG()->printCFG();
     cout << endl;
-    cout << endl;
+    cout << endl;*/
     irv.getCurrentCFG()->gen_asm(cout);
     auto symbolIndex = irv.getCurrentCFG()->getSymbolIndex();
     for (const auto& pair : symbolIndex) {

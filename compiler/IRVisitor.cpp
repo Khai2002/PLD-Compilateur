@@ -85,7 +85,7 @@ antlrcpp::Any IRVisitor::visitAddSubExpr(ifccParser::AddSubExprContext *ctx)
     auto left = ctx->expr(0);
     auto right = ctx->expr(1);
     string op = ctx->ADD_SUB()->getText();
-
+    cout << "opération : " << op << endl;
     // Visit left and right expressions and get their adress in memory
     string param2 = visit(left);
     string param3 = visit(right);
@@ -95,11 +95,11 @@ antlrcpp::Any IRVisitor::visitAddSubExpr(ifccParser::AddSubExprContext *ctx)
     params.push_back(param3);
     params.push_back(tempvar);
 
-    if (op == "add")
+    if (op == "+")
     {
         currentCFG->current_bb->add_IRInstr(IRInstr::Operation::add, Type::TypeEnum::INT, params);
     }
-    else if (op == "sub")
+    else if (op == "-")
     {
         currentCFG->current_bb->add_IRInstr(IRInstr::Operation::sub, Type::TypeEnum::INT, params);
     }
@@ -122,21 +122,22 @@ antlrcpp::Any IRVisitor::visitMultDivModExpr(ifccParser::MultDivModExprContext *
     params.push_back(param2);
     params.push_back(param3);
     params.push_back(tempvar);
+    
 
-    if (op == "mul")
+    if (op == "*")
     {
         currentCFG->current_bb->add_IRInstr(IRInstr::Operation::mul, Type::TypeEnum::INT, params);
     }
-    else if (op == "div")
+    else if (op == "/")
     {
         currentCFG->current_bb->add_IRInstr(IRInstr::Operation::div, Type::TypeEnum::INT, params);
     }
-    else if (op == "mod")
+    else if (op == "%")
     {
         currentCFG->current_bb->add_IRInstr(IRInstr::Operation::mod, Type::TypeEnum::INT, params);
     }
 
-    return 0;
+    return tempvar;
 }
 
 antlrcpp::Any IRVisitor::visitVar_ass(ifccParser::Var_assContext *ctx)
