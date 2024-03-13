@@ -86,18 +86,21 @@ antlrcpp::Any CodeGenVisitor::visitCharConst(ifccParser::CharConstContext *ctx)
     return tmpAdr;
 }
 
-antlrcpp::Any CodeGenVisitor::visitUnaire(ifccParser::UnaireExprContext *ctx){
+antlrcpp::Any CodeGenVisitor::visitUnaireExpr(ifccParser::UnaireExprContext *ctx){
     auto expr = ctx->expr();
     int value = visit(expr);
     string op = ctx->UNAIRE->getText();
     int tmpAdr = this->cur_pointer;
     if (op == "-")
     {
-        cout << "    negl " << value << "(%rbp)" << endl;
+        cout << "    neg " << value << "(%rbp)" << endl;
         this->cur_pointer -= 4;
         tmpAdr = this->cur_pointer;
         cout << "    movl "
-             << value << "(%rbp), " << tmpAdr << "(%rbp)\n";
+             << value << "(%rbp), " << "%eax\n";
+
+        cout << "    movl "
+             << "%eax, " << tmpAdr << "(%rbp)\n";
     }
     else if (op == "!")
     {
