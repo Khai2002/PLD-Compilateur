@@ -11,7 +11,7 @@ antlrcpp::Any VarCheckVisitor::visitVar_decl(ifccParser::Var_declContext *ctx)
     auto it = this->adrTable.find(name);
     if (it != this->adrTable.end())
     {
-        cerr << "Erreur : Variable '" << name << "' déjà déclarée." << endl;
+        cerr << "#Erreur : Variable '" << name << "' déjà déclarée." << endl;
         this->number_errors++;
         return 0;
     }
@@ -47,7 +47,7 @@ antlrcpp::Any VarCheckVisitor::visitProg(ifccParser::ProgContext *ctx)
         const VariableInfo &variable = entry.second;
         if (variable.callCount == 0)
         {
-            cerr << "Variable '" << entry.first << "' déclarée mais non utilisée" << endl;
+            cerr << "#Variable '" << entry.first << "' déclarée mais non utilisée" << endl;
             this->number_warnings++;
         }
     }
@@ -61,7 +61,7 @@ antlrcpp::Any VarCheckVisitor::visitVar_ass(ifccParser::Var_assContext *ctx)
     auto it1 = this->adrTable.find(name1);
     if (it1 == this->adrTable.end())
     {
-        cerr << "Erreur : Variable '" << name1 << "' n'a pas été déclarée." << endl;
+        cerr << "#Erreur : Variable '" << name1 << "' n'a pas été déclarée." << endl;
         this->number_errors++;
         return 0;
     }
@@ -77,7 +77,7 @@ antlrcpp::Any VarCheckVisitor::visitVar(ifccParser::VarContext *ctx)
     auto it = this->adrTable.find(name);
     if (it == this->adrTable.end())
     {
-        cerr << "Erreur : Variable '" << name << "' n'a pas été déclarée." << endl;
+        cerr << "#Erreur : Variable '" << name << "' n'a pas été déclarée." << endl;
         this->number_errors++;
         return 0;
     }

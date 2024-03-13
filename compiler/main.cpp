@@ -60,17 +60,17 @@ int main(int argn, const char **argv)
     cout << endl;
     cout << endl;*/
     irv.getCurrentCFG()->gen_asm(cout);
+    /*
     auto symbolIndex = irv.getCurrentCFG()->getSymbolIndex();
     for (const auto& pair : symbolIndex) {
       cout << "Key: " << pair.first << ", Value: " << pair.second << std::endl;
     }
-
-
-    
-  }else{
-    return 1 ; 
+    */
   }
-
+  else
+  {
+    return 1;
+  }
 
   // cout << v.getVarMap().size()<< endl;
   // cout << v.getCurPointer() << endl;

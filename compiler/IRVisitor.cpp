@@ -18,7 +18,7 @@ antlrcpp::Any IRVisitor::visitProg(ifccParser::ProgContext *ctx)
 
 antlrcpp::Any IRVisitor::visitFunc_decl(ifccParser::Func_declContext *ctx)
 {
-    cout << "visiting function declarations..." << endl;
+    // cout << "visiting function declarations..." << endl;
 
     CFG *cfg = new CFG(ctx->ID()->getText());
     currentCFG = cfg;
@@ -39,7 +39,7 @@ antlrcpp::Any IRVisitor::visitFunc_decl(ifccParser::Func_declContext *ctx)
 
 antlrcpp::Any IRVisitor::visitLine(ifccParser::LineContext *ctx)
 {
-    cout << "visiting lines..." << endl;
+    // cout << "visiting lines..." << endl;
     if (ctx->stmt())
     {
         visit(ctx->stmt());
@@ -57,7 +57,7 @@ antlrcpp::Any IRVisitor::visitLine(ifccParser::LineContext *ctx)
 
 antlrcpp::Any IRVisitor::visitVar_decl(ifccParser::Var_declContext *ctx)
 {
-    cout << "visiting variable declarations..." << endl;
+    // cout << "visiting variable declarations..." << endl;
 
     string typeName = ctx->type()->getText();
     string name = ctx->ID()->getText();
@@ -81,11 +81,10 @@ antlrcpp::Any IRVisitor::visitVar_decl(ifccParser::Var_declContext *ctx)
 
 antlrcpp::Any IRVisitor::visitAddSubExpr(ifccParser::AddSubExprContext *ctx)
 {
-    cout << "visiting add sub expressions..." << endl;
+    // cout << "visiting add sub expressions..." << endl;
     auto left = ctx->expr(0);
     auto right = ctx->expr(1);
     string op = ctx->ADD_SUB()->getText();
-    cout << "opération : " << op << endl;
     // Visit left and right expressions and get their adress in memory
     string param2 = visit(left);
     string param3 = visit(right);
@@ -109,7 +108,7 @@ antlrcpp::Any IRVisitor::visitAddSubExpr(ifccParser::AddSubExprContext *ctx)
 
 antlrcpp::Any IRVisitor::visitMultDivModExpr(ifccParser::MultDivModExprContext *ctx)
 {
-    cout << "visiting mult div mod expressions..." << endl;
+    // cout << "visiting mult div mod expressions..." << endl;
     auto left = ctx->expr(0);
     auto right = ctx->expr(1);
     string op = ctx->MULT_DIV_MOD()->getText();
@@ -122,7 +121,6 @@ antlrcpp::Any IRVisitor::visitMultDivModExpr(ifccParser::MultDivModExprContext *
     params.push_back(param2);
     params.push_back(param3);
     params.push_back(tempvar);
-    
 
     if (op == "*")
     {
@@ -142,7 +140,7 @@ antlrcpp::Any IRVisitor::visitMultDivModExpr(ifccParser::MultDivModExprContext *
 
 antlrcpp::Any IRVisitor::visitVar_ass(ifccParser::Var_assContext *ctx)
 {
-    cout << "visiting variable assignments..." << endl;
+    // cout << "visiting variable assignments..." << endl;
 
     string name = ctx->ID()->getText();
 
@@ -169,7 +167,7 @@ antlrcpp::Any IRVisitor::visitVar(ifccParser::VarContext *ctx)
 {
     string name = ctx->ID()->getText();
     int ind = currentCFG->getSymbolIndex()[name];
-    cout << "Var named " << name << " at " << ind << endl;
+    // cout << "Var named " << name << " at " << ind << endl;
 
     return name;
 }
@@ -180,7 +178,7 @@ antlrcpp::Any IRVisitor::visitIntConst(ifccParser::IntConstContext *ctx)
     string tempvar = currentCFG->create_new_tempvar(Type::TypeEnum::INT);
     currentCFG->current_bb->add_IRInstr(IRInstr::Operation::ldconst, Type::TypeEnum::INT, {tempvar, value});
 
-    cout << "New Int Const with value [" << value << "] Decl as " << tempvar << endl;
+    // cout << "New Int Const with value [" << value << "] Decl as " << tempvar << endl;
 
     return tempvar;
 }
