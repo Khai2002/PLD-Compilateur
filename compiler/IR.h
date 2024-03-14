@@ -57,6 +57,8 @@ public:
 		mul,
 		div,
 		mod,
+		neg,
+		unary_not,
 		rmem,
 		wmem,
 		call,
@@ -129,6 +131,20 @@ class IRInstrMod : public IRInstr
 {
 public:
 	IRInstrMod(BasicBlock *bb, Operation op, Type t, vector<string> params) : IRInstr(bb, op, t, params){};
+	void gen_asm(ostream &o) override;
+};
+
+class IRInstrNeg : public IRInstr
+{
+public:
+	IRInstrNeg(BasicBlock *bb, Operation op, Type t, vector<string> params) : IRInstr(bb, op, t, params){};
+	void gen_asm(ostream &o) override;
+};
+
+class IRInstrNot : public IRInstr
+{
+public:
+	IRInstrNot(BasicBlock *bb, Operation op, Type t, vector<string> params) : IRInstr(bb, op, t, params){};
 	void gen_asm(ostream &o) override;
 };
 

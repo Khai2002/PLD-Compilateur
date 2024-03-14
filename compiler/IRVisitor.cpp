@@ -60,22 +60,27 @@ antlrcpp::Any IRVisitor::visitVar_decl(ifccParser::Var_declContext *ctx)
     // cout << "visiting variable declarations..." << endl;
 
     string typeName = ctx->type()->getText();
-    string name = ctx->ID()->getText();
-    // string tempvar = currentCFG->create_new_tempvar(Type::TypeEnum::INT);
-    if (typeName == "int")
-    {
-        currentCFG->add_to_symbol_table(name, Type::TypeEnum::INT);
-    }
-    else if (typeName == "char")
-    {
-        currentCFG->add_to_symbol_table(name, Type::TypeEnum::CHAR);
-    }
-    if (ctx->expr())
-    {
-        string expr = visit(ctx->expr());
-        currentCFG->current_bb->add_IRInstr(IRInstr::Operation::copy, currentCFG->getSymbolType()[name], {name, expr});
-    }
 
+    for (auto id : ctx->ID()) {
+        string name = id->getText();
+        // string tempvar = currentCFG->create_new_tempvar(Type::TypeEnum::INT);
+        if (typeName == "int")
+        {
+            currentCFG->add_to_symbol_table(name, Type::TypeEnum::INT);
+        }
+        else if (typeName == "char")
+        {
+            currentCFG->add_to_symbol_table(name, Type::TypeEnum::CHAR);
+        }
+        /*
+        if (ctx->expr())
+        {
+            string expr = visit(ctx->expr());
+            currentCFG->current_bb->add_IRInstr(IRInstr::Operation::copy, currentCFG->getSymbolType()[name], {name, expr});
+        }
+        */
+    }
+    
     return 0;
 }
 
@@ -84,7 +89,7 @@ antlrcpp::Any IRVisitor::visitAddSubExpr(ifccParser::AddSubExprContext *ctx)
     // cout << "visiting add sub expressions..." << endl;
     auto left = ctx->expr(0);
     auto right = ctx->expr(1);
-    string op = ctx->ADD_SUB()->getText();
+    string op = ctx->ADD_SUB->getText();
     // Visit left and right expressions and get their adress in memory
     string param2 = visit(left);
     string param3 = visit(right);
@@ -223,9 +228,27 @@ antlrcpp::Any IRVisitor::visitCharConst(ifccParser::CharConstContext *ctx)
 //     return 0;
 // }
 
-// antlrcpp::Any IRVisitor::visitUnaire(ifccParser::UnaireContext *ctx)  {
-//     return 0;
-// }
+antlrcpp::Any IRVisitor::visitUnaireExpr(ifccParser::UnaireExprContext *ctx)  {
+    auto expr = ctx->expr();
+    string op = ctx->UNAIRE->getText();
+
+    string param = visit(expr); 
+    string tempvar = currentCFG->create_new_tempvar(Type::TypeEnum::INT);
+    vector<string> params;
+    params.push_back(param);
+    params.push_back(tempvar);
+
+    if (op == "-")
+    {
+        currentCFG->current_bb->add_IRInstr(IRInstr::Operation::neg, Type::TypeEnum::INT, params);
+    }
+    else if (op == "!")
+    {
+        currentCFG->current_bb->add_IRInstr(IRInstr::Operation::unary_not, Type::TypeEnum::INT, params);
+    }
+
+    return tempvar;
+}
 
 // antlrcpp::Any IRVisitor::visitXorExpr(ifccParser::XorExprContext *ctx)  {
 //     return 0;

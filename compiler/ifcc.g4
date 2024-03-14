@@ -32,7 +32,7 @@ expr :
     '(' expr ')'                        # ParExpr
     | UNAIRE=('-'|'!') expr             # UnaireExpr
     | expr MULT_DIV_MOD expr            # MultDivModExpr
-    | expr ADD_SUB=('+' | '-') expr                 # AddSubExpr
+    | expr ADD_SUB=('+' | '-') expr     # AddSubExpr
     | expr MORE_LESS expr               # MoreLessExpr
     | expr EQ_NEQ expr                  # EqualExpr
     | expr AND expr                     # AndExpr
@@ -46,7 +46,6 @@ expr :
 type : 'int' | 'char' | 'void' ;
 
 MULT_DIV_MOD : '*'|'/'|'%' ;
-ADD_SUB : '+'|'-';
 MORE_LESS : '>'| '<';
 EQ_NEQ : '==' | '!=';
 AND : '&';

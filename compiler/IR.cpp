@@ -60,6 +60,12 @@ void IRInstr::gen_asm(ostream &o)
         */
         cout << "Multiplying values.\n";
         break;
+    case neg:
+        cout << "Negation of value.\n";
+        break;
+    case unary_not:
+        cout << "Unary not of value.\n";
+        break;
     case rmem:
         cout << "Reading from memory.\n";
         break;
@@ -111,6 +117,10 @@ string IRInstr::operationToString(Operation op)
         return "mul";
     case div:
         return "div";
+    case neg:
+        return "neg";
+    case unary_not:
+        return "unary_not";
     case ret:
         return "ret";
     case rmem:
@@ -204,6 +214,27 @@ void IRInstrMod::gen_asm(ostream &o)
     o << "movq %rdx, " << indexDest << "(%rbp)" << endl;
 }
 
+void IRInstrNeg::gen_asm(ostream &o)
+{
+    int indexParam = bb->cfg->get_var_index(params[0]);
+    int indexDest = bb->cfg->get_var_index(params[1]);
+
+    o << "    neg " << indexParam << "(%rbp)" << endl;
+    o << "    movl " << indexParam << "(%rbp), %eax" << endl;
+    o << "    movl " << "%eax, " << indexDest << "(%rbp)" << endl;
+}
+
+void IRInstrNot::gen_asm(ostream &o)
+{
+    int indexParam = bb->cfg->get_var_index(params[0]);
+    int indexDest = bb->cfg->get_var_index(params[1]);
+
+    o << "    cmpl $0, " << indexParam << "(%rbp)" << endl;
+    o << "    sete %al" << endl;
+    o << "    movzbl %al, %eax" << endl;
+    o << "    movl " << "%eax, " << indexDest << "(%rbp)" << endl;
+}
+
 void IRInstrRet::gen_asm(ostream &o)
 {
     int indexDest = bb->cfg->get_var_index(params[0]);
@@ -270,7 +301,12 @@ void BasicBlock::add_IRInstr(IRInstr::Operation op, Type t, vector<string> param
     case IRInstr::Operation::mod:
         newInstr = new IRInstrMod(this, op, t, params);
         break;
-
+    case IRInstr::Operation::neg:
+        newInstr = new IRInstrNeg(this, op, t, params);
+        break;
+    case IRInstr::Operation::unary_not:
+        newInstr = new IRInstrNot(this, op, t, params);
+        break;
     case IRInstr::Operation::ret:
         newInstr = new IRInstrRet(this, op, t, params);
         break;
