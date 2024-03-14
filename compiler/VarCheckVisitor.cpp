@@ -7,25 +7,27 @@ antlrcpp::Any VarCheckVisitor::visitVar_decl(ifccParser::Var_declContext *ctx)
     int int_size = 4;
     int char_size = 1;
 
-    string name = ctx->ID()->getText();
-    auto it = this->adrTable.find(name);
-    if (it != this->adrTable.end())
-    {
-        cerr << "#Erreur : Variable '" << name << "' déjà déclarée." << endl;
-        this->number_errors++;
-        return 0;
-    }
+    for (auto id : ctx->ID()) {
+        string name = id->getText();
+        auto it = this->adrTable.find(name);
+        if (it != this->adrTable.end())
+        {
+            cerr << "#Erreur : Variable '" << name << "' déjà déclarée." << endl;
+            this->number_errors++;
+            return 0;
+        }
 
-    string type = ctx->type()->getText();
-    if (type == "int")
-    {
-        this->cur_pointer -= int_size;
-    }
-    else
-    {
-        this->cur_pointer -= char_size;
-    }
-    this->adrTable[name] = VariableInfo(this->cur_pointer);
+        string type = ctx->type()->getText();
+        if (type == "int")
+        {
+            this->cur_pointer -= int_size;
+        }
+        else
+        {
+            this->cur_pointer -= char_size;
+        }
+        this->adrTable[name] = VariableInfo(this->cur_pointer);
+    }    
 
     // cout << "Name :" << name << " index : " << this->adrTable[name].index << endl;
     return 0;
@@ -47,7 +49,7 @@ antlrcpp::Any VarCheckVisitor::visitProg(ifccParser::ProgContext *ctx)
         const VariableInfo &variable = entry.second;
         if (variable.callCount == 0)
         {
-            cerr << "#Variable '" << entry.first << "' déclarée mais non utilisée" << endl;
+            cerr << "# Variable '" << entry.first << "' déclarée mais non utilisée" << endl;
             this->number_warnings++;
         }
     }
@@ -61,7 +63,7 @@ antlrcpp::Any VarCheckVisitor::visitVar_ass(ifccParser::Var_assContext *ctx)
     auto it1 = this->adrTable.find(name1);
     if (it1 == this->adrTable.end())
     {
-        cerr << "#Erreur : Variable '" << name1 << "' n'a pas été déclarée." << endl;
+        cerr << "# Erreur : Variable '" << name1 << "' n'a pas été déclarée." << endl;
         this->number_errors++;
         return 0;
     }

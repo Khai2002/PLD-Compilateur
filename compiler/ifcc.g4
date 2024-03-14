@@ -22,21 +22,22 @@ block : '{' line* '}' ;
 
 stmt : var_decl | var_ass | return_stmt ;
 
-var_decl : type ID ('=' expr)? ';' ;
+var_decl : type ID (',' ID)* ';' ;
 
 var_ass: ID '=' expr ';' ; 
 
 return_stmt: RETURN (expr)? ';' ;
 
-expr :  '(' expr ')'                    #ParExpr
+expr :  
+    '(' expr ')'                        # ParExpr
+    | UNAIRE=('-'|'!') expr             # UnaireExpr
     | expr MULT_DIV_MOD expr            # MultDivModExpr
-    | expr ADD_SUB expr                 # AddSubExpr
+    | expr ADD_SUB=('+' | '-') expr                 # AddSubExpr
     | expr MORE_LESS expr               # MoreLessExpr
     | expr EQ_NEQ expr                  # EqualExpr
     | expr AND expr                     # AndExpr
     | expr XOR expr                     # XorExpr
-    | expr OR expr                      # OrExpr
-    | UNAIRE expr                       # Unaire
+    | expr OR expr                      # OrExpr    
     | ID                                # Var
     | INT_CONST                         # IntConst
     | CHAR_CONST                        # CharConst
@@ -54,8 +55,9 @@ OR : '|';
 UNAIRE : '!' | '-';
 RETURN : 'return' ; 
 INT_CONST : [0-9]+ ;
-CHAR_CONST : '\'' .*? '\'' ; 
-COMMENT : '/*' .*? '*/' -> skip ;
+CHAR_CONST : '\'' . '\'' ; 
+BLOC_COMMENT : '/*' .*? '*/' -> skip ;
+LINE_COMMENT : '//' .*? '\n' -> skip ;
 DIRECTIVE : '#' .*? '\n' -> skip ;
 
 ID : [a-zA-Z_][a-zA-Z_0-9]* ;

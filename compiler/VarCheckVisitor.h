@@ -22,9 +22,7 @@ public:
         virtual antlrcpp::Any visitVar_ass(ifccParser::Var_assContext *ctx) override;
         virtual antlrcpp::Any visitReturn_stmt(ifccParser::Return_stmtContext *ctx) override;
         virtual antlrcpp::Any visitVar(ifccParser::VarContext *ctx) override;
-        // virtual antlrcpp::Any visitVarAss(ifccParser::VarAssContext *ctx) override;
-        // virtual antlrcpp::Any visitExprAss(ifccParser::ExprAssContext *ctx) override;
-        // virtual antlrcpp::Any visitReturnVar(ifccParser::ReturnVarContext *ctx) override ;
+        
 
 protected:
         unordered_map<string, VariableInfo> adrTable;

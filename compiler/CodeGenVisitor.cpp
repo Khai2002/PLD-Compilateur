@@ -27,7 +27,7 @@ antlrcpp::Any CodeGenVisitor::visitProg(ifccParser::ProgContext *ctx)
 
 antlrcpp::Any CodeGenVisitor::visitVar_decl(ifccParser::Var_declContext *ctx)
 {
-
+    /*
     string typeName = ctx->type()->getText();
     string name = ctx->ID()->getText();
     //Type *type = new Type(typeName);
@@ -39,6 +39,7 @@ antlrcpp::Any CodeGenVisitor::visitVar_decl(ifccParser::Var_declContext *ctx)
         cout << "    movl "
              << "%eax, " << this->adrTable[name].index << "(%rbp)" << endl;
     }
+    */
 
     return 0;
     // return new VarDecl(id, type, nullptr);
@@ -90,6 +91,35 @@ antlrcpp::Any CodeGenVisitor::visitCharConst(ifccParser::CharConstContext *ctx)
     return tmpAdr;
 }
 
+antlrcpp::Any CodeGenVisitor::visitUnaireExpr(ifccParser::UnaireExprContext *ctx){
+    auto expr = ctx->expr();
+    int value = visit(expr);
+    string op = ctx->UNAIRE->getText();
+    int tmpAdr = this->cur_pointer;
+    if (op == "-")
+    {
+        cout << "    neg " << value << "(%rbp)" << endl;
+        this->cur_pointer -= 4;
+        tmpAdr = this->cur_pointer;
+        cout << "    movl "
+             << value << "(%rbp), " << "%eax\n";
+
+        cout << "    movl "
+             << "%eax, " << tmpAdr << "(%rbp)\n";
+    }
+    else if (op == "!")
+    {
+        cout << "    cmpl $0, " << value << "(%rbp)" << endl;
+        cout << "    sete %al" << endl;
+        cout << "    movzbl %al, %eax" << endl;
+        this->cur_pointer -= 4;
+        tmpAdr = this->cur_pointer;
+        cout << "    movl "
+             << "%eax, " << tmpAdr << "(%rbp)\n";
+    }
+    return tmpAdr;
+}
+
 // movl	-4(%rbp), %eax
 antlrcpp::Any CodeGenVisitor::visitVar(ifccParser::VarContext *ctx)
 {
@@ -105,11 +135,12 @@ antlrcpp::Any CodeGenVisitor::visitAddSubExpr(ifccParser::AddSubExprContext *ctx
 {
     auto left = ctx->expr(0);
     auto right = ctx->expr(1);
-    string op = ctx->ADD_SUB()->getText();
+    string op = ctx->ADD_SUB->getText();
 
     // Visit left and right expressions and get their adress in memory
     int lvalue = visit(left);
     int rvalue = visit(right);
+    int tmpAdr;
 
     cout << "    movl " << lvalue << "(%rbp)"
          << ", %edx\n";
@@ -121,17 +152,21 @@ antlrcpp::Any CodeGenVisitor::visitAddSubExpr(ifccParser::AddSubExprContext *ctx
     {
         cout << "    addl ";
         cout << "%edx, %eax" << endl;
+        this->cur_pointer -= 4;
+        tmpAdr = this->cur_pointer;
+        cout << "    movl "
+             << "%eax, " << tmpAdr << "(%rbp)\n";
     }
     else if (op == "-")
     {
         cout << "    subl ";
         cout << "%eax, %edx" << endl;
+        this->cur_pointer -= 4;
+        tmpAdr = this->cur_pointer;
+        cout << "    movl "
+             << "%edx, " << tmpAdr << "(%rbp)\n";
     }
 
-        this->cur_pointer -= 4;
-    int tmpAdr = this->cur_pointer;
-    cout << "    movl "
-         << "%eax, " << tmpAdr << "(%rbp)\n";
     return tmpAdr;
 }
 
@@ -195,45 +230,3 @@ antlrcpp::Any CodeGenVisitor::visitMultDivModExpr(ifccParser::MultDivModExprCont
     }
     return tmpAdr;
 }
-
-/*antlrcpp::Any CodeGenVisitor::visitVarAss(ifccParser::VarAssContext *ctx)
-{
-    string name1 = ctx->ID(0)->getText();
-    string name2 = ctx->ID(1)->getText();
-    cout << "    movl ";
-    cout << this->adrTable[name2].index << "(%rbp) ";
-    cout << this->adrTable[name1].index << "(%rbp) " << endl;
-    return 0;
-}*/
-
-/*antlrcpp::Any CodeGenVisitor::visitExprAss(ifccParser::ExprAssContext *ctx)
-{
-    auto left = ctx->expr();
-    auto var = ctx->ID()->getText();
-    return 0 ;
-}
-*/
-
-/*
-antlrcpp::Any CodeGenVisitor::visitReturnVar(ifccParser::ReturnVarContext *ctx)
-{
-    string name = ctx->ID()->getText();
-    cout << "    movl ";
-    cout << this->adrTable[name].index << "(%rbp) ";
-    cout << ", %eax\n";
-
-    return ReturnStmt(ctx->start->getLine());
-}*/
-
-/*antlrcpp::Any CodeGenVisitor::visitReturnExp(ifccParser::ReturnExpContext *ctx)
-{
-
-    if (ctx->expr())
-    {
-        cout << "    movl ";
-        visit(ctx->expr());
-        cout << ", %eax\n";
-    }
-
-    return ReturnStmt(ctx->start->getLine());
-}*/

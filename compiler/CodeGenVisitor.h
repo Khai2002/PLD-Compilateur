@@ -22,6 +22,7 @@ public:
         virtual antlrcpp::Any visitVar(ifccParser::VarContext *ctx) override;
         virtual antlrcpp::Any visitAddSubExpr(ifccParser::AddSubExprContext *ctx) override;
         virtual antlrcpp::Any visitMultDivModExpr(ifccParser::MultDivModExprContext *ctx) override;
+        virtual antlrcpp::Any visitUnaireExpr(ifccParser::UnaireExprContext *ctx) override;
         virtual antlrcpp::Any visitVar_ass(ifccParser::Var_assContext *ctx) override;
 
 protected:
