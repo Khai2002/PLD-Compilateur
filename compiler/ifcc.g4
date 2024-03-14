@@ -2,7 +2,23 @@ grammar ifcc;
 
 axiom : prog EOF ;
 
-prog : 'int' 'main' '(' ')' '{' stmt* return_stmt '}';
+prog: func_decl*;
+
+
+func_decl : type ID '(' ')' '{' line* return_stmt '}';
+
+line : stmt 
+    | if_block 
+    | while_block 
+    ;
+
+if_block : 'if' '(' expr ')' (line | block) else_block? ;
+
+else_block : 'else' (line | block | if_block) ;
+
+while_block : 'while' '(' expr ')' (line | block);
+
+block : '{' line* '}' ;
 
 stmt : var_decl | var_ass | return_stmt ;
 
@@ -27,8 +43,7 @@ expr :
     | CHAR_CONST                        # CharConst
     ;
 
-
-type : 'int' | 'char' ;
+type : 'int' | 'char' | 'void' ;
 
 MULT_DIV_MOD : '*'|'/'|'%' ;
 ADD_SUB : '+'|'-';
@@ -37,6 +52,7 @@ EQ_NEQ : '==' | '!=';
 AND : '&';
 XOR : '^';
 OR : '|';
+UNAIRE : '!' | '-';
 RETURN : 'return' ; 
 INT_CONST : [0-9]+ ;
 CHAR_CONST : '\'' . '\'' ; 
@@ -46,4 +62,3 @@ DIRECTIVE : '#' .*? '\n' -> skip ;
 
 ID : [a-zA-Z_][a-zA-Z_0-9]* ;
 WS    : [ \t\r\n] -> channel(HIDDEN);
-

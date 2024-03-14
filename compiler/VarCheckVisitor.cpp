@@ -35,11 +35,15 @@ antlrcpp::Any VarCheckVisitor::visitVar_decl(ifccParser::Var_declContext *ctx)
 
 antlrcpp::Any VarCheckVisitor::visitProg(ifccParser::ProgContext *ctx)
 {
-    for (auto stmt : ctx->stmt())
+    // To be completed
+    auto func_ctx = ctx->func_decl(0);
+    
+    for (auto line : func_ctx->line())
     {
+        auto stmt  = line->stmt();
         visit(stmt);
     }
-    this->visit(ctx->return_stmt());
+    this->visit(func_ctx->return_stmt());
     for (const auto &entry : adrTable)
     {
         const VariableInfo &variable = entry.second;
