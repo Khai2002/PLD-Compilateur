@@ -135,7 +135,7 @@ antlrcpp::Any CodeGenVisitor::visitAddSubExpr(ifccParser::AddSubExprContext *ctx
 {
     auto left = ctx->expr(0);
     auto right = ctx->expr(1);
-    string op = ctx->ADD_SUB->getText();
+    string op = ctx->ADD_SUB()->getText();
 
     // Visit left and right expressions and get their adress in memory
     int lvalue = visit(left);

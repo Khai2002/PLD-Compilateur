@@ -58,23 +58,33 @@ antlrcpp::Any IRVisitor::visitLine(ifccParser::LineContext *ctx)
 antlrcpp::Any IRVisitor::visitVar_decl(ifccParser::Var_declContext *ctx)
 {
     // cout << "visiting variable declarations..." << endl;
+    // var_decl : type ID (',' ID)* ';' ;
 
     string typeName = ctx->type()->getText();
-    string name = ctx->ID()->getText();
-    // string tempvar = currentCFG->create_new_tempvar(Type::TypeEnum::INT);
-    if (typeName == "int")
-    {
-        currentCFG->add_to_symbol_table(name, Type::TypeEnum::INT);
+    string name;
+
+    for (auto var : ctx->ID()){
+        name = var->getText();
+        // string tempvar = currentCFG->create_new_tempvar(Type::TypeEnum::INT);
+        if (typeName == "int")
+        {
+            currentCFG->add_to_symbol_table(name, Type::TypeEnum::INT);
+        }
+        else if (typeName == "char")
+        {
+            currentCFG->add_to_symbol_table(name, Type::TypeEnum::CHAR);
+        }
     }
-    else if (typeName == "char")
-    {
-        currentCFG->add_to_symbol_table(name, Type::TypeEnum::CHAR);
-    }
+    
+    
+    // Remove expression assignment
+    /*
     if (ctx->expr())
     {
         string expr = visit(ctx->expr());
         currentCFG->current_bb->add_IRInstr(IRInstr::Operation::copy, currentCFG->getSymbolType()[name], {name, expr});
     }
+    */
 
     return 0;
 }
@@ -192,10 +202,48 @@ antlrcpp::Any IRVisitor::visitCharConst(ifccParser::CharConstContext *ctx)
     return tempvar;
 }
 
-// antlrcpp::Any IRVisitor::visitIf_block(ifccParser::If_blockContext *ctx)
-// {
-//     return 0;
-// }
+antlrcpp::Any IRVisitor::visitIf_block(ifccParser::If_blockContext *ctx)
+{
+    //if_block : 'if' '(' expr ')' (line | block) else_block? ;
+
+    auto testBB = currentCFG->current_bb;
+    auto thenBB = new BasicBlock(currentCFG, currentCFG->new_BB_name());
+    auto elseBB = new BasicBlock(currentCFG, currentCFG->new_BB_name());
+    auto endifBB = new BasicBlock(currentCFG, currentCFG->new_BB_name());
+    currentCFG->add_bb(thenBB);
+    currentCFG->add_bb(elseBB);
+    currentCFG->add_bb(endifBB);
+
+    // Adjust pointers
+    endifBB->exit_true = testBB->exit_true;
+    endifBB->exit_false = testBB->exit_false;
+    testBB->exit_true = thenBB;
+    testBB->exit_false = elseBB;
+    thenBB->exit_true = endifBB;
+    thenBB->exit_false = nullptr;
+    elseBB->exit_true = endifBB;
+    elseBB->exit_false = nullptr;
+
+    // Generate IRIntr in blocks
+    visit(ctx->expr());
+
+    currentCFG->current_bb = thenBB;
+    if(ctx->line()) {
+        visit(ctx->line());
+    }
+    if(ctx->block()){
+        visit(ctx->block());
+    }
+
+
+    currentCFG->current_bb = elseBB;
+    if(ctx->else_block()){
+        visit(ctx->else_block());
+    }
+
+    currentCFG->current_bb = endifBB;
+    return 0;
+}
 
 // antlrcpp::Any IRVisitor::visitElse_block(ifccParser::Else_blockContext *ctx)
 // {
@@ -207,9 +255,13 @@ antlrcpp::Any IRVisitor::visitCharConst(ifccParser::CharConstContext *ctx)
 //     return 0;
 // }
 
-// antlrcpp::Any IRVisitor::visitBlock(ifccParser::BlockContext *ctx)  {
-//     return 0;
-// }
+antlrcpp::Any IRVisitor::visitBlock(ifccParser::BlockContext *ctx)  {
+    // block : '{' line* '}' ;
+    for(auto line : ctx->line()){
+        visit(line);
+    }
+    return 0;
+}
 
 // antlrcpp::Any IRVisitor::visitStmt(ifccParser::StmtContext *ctx)  {
 //     return 0;
