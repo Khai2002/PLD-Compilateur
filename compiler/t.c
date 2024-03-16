@@ -1,8 +1,8 @@
 int main()
 {
     int x;
-    int y;
-    int z;
-    z = 12 % 3;
-    return z;
+    if(1){
+
+    }else{}
+    return x;
 }

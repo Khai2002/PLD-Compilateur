@@ -39,7 +39,7 @@ antlrcpp::Any IRVisitor::visitFunc_decl(ifccParser::Func_declContext *ctx)
 
 antlrcpp::Any IRVisitor::visitLine(ifccParser::LineContext *ctx)
 {
-    // cout << "visiting lines..." << endl;
+    cout << "visiting lines..." << endl;
     if (ctx->stmt())
     {
         visit(ctx->stmt());
@@ -205,7 +205,7 @@ antlrcpp::Any IRVisitor::visitCharConst(ifccParser::CharConstContext *ctx)
 antlrcpp::Any IRVisitor::visitIf_block(ifccParser::If_blockContext *ctx)
 {
     //if_block : 'if' '(' expr ')' (line | block) else_block? ;
-
+    cout << "Hello" << endl;
     auto testBB = currentCFG->current_bb;
     auto thenBB = new BasicBlock(currentCFG, currentCFG->new_BB_name());
     auto elseBB = new BasicBlock(currentCFG, currentCFG->new_BB_name());
@@ -245,15 +245,46 @@ antlrcpp::Any IRVisitor::visitIf_block(ifccParser::If_blockContext *ctx)
     return 0;
 }
 
-// antlrcpp::Any IRVisitor::visitElse_block(ifccParser::Else_blockContext *ctx)
-// {
-//     return 0;
-// }
+antlrcpp::Any IRVisitor::visitElse_block(ifccParser::Else_blockContext *ctx)
+{
+    // else_block : 'else' (line | block) ;
 
-// antlrcpp::Any IRVisitor::visitWhile_block(ifccParser::While_blockContext *ctx)
-// {
-//     return 0;
-// }
+    if(ctx->line()) {
+        visit(ctx->line());
+    }
+    if(ctx->block()){
+        visit(ctx->block());
+    }
+    return 0;
+}
+
+antlrcpp::Any IRVisitor::visitWhile_block(ifccParser::While_blockContext *ctx)
+{
+    // while_block : 'while' '(' expr ')' (line | block);
+    auto testBB = new BasicBlock(currentCFG, currentCFG->new_BB_name());
+    auto bodyBB = new BasicBlock(currentCFG, currentCFG->new_BB_name());
+    currentCFG->add_bb(testBB);
+    currentCFG->add_bb(bodyBB);
+
+    testBB->exit_false = currentCFG->current_bb->exit_true;
+    testBB->exit_true = bodyBB;
+    currentCFG->current_bb->exit_true = testBB;
+    currentCFG->current_bb->exit_false = nullptr;
+    bodyBB->exit_true = testBB;
+    bodyBB->exit_false = nullptr;
+
+
+    visit(ctx->expr());
+
+    currentCFG->current_bb = bodyBB;
+    if(ctx->line()) {
+        visit(ctx->line());
+    }
+    if(ctx->block()){
+        visit(ctx->block());
+    }
+    return 0;
+}
 
 antlrcpp::Any IRVisitor::visitBlock(ifccParser::BlockContext *ctx)  {
     // block : '{' line* '}' ;
@@ -263,9 +294,17 @@ antlrcpp::Any IRVisitor::visitBlock(ifccParser::BlockContext *ctx)  {
     return 0;
 }
 
-// antlrcpp::Any IRVisitor::visitStmt(ifccParser::StmtContext *ctx)  {
-//     return 0;
-// }
+antlrcpp::Any IRVisitor::visitStmt(ifccParser::StmtContext *ctx)  {
+    // stmt : var_decl | var_ass | return_stmt ;
+    if(ctx->var_decl()){
+        visit(ctx->var_decl());
+    } else if (ctx->var_ass()){
+        visit(ctx->var_ass());
+    } else if (ctx->return_stmt()){
+        visit(ctx->return_stmt());
+    }
+    return 0;
+}
 
 // antlrcpp::Any IRVisitor::visitAndExpr(ifccParser::AndExprContext *ctx)  {
 //     return 0;

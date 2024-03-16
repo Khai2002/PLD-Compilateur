@@ -14,7 +14,7 @@ line : stmt
 
 if_block : 'if' '(' expr ')' (line | block) else_block? ;
 
-else_block : 'else' (line | block | if_block) ;
+else_block : 'else' (line | block) ;
 
 while_block : 'while' '(' expr ')' (line | block);
 
