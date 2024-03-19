@@ -32,3 +32,6 @@ where `N` is a positive integer constant.
   You can (should)  change  those values to suit your installation, either
   by editing the  Makefile and/or adding another .mk file.
 
+# WSL
+If you are using WSL please run this command for the tests 
+dos2unix ifcc-wrapper.sh
