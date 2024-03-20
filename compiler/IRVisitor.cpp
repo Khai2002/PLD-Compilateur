@@ -61,7 +61,8 @@ antlrcpp::Any IRVisitor::visitVar_decl(ifccParser::Var_declContext *ctx)
 
     string typeName = ctx->type()->getText();
 
-    for (auto id : ctx->ID()) {
+    for (auto id : ctx->ID())
+    {
         string name = id->getText();
         // string tempvar = currentCFG->create_new_tempvar(Type::TypeEnum::INT);
         if (typeName == "int")
@@ -80,7 +81,7 @@ antlrcpp::Any IRVisitor::visitVar_decl(ifccParser::Var_declContext *ctx)
         }
         */
     }
-    
+
     return 0;
 }
 
@@ -264,11 +265,12 @@ antlrcpp::Any IRVisitor::visitEqualExpr(ifccParser::EqualExprContext *ctx)  {
     return tempvar;
 }
 
-antlrcpp::Any IRVisitor::visitUnaireExpr(ifccParser::UnaireExprContext *ctx)  {
+antlrcpp::Any IRVisitor::visitUnaireExpr(ifccParser::UnaireExprContext *ctx)
+{
     auto expr = ctx->expr();
     string op = ctx->UNAIRE->getText();
 
-    string param = visit(expr); 
+    string param = visit(expr);
     string tempvar = currentCFG->create_new_tempvar(Type::TypeEnum::INT);
     vector<string> params;
     params.push_back(param);
@@ -304,9 +306,12 @@ antlrcpp::Any IRVisitor::visitXorExpr(ifccParser::XorExprContext *ctx)  {
     return tempvar;
 }
 
-// antlrcpp::Any IRVisitor::visitParExpr(ifccParser::ParExprContext *ctx)  {
-//     return 0;
-// }
+antlrcpp::Any IRVisitor::visitParExpr(ifccParser::ParExprContext *ctx)
+{
+    auto expr = ctx->expr();
+    string name = visit(expr);
+    return name;
+}
 
 antlrcpp::Any IRVisitor::visitMoreLessExpr(ifccParser::MoreLessExprContext *ctx)  {
     // cout << "visiting more less expressions..." << endl;
