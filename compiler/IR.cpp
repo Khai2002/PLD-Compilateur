@@ -220,7 +220,7 @@ void BasicBlock::gen_asm(ostream &o)
 {
     // Very simple assembly code generation for this basic block
     // This is a placeholder implementation. Actual implementation will depend on your specific requirements.
-    o << label << ":\n";
+    o << "\n" << label << ":\n\n";
     if (label == cfg->getFuncName())
     {
         cfg->gen_asm_prologue(o);
@@ -368,7 +368,7 @@ void CFG::gen_asm_prologue(ostream &o)
     o << "pushq  %rbp" << endl;
     o << "movq  %rsp, %rbp" << endl;
     o << "subq  $" << -alloc_size << ", %rsp" << endl;
-    o << endl;
+    // o << endl;
 }
 
 // Method implementation for gen_asm_epilogue
@@ -376,7 +376,7 @@ void CFG::gen_asm_epilogue(ostream &o)
 {
     // Placeholder for generating assembly code epilogue
     // Actual implementation will depend on your specific requirements
-    o << endl;
+    // o << endl;
     o << "leave" << endl;
     o << "ret" << endl;
 }

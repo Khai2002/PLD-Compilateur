@@ -44,7 +44,7 @@ int main(int argn, const char **argv)
     cerr << "error: syntax error during parsing" << endl;
     exit(1);
   }
-  cout << "I'm coming 1" << endl;
+  // cout << "I'm coming 1" << endl;
   VarCheckVisitor varCheckVisitor;
   //varCheckVisitor.visit(tree);
   int temp = 0;
@@ -56,7 +56,7 @@ int main(int argn, const char **argv)
     // CodeGenVisitor v(varCheckVisitor.getAdrTable(), varCheckVisitor.getCurPointer());
     // v.visit(tree);
     IRVisitor irv;
-    cout << "I'm coming" << endl;
+    // cout << "I'm coming" << endl;
     irv.visit(tree);
     /*cout << endl;
     cout << endl;

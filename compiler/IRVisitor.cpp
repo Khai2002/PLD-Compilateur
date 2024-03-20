@@ -39,7 +39,7 @@ antlrcpp::Any IRVisitor::visitFunc_decl(ifccParser::Func_declContext *ctx)
 
 antlrcpp::Any IRVisitor::visitLine(ifccParser::LineContext *ctx)
 {
-    cout << "visiting lines..." << endl;
+    // cout << "visiting lines..." << endl;
     if (ctx->stmt())
     {
         visit(ctx->stmt());
@@ -205,7 +205,6 @@ antlrcpp::Any IRVisitor::visitCharConst(ifccParser::CharConstContext *ctx)
 antlrcpp::Any IRVisitor::visitIf_block(ifccParser::If_blockContext *ctx)
 {
     //if_block : 'if' '(' expr ')' (line | block) else_block? ;
-    cout << "Hello" << endl;
     auto testBB = currentCFG->current_bb;
     auto thenBB = new BasicBlock(currentCFG, currentCFG->new_BB_name());
     auto elseBB = new BasicBlock(currentCFG, currentCFG->new_BB_name());
