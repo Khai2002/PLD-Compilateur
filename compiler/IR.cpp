@@ -219,9 +219,9 @@ void IRInstrNeg::gen_asm(ostream &o)
     int indexParam = bb->cfg->get_var_index(params[0]);
     int indexDest = bb->cfg->get_var_index(params[1]);
 
-    o << "    neg " << indexParam << "(%rbp)" << endl;
-    o << "    movl " << indexParam << "(%rbp), %eax" << endl;
-    o << "    movl " << "%eax, " << indexDest << "(%rbp)" << endl;
+    o << "    negq " << indexParam << "(%rbp)" << endl;
+    o << "    movq " << indexParam << "(%rbp), %rax" << endl;
+    o << "    movq " << "%rax, " << indexDest << "(%rbp)" << endl;
 }
 
 void IRInstrNot::gen_asm(ostream &o)
@@ -231,8 +231,8 @@ void IRInstrNot::gen_asm(ostream &o)
 
     o << "    cmpl $0, " << indexParam << "(%rbp)" << endl;
     o << "    sete %al" << endl;
-    o << "    movzbl %al, %eax" << endl;
-    o << "    movl " << "%eax, " << indexDest << "(%rbp)" << endl;
+    o << "    movzbq %al, %rax" << endl;
+    o << "    movq " << "%rax, " << indexDest << "(%rbp)" << endl;
 }
 
 void IRInstrRet::gen_asm(ostream &o)
