@@ -232,7 +232,15 @@ antlrcpp::Any IRVisitor::visitUnaireExpr(ifccParser::UnaireExprContext *ctx)  {
     auto expr = ctx->expr();
     string op = ctx->UNAIRE->getText();
 
-    string param = visit(expr); 
+    antlrcpp::Any result = visit(expr);
+    string param;
+    if (result.is<std::string>()) {  // Check if the result is a string
+        param = result.as<std::string>();  // Cast to string
+        // Use 'param' as needed
+    } else {
+        // Handle the case where result is not a string
+    }
+    // string param = visit(expr); 
     string tempvar = currentCFG->create_new_tempvar(Type::TypeEnum::INT);
     vector<string> params;
     params.push_back(param);
