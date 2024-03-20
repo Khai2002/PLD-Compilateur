@@ -28,16 +28,16 @@ var_ass: ID '=' expr ';' ;
 
 return_stmt: RETURN (expr)? ';' ;
 
-expr :  
-    '(' expr ')'                        # ParExpr
-    | UNAIRE=('-'|'!') expr             # UnaireExpr
+expr : 
+     UNAIRE=('-'|'!') expr             # UnaireExpr
     | expr MULT_DIV_MOD expr            # MultDivModExpr
     | expr ADD_SUB=('+' | '-') expr     # AddSubExpr
     | expr MORE_LESS expr               # MoreLessExpr
     | expr EQ_NEQ expr                  # EqualExpr
     | expr AND expr                     # AndExpr
     | expr XOR expr                     # XorExpr
-    | expr OR expr                      # OrExpr    
+    | expr OR expr                      # OrExpr 
+    |'(' expr ')'                       # ParExpr   
     | ID                                # Var
     | INT_CONST                         # IntConst
     | CHAR_CONST                        # CharConst

@@ -32,7 +32,7 @@ public:
     // virtual antlrcpp::Any visitEqualExpr(ifccParser::EqualExprContext *ctx) override;
     virtual antlrcpp::Any visitUnaireExpr(ifccParser::UnaireExprContext *ctx) override;
     // virtual antlrcpp::Any visitXorExpr(ifccParser::XorExprContext *ctx) override;
-    // virtual antlrcpp::Any visitParExpr(ifccParser::ParExprContext *ctx) override;
+    virtual antlrcpp::Any visitParExpr(ifccParser::ParExprContext *ctx) override;
     // virtual antlrcpp::Any visitMoreLessExpr(ifccParser::MoreLessExprContext *ctx) override;
     // virtual antlrcpp::Any visitOrExpr(ifccParser::OrExprContext *ctx) override;
     // virtual antlrcpp::Any visitType(ifccParser::TypeContext *ctx) override;
