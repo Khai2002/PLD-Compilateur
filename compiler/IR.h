@@ -57,6 +57,9 @@ public:
 		mul,
 		div,
 		mod,
+		bit_or,
+		bit_and,
+		bit_xor,
 		eq,
 		neq,
 		lt,
@@ -132,6 +135,27 @@ class IRInstrMod : public IRInstr
 {
 public:
 	IRInstrMod(BasicBlock *bb, Operation op, Type t, vector<string> params) : IRInstr(bb, op, t, params){};
+	void gen_asm(ostream &o) override;
+};
+
+class IRInstrOr : public IRInstr
+{
+public:
+	IRInstrOr(BasicBlock *bb, Operation op, Type t, vector<string> params) : IRInstr(bb, op, t, params){};
+	void gen_asm(ostream &o) override;
+};
+
+class IRInstrAnd : public IRInstr
+{
+public:
+	IRInstrAnd(BasicBlock *bb, Operation op, Type t, vector<string> params) : IRInstr(bb, op, t, params){};
+	void gen_asm(ostream &o) override;
+};
+
+class IRInstrXor : public IRInstr
+{
+public:
+	IRInstrXor(BasicBlock *bb, Operation op, Type t, vector<string> params) : IRInstr(bb, op, t, params){};
 	void gen_asm(ostream &o) override;
 };
 

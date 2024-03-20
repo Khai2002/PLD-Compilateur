@@ -60,6 +60,15 @@ void IRInstr::gen_asm(ostream &o)
         */
         cout << "Multiplying values.\n";
         break;
+    case bit_or:
+        cout << "Bitwise or\n";
+        break;
+    case bit_and:
+        cout << "Bitwise and\n";
+        break;
+    case bit_xor:
+        cout << "Bitwise xor\n";
+        break;
     case eq:
         cout << "Comparing equality\n";
         break;
@@ -120,6 +129,12 @@ string IRInstr::operationToString(Operation op)
         return "mul";
     case div:
         return "div";
+    case bit_or:
+        return "bit_or";
+    case bit_and:
+        return "bit_and";
+    case bit_xor:
+        return "bit_xor";
     case eq:
         return "eq";
     case neq:
@@ -207,6 +222,51 @@ void IRInstrDiv::gen_asm(ostream &o)
     o << "movq %rax, " << indexDest << "(%rbp)" << endl;
 }
 
+void IRInstrMod::gen_asm(ostream &o)
+{
+    int indexParam1 = bb->cfg->get_var_index(params[0]);
+    int indexParam2 = bb->cfg->get_var_index(params[1]);
+    int indexDest = bb->cfg->get_var_index(params[2]);
+
+    o << "movq " << indexParam1 << "(%rbp), %rax" << endl;
+    o << "    cltd" << endl;
+    o << "idivl " << indexParam2 << "(%rbp)" << endl;
+    o << "movq %rdx, " << indexDest << "(%rbp)" << endl;
+}
+
+void IRInstrOr::gen_asm(ostream &o)
+{
+    int indexParam1 = bb->cfg->get_var_index(params[0]);
+    int indexParam2 = bb->cfg->get_var_index(params[1]);
+    int indexDest = bb->cfg->get_var_index(params[2]);
+
+    o << "    movq " << indexParam1 << "(%rbp), %rax" << endl;
+    o << "    orq " << indexParam2 << "(%rbp), %rax" << endl;
+    o << "    movq %rax, " << indexDest << "(%rbp)" << endl;
+}
+
+void IRInstrAnd::gen_asm(ostream &o)
+{
+    int indexParam1 = bb->cfg->get_var_index(params[0]);
+    int indexParam2 = bb->cfg->get_var_index(params[1]);
+    int indexDest = bb->cfg->get_var_index(params[2]);
+
+    o << "    movq " << indexParam1 << "(%rbp), %rax" << endl;
+    o << "    andq " << indexParam2 << "(%rbp), %rax" << endl;
+    o << "    movq %rax, " << indexDest << "(%rbp)" << endl;
+}
+
+void IRInstrXor::gen_asm(ostream &o)
+{
+    int indexParam1 = bb->cfg->get_var_index(params[0]);
+    int indexParam2 = bb->cfg->get_var_index(params[1]);
+    int indexDest = bb->cfg->get_var_index(params[2]);
+
+    o << "    movq " << indexParam1 << "(%rbp), %rax" << endl;
+    o << "    xorq " << indexParam2 << "(%rbp), %rax" << endl;
+    o << "    movq %rax, " << indexDest << "(%rbp)" << endl;
+}
+
 void IRInstrEq::gen_asm(ostream &o)
 {
     int indexParam1 = bb->cfg->get_var_index(params[0]);
@@ -257,18 +317,6 @@ void IRInstrGt::gen_asm(ostream &o)
     o << "    setg %al" << endl;
     o << "    movzbq %al, %rax" << endl;
     o << "    movq %rax, " << indexDest << "(%rbp)" << endl;
-}
-
-void IRInstrMod::gen_asm(ostream &o)
-{
-    int indexParam1 = bb->cfg->get_var_index(params[0]);
-    int indexParam2 = bb->cfg->get_var_index(params[1]);
-    int indexDest = bb->cfg->get_var_index(params[2]);
-
-    o << "movq " << indexParam1 << "(%rbp), %rax" << endl;
-    o << "    cltd" << endl;
-    o << "idivl " << indexParam2 << "(%rbp)" << endl;
-    o << "movq %rdx, " << indexDest << "(%rbp)" << endl;
 }
 
 void IRInstrNeg::gen_asm(ostream &o)
@@ -357,6 +405,15 @@ void BasicBlock::add_IRInstr(IRInstr::Operation op, Type t, vector<string> param
         break;
     case IRInstr::Operation::mod:
         newInstr = new IRInstrMod(this, op, t, params);
+        break;
+    case IRInstr::Operation::bit_or:
+        newInstr = new IRInstrOr(this, op, t, params);
+        break;
+    case IRInstr::Operation::bit_and:
+        newInstr = new IRInstrAnd(this, op, t, params);
+        break;
+    case IRInstr::Operation::bit_xor:
+        newInstr = new IRInstrXor(this, op, t, params);
         break;
     case IRInstr::Operation::eq:
         newInstr = new IRInstrEq(this, op, t, params);
