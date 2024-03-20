@@ -2,8 +2,8 @@ int main()
 {
     int x;
     x=3;
-    if('U'){
-        x=4;
+    while(0) {
+        x = x + 1;
     }
     return x;
 }

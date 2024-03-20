@@ -210,6 +210,23 @@ void IRInstrRet::gen_asm(ostream &o)
     o << "movq " << indexDest << "(%rbp), %rax" << endl;
 }
 
+void IRInstrJumpCond::gen_asm(ostream &o)
+{
+    // cmpl	$0, -4(%rbp)
+	// je	.L2
+	// movl	$4, -4(%rbp)
+	// jmp	.L3
+    int indexCond = bb->cfg->get_var_index(params[0]);
+    string trueBBLabel = params[1];
+    string falseBBLabel = params[2];
+
+    o << "cmpq $0, " << indexCond << "(%rbp)" << endl;
+    o << "je ." << falseBBLabel << endl;
+    o << "jmp ." << trueBBLabel << endl;
+
+
+}
+
 // ======== BasicBlock ==========================================================================================
 
 // Constructor
@@ -230,12 +247,12 @@ void BasicBlock::gen_asm(ostream &o)
         instr->gen_asm(o);
     }
 
-    if (this->exit_true)
+    if (this->exit_true && !this->exit_false)
     {
-        o << "jmp " << this->exit_true->label << endl;
+        o << "jmp ." << this->exit_true->label << endl;
     }
 
-    if (!(this->exit_true && this->exit_false))
+    if (!(this->exit_true || this->exit_false))
     {
         cfg->gen_asm_epilogue(o);
     }
@@ -270,9 +287,11 @@ void BasicBlock::add_IRInstr(IRInstr::Operation op, Type t, vector<string> param
     case IRInstr::Operation::mod:
         newInstr = new IRInstrMod(this, op, t, params);
         break;
-
     case IRInstr::Operation::ret:
         newInstr = new IRInstrRet(this, op, t, params);
+        break;
+    case IRInstr::Operation::jmp_cond:
+        newInstr = new IRInstrJumpCond(this, op, t, params);
         break;
     }
 

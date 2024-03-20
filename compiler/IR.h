@@ -63,7 +63,8 @@ public:
 		cmp_eq,
 		cmp_lt,
 		cmp_le,
-		ret
+		ret,
+		jmp_cond
 	} Operation;
 
 	string operationToString(Operation op);
@@ -136,6 +137,13 @@ class IRInstrRet : public IRInstr
 {
 public:
 	IRInstrRet(BasicBlock *bb, Operation op, Type t, vector<string> params) : IRInstr(bb, op, t, params){};
+	void gen_asm(ostream &o) override;
+};
+
+class IRInstrJumpCond : public IRInstr
+{
+public:
+	IRInstrJumpCond(BasicBlock *bb, Operation op, Type t, vector<string> params) : IRInstr(bb, op, t, params){};
 	void gen_asm(ostream &o) override;
 };
 

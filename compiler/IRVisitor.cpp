@@ -223,8 +223,17 @@ antlrcpp::Any IRVisitor::visitIf_block(ifccParser::If_blockContext *ctx)
     elseBB->exit_true = endifBB;
     elseBB->exit_false = nullptr;
 
+    currentCFG->current_bb = testBB;
+
     // Generate IRIntr in blocks
-    visit(ctx->expr());
+    string cond = visit(ctx->expr());
+    
+    vector<string> params;
+    params.push_back(cond);
+    params.push_back(testBB->exit_true->label);
+    params.push_back(testBB->exit_false->label);
+
+    testBB->add_IRInstr(IRInstr::Operation::jmp_cond, Type::TypeEnum::INT, params);
 
     currentCFG->current_bb = thenBB;
     if(ctx->line()) {
@@ -260,20 +269,30 @@ antlrcpp::Any IRVisitor::visitElse_block(ifccParser::Else_blockContext *ctx)
 antlrcpp::Any IRVisitor::visitWhile_block(ifccParser::While_blockContext *ctx)
 {
     // while_block : 'while' '(' expr ')' (line | block);
+    auto pretestBB = currentCFG->current_bb;
     auto testBB = new BasicBlock(currentCFG, currentCFG->new_BB_name());
     auto bodyBB = new BasicBlock(currentCFG, currentCFG->new_BB_name());
-    currentCFG->add_bb(testBB);
-    currentCFG->add_bb(bodyBB);
 
-    testBB->exit_false = currentCFG->current_bb->exit_true;
+    testBB->exit_false = pretestBB->exit_true;
     testBB->exit_true = bodyBB;
-    currentCFG->current_bb->exit_true = testBB;
-    currentCFG->current_bb->exit_false = nullptr;
+    pretestBB->exit_true = testBB;
+    pretestBB->exit_false = nullptr;
     bodyBB->exit_true = testBB;
     bodyBB->exit_false = nullptr;
 
+    currentCFG->add_bb(testBB);
+    currentCFG->add_bb(bodyBB);
 
-    visit(ctx->expr());
+    currentCFG->current_bb = testBB;
+
+    string cond = visit(ctx->expr());
+    
+    vector<string> params;
+    params.push_back(cond);
+    params.push_back(testBB->exit_true->label);
+    params.push_back(testBB->exit_false->label);
+
+    testBB->add_IRInstr(IRInstr::Operation::jmp_cond, Type::TypeEnum::INT, params);
 
     currentCFG->current_bb = bodyBB;
     if(ctx->line()) {
