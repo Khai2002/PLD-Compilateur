@@ -175,6 +175,7 @@ void IRInstrCopy::gen_asm(ostream &o)
 
     int indexLvalue = bb->cfg->get_var_index(params[0]);
     int indexRValue = bb->cfg->get_var_index(params[1]);
+    int indexDest = bb->cfg->get_var_index(params[2]);
     o << "movq " << indexRValue << "(%rbp), %rax" << endl;
     o << "movq %rax, " << indexLvalue << "(%rbp)" << endl;
 }

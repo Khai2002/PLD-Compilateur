@@ -155,10 +155,11 @@ antlrcpp::Any IRVisitor::visitVar_ass(ifccParser::Var_assContext *ctx)
     if (ctx->expr())
     {
         string expr = visit(ctx->expr());
-        currentCFG->current_bb->add_IRInstr(IRInstr::Operation::copy, currentCFG->getSymbolType()[name], {name, expr});
+        string tempvar = currentCFG->create_new_tempvar(Type::TypeEnum::INT);
+        currentCFG->current_bb->add_IRInstr(IRInstr::Operation::copy, currentCFG->getSymbolType()[name], {name, expr, tempvar});
     }
 
-    return 0;
+    return tempvar;
 }
 
 antlrcpp::Any IRVisitor::visitReturn_stmt(ifccParser::Return_stmtContext *ctx)
