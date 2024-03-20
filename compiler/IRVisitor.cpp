@@ -82,7 +82,7 @@ antlrcpp::Any IRVisitor::visitVar_decl(ifccParser::Var_declContext *ctx)
         }
         */
     }
-    */
+    
 
     return 0;
 }
@@ -299,6 +299,9 @@ antlrcpp::Any IRVisitor::visitWhile_block(ifccParser::While_blockContext *ctx)
     if(ctx->block()){
         visit(ctx->block());
     }
+
+    currentCFG->current_bb = testBB->exit_false;
+
     return 0;
 }
 

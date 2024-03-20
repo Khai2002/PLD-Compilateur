@@ -373,10 +373,11 @@ void BasicBlock::gen_asm(ostream &o)
 {
     // Very simple assembly code generation for this basic block
     // This is a placeholder implementation. Actual implementation will depend on your specific requirements.
-    o << "\n" << label << ":\n\n";
     if (label == cfg->getFuncName())
     {
         cfg->gen_asm_prologue(o);
+    }else{
+        o << "\n." << label << ":\n\n";
     }
     for (IRInstr *instr : instrs)
     {
@@ -546,6 +547,7 @@ void CFG::gen_asm_prologue(ostream &o)
         alloc_size = nextFreeSymbolIndex + 8;
     }
     // alloc_size += 16 - (alloc_size % 16);
+    o << this->funcName << ":" << endl << endl;
 
     o << "pushq  %rbp" << endl;
     o << "movq  %rsp, %rbp" << endl;
