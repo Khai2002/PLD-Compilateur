@@ -60,6 +60,18 @@ void IRInstr::gen_asm(ostream &o)
         */
         cout << "Multiplying values.\n";
         break;
+    case eq:
+        cout << "Comparing equality\n";
+        break;
+    case neq:
+        cout << "Comparing not equal\n";
+        break;
+    case lt:
+        cout << "Comparing less\n";
+        break;
+    case gt:
+        cout << "Comparing more\n";
+        break;
     case neg:
         cout << "Negation of value.\n";
         break;
@@ -74,15 +86,6 @@ void IRInstr::gen_asm(ostream &o)
         break;
     case call:
         cout << "Calling a function.\n";
-        break;
-    case cmp_eq:
-        cout << "Comparing for equality.\n";
-        break;
-    case cmp_lt:
-        cout << "Comparing for less than.\n";
-        break;
-    case cmp_le:
-        cout << "Comparing for less than or equal to.\n";
         break;
     default:
         cout << "Unknown operation.\n";
@@ -117,6 +120,14 @@ string IRInstr::operationToString(Operation op)
         return "mul";
     case div:
         return "div";
+    case eq:
+        return "eq";
+    case neq:
+        return "neq";
+    case lt:
+        return "lt";
+    case gt:
+        return "gt";
     case neg:
         return "neg";
     case unary_not:
@@ -129,12 +140,6 @@ string IRInstr::operationToString(Operation op)
         return "wmem";
     case call:
         return "call";
-    case cmp_eq:
-        return "cmp_eq";
-    case cmp_lt:
-        return "cmp_lt";
-    case cmp_le:
-        return "cmp_le";
     default:
         return "Unknown Operation";
     }
@@ -200,6 +205,58 @@ void IRInstrDiv::gen_asm(ostream &o)
     o << "    cltd" << endl;
     o << "idivl " << indexParam2 << "(%rbp)" << endl;
     o << "movq %rax, " << indexDest << "(%rbp)" << endl;
+}
+
+void IRInstrEq::gen_asm(ostream &o)
+{
+    int indexParam1 = bb->cfg->get_var_index(params[0]);
+    int indexParam2 = bb->cfg->get_var_index(params[1]);
+    int indexDest = bb->cfg->get_var_index(params[2]);
+
+    o << "    movq " << indexParam1 << "(%rbp), %rax" << endl;
+    o << "    cmpq " << indexParam2 << "(%rbp), %rax" << endl;
+    o << "    sete %al" << endl;
+    o << "    movzbq %al, %rax" << endl;
+    o << "    movq %rax, " << indexDest << "(%rbp)" << endl;
+}
+
+void IRInstrNeq::gen_asm(ostream &o)
+{
+    int indexParam1 = bb->cfg->get_var_index(params[0]);
+    int indexParam2 = bb->cfg->get_var_index(params[1]);
+    int indexDest = bb->cfg->get_var_index(params[2]);
+
+    o << "    movq " << indexParam1 << "(%rbp), %rax" << endl;
+    o << "    cmpq " << indexParam2 << "(%rbp), %rax" << endl;
+    o << "    setne %al" << endl;
+    o << "    movzbq %al, %rax" << endl;
+    o << "    movq %rax, " << indexDest << "(%rbp)" << endl;
+}
+
+void IRInstrLt::gen_asm(ostream &o)
+{
+    int indexParam1 = bb->cfg->get_var_index(params[0]);
+    int indexParam2 = bb->cfg->get_var_index(params[1]);
+    int indexDest = bb->cfg->get_var_index(params[2]);
+
+    o << "    movq " << indexParam1 << "(%rbp), %rax" << endl;
+    o << "    cmpq " << indexParam2 << "(%rbp), %rax" << endl;
+    o << "    setl %al" << endl;
+    o << "    movzbq %al, %rax" << endl;
+    o << "    movq %rax, " << indexDest << "(%rbp)" << endl;
+}
+
+void IRInstrGt::gen_asm(ostream &o)
+{
+    int indexParam1 = bb->cfg->get_var_index(params[0]);
+    int indexParam2 = bb->cfg->get_var_index(params[1]);
+    int indexDest = bb->cfg->get_var_index(params[2]);
+
+    o << "    movq " << indexParam1 << "(%rbp), %rax" << endl;
+    o << "    cmpq " << indexParam2 << "(%rbp), %rax" << endl;
+    o << "    setg %al" << endl;
+    o << "    movzbq %al, %rax" << endl;
+    o << "    movq %rax, " << indexDest << "(%rbp)" << endl;
 }
 
 void IRInstrMod::gen_asm(ostream &o)
@@ -300,6 +357,18 @@ void BasicBlock::add_IRInstr(IRInstr::Operation op, Type t, vector<string> param
         break;
     case IRInstr::Operation::mod:
         newInstr = new IRInstrMod(this, op, t, params);
+        break;
+    case IRInstr::Operation::eq:
+        newInstr = new IRInstrEq(this, op, t, params);
+        break;
+    case IRInstr::Operation::neq:
+        newInstr = new IRInstrNeq(this, op, t, params);
+        break;
+    case IRInstr::Operation::lt:
+        newInstr = new IRInstrLt(this, op, t, params);
+        break;
+    case IRInstr::Operation::gt:
+        newInstr = new IRInstrGt(this, op, t, params);
         break;
     case IRInstr::Operation::neg:
         newInstr = new IRInstrNeg(this, op, t, params);

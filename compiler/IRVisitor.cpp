@@ -224,9 +224,31 @@ antlrcpp::Any IRVisitor::visitCharConst(ifccParser::CharConstContext *ctx)
 //     return 0;
 // }
 
-// antlrcpp::Any IRVisitor::visitEqualExpr(ifccParser::EqualExprContext *ctx)  {
-//     return 0;
-// }
+antlrcpp::Any IRVisitor::visitEqualExpr(ifccParser::EqualExprContext *ctx)  {
+    // cout << "visiting equal / not equal expressions..." << endl;
+    auto left = ctx->expr(0);
+    auto right = ctx->expr(1);
+    string op = ctx->EQ_NEQ()->getText();
+    // Visit left and right expressions and get their adress in memory
+    string param2 = visit(left);
+    string param3 = visit(right);
+    string tempvar = currentCFG->create_new_tempvar(Type::TypeEnum::INT);
+    vector<string> params;
+    params.push_back(param2);
+    params.push_back(param3);
+    params.push_back(tempvar);
+
+    if (op == "==")
+    {
+        currentCFG->current_bb->add_IRInstr(IRInstr::Operation::eq, Type::TypeEnum::INT, params);
+    }
+    else if (op == "!=")
+    {
+        currentCFG->current_bb->add_IRInstr(IRInstr::Operation::neq, Type::TypeEnum::INT, params);
+    }
+
+    return tempvar;
+}
 
 antlrcpp::Any IRVisitor::visitUnaireExpr(ifccParser::UnaireExprContext *ctx)  {
     auto expr = ctx->expr();
@@ -258,9 +280,31 @@ antlrcpp::Any IRVisitor::visitUnaireExpr(ifccParser::UnaireExprContext *ctx)  {
 //     return 0;
 // }
 
-// antlrcpp::Any IRVisitor::visitMoreLessExpr(ifccParser::MoreLessExprContext *ctx)  {
-//     return 0;
-// }
+antlrcpp::Any IRVisitor::visitMoreLessExpr(ifccParser::MoreLessExprContext *ctx)  {
+    // cout << "visiting more less expressions..." << endl;
+    auto left = ctx->expr(0);
+    auto right = ctx->expr(1);
+    string op = ctx->MORE_LESS()->getText();
+    // Visit left and right expressions and get their adress in memory
+    string param2 = visit(left);
+    string param3 = visit(right);
+    string tempvar = currentCFG->create_new_tempvar(Type::TypeEnum::INT);
+    vector<string> params;
+    params.push_back(param2);
+    params.push_back(param3);
+    params.push_back(tempvar);
+
+    if (op == "<")
+    {
+        currentCFG->current_bb->add_IRInstr(IRInstr::Operation::lt, Type::TypeEnum::INT, params);
+    }
+    else if (op == ">")
+    {
+        currentCFG->current_bb->add_IRInstr(IRInstr::Operation::gt, Type::TypeEnum::INT, params);
+    }
+
+    return tempvar;
+}
 
 // antlrcpp::Any IRVisitor::visitOrExpr(ifccParser::OrExprContext *ctx)  {
 //     return 0;
