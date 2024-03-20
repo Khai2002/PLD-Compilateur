@@ -44,15 +44,19 @@ int main(int argn, const char **argv)
     cerr << "error: syntax error during parsing" << endl;
     exit(1);
   }
-
+  // cout << "I'm coming 1" << endl;
   VarCheckVisitor varCheckVisitor;
-  varCheckVisitor.visit(tree);
+  //varCheckVisitor.visit(tree);
+  int temp = 0;
+  //temp = varCheckVisitor.getNumber_errors();
+
   // cout << "nombre d'erreurs " << varCheckVisitor.getNumber_errors() << endl;
-  if (varCheckVisitor.getNumber_errors() == 0)
+  if (temp == 0)
   {
     // CodeGenVisitor v(varCheckVisitor.getAdrTable(), varCheckVisitor.getCurPointer());
     // v.visit(tree);
     IRVisitor irv;
+    // cout << "I'm coming" << endl;
     irv.visit(tree);
     /*cout << endl;
     cout << endl;

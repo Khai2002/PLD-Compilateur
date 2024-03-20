@@ -346,6 +346,23 @@ void IRInstrRet::gen_asm(ostream &o)
     o << "movq " << indexDest << "(%rbp), %rax" << endl;
 }
 
+void IRInstrJumpCond::gen_asm(ostream &o)
+{
+    // cmpl	$0, -4(%rbp)
+	// je	.L2
+	// movl	$4, -4(%rbp)
+	// jmp	.L3
+    int indexCond = bb->cfg->get_var_index(params[0]);
+    string trueBBLabel = params[1];
+    string falseBBLabel = params[2];
+
+    o << "cmpq $0, " << indexCond << "(%rbp)" << endl;
+    o << "je ." << falseBBLabel << endl;
+    o << "jmp ." << trueBBLabel << endl;
+
+
+}
+
 // ======== BasicBlock ==========================================================================================
 
 // Constructor
@@ -356,7 +373,7 @@ void BasicBlock::gen_asm(ostream &o)
 {
     // Very simple assembly code generation for this basic block
     // This is a placeholder implementation. Actual implementation will depend on your specific requirements.
-    o << label << ":\n";
+    o << "\n" << label << ":\n\n";
     if (label == cfg->getFuncName())
     {
         cfg->gen_asm_prologue(o);
@@ -366,12 +383,12 @@ void BasicBlock::gen_asm(ostream &o)
         instr->gen_asm(o);
     }
 
-    if (this->exit_true)
+    if (this->exit_true && !this->exit_false)
     {
-        o << "jmp " << this->exit_true->label << endl;
+        o << "jmp ." << this->exit_true->label << endl;
     }
 
-    if (!(this->exit_true && this->exit_false))
+    if (!(this->exit_true || this->exit_false))
     {
         cfg->gen_asm_epilogue(o);
     }
@@ -435,6 +452,9 @@ void BasicBlock::add_IRInstr(IRInstr::Operation op, Type t, vector<string> param
         break;
     case IRInstr::Operation::ret:
         newInstr = new IRInstrRet(this, op, t, params);
+        break;
+    case IRInstr::Operation::jmp_cond:
+        newInstr = new IRInstrJumpCond(this, op, t, params);
         break;
     }
 
@@ -530,7 +550,7 @@ void CFG::gen_asm_prologue(ostream &o)
     o << "pushq  %rbp" << endl;
     o << "movq  %rsp, %rbp" << endl;
     o << "subq  $" << -alloc_size << ", %rsp" << endl;
-    o << endl;
+    // o << endl;
 }
 
 // Method implementation for gen_asm_epilogue
@@ -538,7 +558,7 @@ void CFG::gen_asm_epilogue(ostream &o)
 {
     // Placeholder for generating assembly code epilogue
     // Actual implementation will depend on your specific requirements
-    o << endl;
+    // o << endl;
     o << "leave" << endl;
     o << "ret" << endl;
 }
