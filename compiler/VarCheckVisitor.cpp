@@ -7,7 +7,8 @@ antlrcpp::Any VarCheckVisitor::visitVar_decl(ifccParser::Var_declContext *ctx)
     int int_size = 4;
     int char_size = 1;
 
-    for (auto id : ctx->ID()) {
+    for (auto id : ctx->ID())
+    {
         string name = id->getText();
         auto it = this->adrTable.find(name);
         if (it != this->adrTable.end())
@@ -27,7 +28,7 @@ antlrcpp::Any VarCheckVisitor::visitVar_decl(ifccParser::Var_declContext *ctx)
             this->cur_pointer -= char_size;
         }
         this->adrTable[name] = VariableInfo(this->cur_pointer);
-    }    
+    }
 
     // cout << "Name :" << name << " index : " << this->adrTable[name].index << endl;
     return 0;
@@ -37,10 +38,10 @@ antlrcpp::Any VarCheckVisitor::visitProg(ifccParser::ProgContext *ctx)
 {
     // To be completed
     auto func_ctx = ctx->func_decl(0);
-    
+
     for (auto line : func_ctx->line())
     {
-        auto stmt  = line->stmt();
+        auto stmt = line->stmt();
         visit(stmt);
     }
     this->visit(func_ctx->return_stmt());
@@ -63,7 +64,7 @@ antlrcpp::Any VarCheckVisitor::visitVar_ass(ifccParser::Var_assContext *ctx)
     auto it1 = this->adrTable.find(name1);
     if (it1 == this->adrTable.end())
     {
-        cerr << "# Erreur : Variable '" << name1 << "' n'a pas été déclarée." << endl;
+        cout << "# Erreur : Variable '" << name1 << "' n'a pas été déclarée." << endl;
         this->number_errors++;
         return 0;
     }
@@ -79,7 +80,7 @@ antlrcpp::Any VarCheckVisitor::visitVar(ifccParser::VarContext *ctx)
     auto it = this->adrTable.find(name);
     if (it == this->adrTable.end())
     {
-        cerr << "#Erreur : Variable '" << name << "' n'a pas été déclarée." << endl;
+        cout << "#Erreur : Variable '" << name << "' n'a pas été déclarée." << endl;
         this->number_errors++;
         return 0;
     }

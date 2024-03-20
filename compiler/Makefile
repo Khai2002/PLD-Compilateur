@@ -24,11 +24,9 @@ OBJECTS=build/ifccBaseVisitor.o \
 	build/ifccVisitor.o \
 	build/ifccParser.o \
 	build/main.o \
-	build/CodeGenVisitor.o \
 	build/VarCheckVisitor.o \
 	build/IR.o \
-	build/IRVisitor.o \
-	build/ast.o
+	build/IRVisitor.o
 
 ifcc: $(OBJECTS)
 	@mkdir -p build

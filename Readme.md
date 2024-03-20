@@ -9,7 +9,7 @@ A compiler for a subset of C written in C++ using ANTLR4 for parsing.
 ## Table of Contents
 - [Installation](#installation)
 - [Usage](#usage)
-- [Contributing](#contributing)
+- [Supported functionalities](#supported-functionalities)
 - [License](#license)
 
 ## Installation
@@ -40,13 +40,15 @@ Please note that the compiler currently only supports a minimal subset of the C 
 
 ## Supported functionalities
 
+- Declaration of variables of type INT and CHAR
 - Basic arithmetic operations with priorities
-    - Add, 
+    - Add
     - Subtract
     - Multiply
     - Divide 
     - Modulus
-- Declaration of variables
+    - Unary not
+    - Negation
 - Return value
 
 ## License

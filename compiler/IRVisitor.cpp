@@ -61,10 +61,10 @@ antlrcpp::Any IRVisitor::visitVar_decl(ifccParser::Var_declContext *ctx)
     // var_decl : type ID (',' ID)* ';' ;
 
     string typeName = ctx->type()->getText();
-    string name;
 
-    for (auto var : ctx->ID()){
-        name = var->getText();
+    for (auto id : ctx->ID())
+    {
+        string name = id->getText();
         // string tempvar = currentCFG->create_new_tempvar(Type::TypeEnum::INT);
         if (typeName == "int")
         {
@@ -74,15 +74,13 @@ antlrcpp::Any IRVisitor::visitVar_decl(ifccParser::Var_declContext *ctx)
         {
             currentCFG->add_to_symbol_table(name, Type::TypeEnum::CHAR);
         }
-    }
-    
-    
-    // Remove expression assignment
-    /*
-    if (ctx->expr())
-    {
-        string expr = visit(ctx->expr());
-        currentCFG->current_bb->add_IRInstr(IRInstr::Operation::copy, currentCFG->getSymbolType()[name], {name, expr});
+        /*
+        if (ctx->expr())
+        {
+            string expr = visit(ctx->expr());
+            currentCFG->current_bb->add_IRInstr(IRInstr::Operation::copy, currentCFG->getSymbolType()[name], {name, expr});
+        }
+        */
     }
     */
 
@@ -94,7 +92,7 @@ antlrcpp::Any IRVisitor::visitAddSubExpr(ifccParser::AddSubExprContext *ctx)
     // cout << "visiting add sub expressions..." << endl;
     auto left = ctx->expr(0);
     auto right = ctx->expr(1);
-    string op = ctx->ADD_SUB()->getText();
+    string op = ctx->ADD_SUB->getText();
     // Visit left and right expressions and get their adress in memory
     string param2 = visit(left);
     string param3 = visit(right);
@@ -324,33 +322,141 @@ antlrcpp::Any IRVisitor::visitStmt(ifccParser::StmtContext *ctx)  {
     return 0;
 }
 
-// antlrcpp::Any IRVisitor::visitAndExpr(ifccParser::AndExprContext *ctx)  {
-//     return 0;
-// }
+antlrcpp::Any IRVisitor::visitAndExpr(ifccParser::AndExprContext *ctx)  {
+    // cout << "visiting and expression..." << endl;
+    auto left = ctx->expr(0);
+    auto right = ctx->expr(1);
+    // Visit left and right expressions and get their adress in memory
+    string param2 = visit(left);
+    string param3 = visit(right);
+    string tempvar = currentCFG->create_new_tempvar(Type::TypeEnum::INT);
+    vector<string> params;
+    params.push_back(param2);
+    params.push_back(param3);
+    params.push_back(tempvar);
 
-// antlrcpp::Any IRVisitor::visitEqualExpr(ifccParser::EqualExprContext *ctx)  {
-//     return 0;
-// }
+    currentCFG->current_bb->add_IRInstr(IRInstr::Operation::bit_and, Type::TypeEnum::INT, params);
 
-// antlrcpp::Any IRVisitor::visitUnaire(ifccParser::UnaireContext *ctx)  {
-//     return 0;
-// }
+    return tempvar;
+}
 
-// antlrcpp::Any IRVisitor::visitXorExpr(ifccParser::XorExprContext *ctx)  {
-//     return 0;
-// }
+antlrcpp::Any IRVisitor::visitEqualExpr(ifccParser::EqualExprContext *ctx)  {
+    // cout << "visiting equal / not equal expressions..." << endl;
+    auto left = ctx->expr(0);
+    auto right = ctx->expr(1);
+    string op = ctx->EQ_NEQ()->getText();
+    // Visit left and right expressions and get their adress in memory
+    string param2 = visit(left);
+    string param3 = visit(right);
+    string tempvar = currentCFG->create_new_tempvar(Type::TypeEnum::INT);
+    vector<string> params;
+    params.push_back(param2);
+    params.push_back(param3);
+    params.push_back(tempvar);
 
-// antlrcpp::Any IRVisitor::visitParExpr(ifccParser::ParExprContext *ctx)  {
-//     return 0;
-// }
+    if (op == "==")
+    {
+        currentCFG->current_bb->add_IRInstr(IRInstr::Operation::eq, Type::TypeEnum::INT, params);
+    }
+    else if (op == "!=")
+    {
+        currentCFG->current_bb->add_IRInstr(IRInstr::Operation::neq, Type::TypeEnum::INT, params);
+    }
 
-// antlrcpp::Any IRVisitor::visitMoreLessExpr(ifccParser::MoreLessExprContext *ctx)  {
-//     return 0;
-// }
+    return tempvar;
+}
 
-// antlrcpp::Any IRVisitor::visitOrExpr(ifccParser::OrExprContext *ctx)  {
-//     return 0;
-// }
+antlrcpp::Any IRVisitor::visitUnaireExpr(ifccParser::UnaireExprContext *ctx)
+{
+    auto expr = ctx->expr();
+    string op = ctx->UNAIRE->getText();
+
+    string param = visit(expr);
+    string tempvar = currentCFG->create_new_tempvar(Type::TypeEnum::INT);
+    vector<string> params;
+    params.push_back(param);
+    params.push_back(tempvar);
+
+    if (op == "-")
+    {
+        currentCFG->current_bb->add_IRInstr(IRInstr::Operation::neg, Type::TypeEnum::INT, params);
+    }
+    else if (op == "!")
+    {
+        currentCFG->current_bb->add_IRInstr(IRInstr::Operation::unary_not, Type::TypeEnum::INT, params);
+    }
+
+    return tempvar;
+}
+
+antlrcpp::Any IRVisitor::visitXorExpr(ifccParser::XorExprContext *ctx)  {
+    // cout << "visiting xor expression..." << endl;
+    auto left = ctx->expr(0);
+    auto right = ctx->expr(1);
+    // Visit left and right expressions and get their adress in memory
+    string param2 = visit(left);
+    string param3 = visit(right);
+    string tempvar = currentCFG->create_new_tempvar(Type::TypeEnum::INT);
+    vector<string> params;
+    params.push_back(param2);
+    params.push_back(param3);
+    params.push_back(tempvar);
+
+    currentCFG->current_bb->add_IRInstr(IRInstr::Operation::bit_xor, Type::TypeEnum::INT, params);
+
+    return tempvar;
+}
+
+antlrcpp::Any IRVisitor::visitParExpr(ifccParser::ParExprContext *ctx)
+{
+    auto expr = ctx->expr();
+    string name = visit(expr);
+    return name;
+}
+
+antlrcpp::Any IRVisitor::visitMoreLessExpr(ifccParser::MoreLessExprContext *ctx)  {
+    // cout << "visiting more less expressions..." << endl;
+    auto left = ctx->expr(0);
+    auto right = ctx->expr(1);
+    string op = ctx->MORE_LESS()->getText();
+    // Visit left and right expressions and get their adress in memory
+    string param2 = visit(left);
+    string param3 = visit(right);
+    string tempvar = currentCFG->create_new_tempvar(Type::TypeEnum::INT);
+    vector<string> params;
+    params.push_back(param2);
+    params.push_back(param3);
+    params.push_back(tempvar);
+
+    if (op == "<")
+    {
+        currentCFG->current_bb->add_IRInstr(IRInstr::Operation::lt, Type::TypeEnum::INT, params);
+    }
+    else if (op == ">")
+    {
+        currentCFG->current_bb->add_IRInstr(IRInstr::Operation::gt, Type::TypeEnum::INT, params);
+    }
+
+    return tempvar;
+}
+
+antlrcpp::Any IRVisitor::visitOrExpr(ifccParser::OrExprContext *ctx)  {
+    // cout << "visiting or expression..." << endl;
+    auto left = ctx->expr(0);
+    auto right = ctx->expr(1);
+    // Visit left and right expressions and get their adress in memory
+    string param2 = visit(left);
+    string param3 = visit(right);
+    string tempvar = currentCFG->create_new_tempvar(Type::TypeEnum::INT);
+    vector<string> params;
+    params.push_back(param2);
+    params.push_back(param3);
+    params.push_back(tempvar);
+
+    currentCFG->current_bb->add_IRInstr(IRInstr::Operation::bit_or, Type::TypeEnum::INT, params);
+
+    return tempvar;
+}
 
 // antlrcpp::Any IRVisitor::visitType(ifccParser::TypeContext *ctx)  {
 //     return 0;
