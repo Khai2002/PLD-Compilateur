@@ -57,14 +57,18 @@ public:
 		mul,
 		div,
 		mod,
+		bit_or,
+		bit_and,
+		bit_xor,
+		eq,
+		neq,
+		lt,
+		gt,
 		neg,
 		unary_not,
 		rmem,
 		wmem,
 		call,
-		cmp_eq,
-		cmp_lt,
-		cmp_le,
 		ret
 	} Operation;
 
@@ -131,6 +135,55 @@ class IRInstrMod : public IRInstr
 {
 public:
 	IRInstrMod(BasicBlock *bb, Operation op, Type t, vector<string> params) : IRInstr(bb, op, t, params){};
+	void gen_asm(ostream &o) override;
+};
+
+class IRInstrOr : public IRInstr
+{
+public:
+	IRInstrOr(BasicBlock *bb, Operation op, Type t, vector<string> params) : IRInstr(bb, op, t, params){};
+	void gen_asm(ostream &o) override;
+};
+
+class IRInstrAnd : public IRInstr
+{
+public:
+	IRInstrAnd(BasicBlock *bb, Operation op, Type t, vector<string> params) : IRInstr(bb, op, t, params){};
+	void gen_asm(ostream &o) override;
+};
+
+class IRInstrXor : public IRInstr
+{
+public:
+	IRInstrXor(BasicBlock *bb, Operation op, Type t, vector<string> params) : IRInstr(bb, op, t, params){};
+	void gen_asm(ostream &o) override;
+};
+
+class IRInstrEq : public IRInstr
+{
+public:
+	IRInstrEq(BasicBlock *bb, Operation op, Type t, vector<string> params) : IRInstr(bb, op, t, params){};
+	void gen_asm(ostream &o) override;
+};
+
+class IRInstrNeq : public IRInstr
+{
+public:
+	IRInstrNeq(BasicBlock *bb, Operation op, Type t, vector<string> params) : IRInstr(bb, op, t, params){};
+	void gen_asm(ostream &o) override;
+};
+
+class IRInstrLt : public IRInstr
+{
+public:
+	IRInstrLt(BasicBlock *bb, Operation op, Type t, vector<string> params) : IRInstr(bb, op, t, params){};
+	void gen_asm(ostream &o) override;
+};
+
+class IRInstrGt : public IRInstr
+{
+public:
+	IRInstrGt(BasicBlock *bb, Operation op, Type t, vector<string> params) : IRInstr(bb, op, t, params){};
 	void gen_asm(ostream &o) override;
 };
 
