@@ -102,6 +102,12 @@ void IRInstr::gen_asm(ostream &o)
     }
 }
 
+void IRInstr::gen_asm_arm64(ostream &o) 
+{
+    cout << "Using arm64..." << endl;
+}
+
+
 void IRInstr::print_IRInstr()
 {
 
@@ -363,6 +369,100 @@ void IRInstrJumpCond::gen_asm(ostream &o)
 
 }
 
+
+void IRInstrConst::gen_asm_arm64(ostream &o) {
+    int indexDest = this->bb->cfg->get_var_index(params[0]);
+    o << "mov x9, #" << params[1] << endl; // Use a temporary register, e.g., x9
+    o << "str x9, [x29," << indexDest << "]" << endl; // x29 is the frame pointer (equivalent to %rbp in x86)
+}
+
+void IRInstrCopy::gen_asm_arm64(ostream &o) {
+    int indexLvalue = bb->cfg->get_var_index(params[0]);
+    int indexRValue = bb->cfg->get_var_index(params[1]);
+    o << "ldr x9, [x29," << indexRValue << "]" << endl; // Load from stack to x9
+    o << "str x9, [x29," << indexLvalue << "]" << endl; // Store x9 to stack
+}
+
+void IRInstrAdd::gen_asm_arm64(ostream &o) {
+    int indexParam1 = bb->cfg->get_var_index(params[0]);
+    int indexParam2 = bb->cfg->get_var_index(params[1]);
+    int indexDest = bb->cfg->get_var_index(params[2]);
+
+    o << "ldr x9, [x29," << indexParam1 << "]" << endl; // Load first param
+    o << "ldr x10, [x29," << indexParam2 << "]" << endl; // Load second param
+    o << "add x9, x9, x10" << endl; // Add x9 and x10, store result in x9
+    o << "str x9, [x29," << indexDest << "]" << endl; // Store result
+}
+
+void IRInstrSub::gen_asm_arm64(ostream &o) {
+    int indexParam1 = bb->cfg->get_var_index(params[0]);
+    int indexParam2 = bb->cfg->get_var_index(params[1]);
+    int indexDest = bb->cfg->get_var_index(params[2]);
+
+    o << "ldr x9, [x29," << indexParam1 << "]" << endl; // Load first param
+    o << "ldr x10, [x29," << indexParam2 << "]" << endl; // Load second param
+    o << "sub x9, x9, x10" << endl; // Subtract x10 from x9
+    o << "str x9, [x29," << indexDest << "]" << endl; // Store result
+}
+
+
+void IRInstrMul::gen_asm_arm64(ostream &o) {
+    // todo
+}
+
+void IRInstrDiv::gen_asm_arm64(ostream &o) {
+    // todo
+}
+
+void IRInstrMod::gen_asm_arm64(ostream &o) {
+    // todo
+}
+
+void IRInstrOr::gen_asm_arm64(ostream &o) {
+    // todo
+}
+
+void IRInstrAnd::gen_asm_arm64(ostream &o) {
+    // todo
+}
+
+void IRInstrXor::gen_asm_arm64(ostream &o) {
+    // todo
+}
+
+void IRInstrEq::gen_asm_arm64(ostream &o) {
+    // todo
+}
+
+void IRInstrNeq::gen_asm_arm64(ostream &o) {
+    // todo
+}
+
+void IRInstrLt::gen_asm_arm64(ostream &o) {
+    // todo
+}
+
+void IRInstrGt::gen_asm_arm64(ostream &o) {
+    // todo
+}
+
+void IRInstrNeg::gen_asm_arm64(ostream &o) {
+    // todo
+}
+
+void IRInstrNot::gen_asm_arm64(ostream &o) {
+    // todo
+}
+
+void IRInstrRet::gen_asm_arm64(ostream &o) {
+    // todo
+}
+
+void IRInstrJumpCond::gen_asm_arm64(ostream &o) {
+    // todo
+}
+
+
 // ======== BasicBlock ==========================================================================================
 
 // Constructor
@@ -392,6 +492,30 @@ void BasicBlock::gen_asm(ostream &o)
     if (!(this->exit_true || this->exit_false))
     {
         cfg->gen_asm_epilogue(o);
+    }
+}
+
+void BasicBlock::gen_asm_arm64(ostream &o)
+{
+    // ARM64 assembly code generation for this basic block
+    o << label << ":\n";
+    if (label == cfg->getFuncName())
+    {
+        cfg->gen_asm_prologue_arm64(o); // Generate ARM64 specific prologue
+    }
+    for (IRInstr *instr : instrs)
+    {
+        instr->gen_asm_arm64(o); // Ensure that each instruction generates ARM64 code
+    }
+
+    if (this->exit_true)
+    {
+        o << "b " << this->exit_true->label << endl; // ARM64 branch instruction
+    }
+
+    if (!(this->exit_true && this->exit_false))
+    {
+        cfg->gen_asm_epilogue_arm64(o); // Generate ARM64 specific epilogue
     }
 }
 
@@ -562,6 +686,29 @@ void CFG::gen_asm_epilogue(ostream &o)
     // Actual implementation will depend on your specific requirements
     // o << endl;
     o << "leave" << endl;
+    o << "ret" << endl;
+}
+
+void CFG::gen_asm_prologue_arm64(ostream &o)
+{
+    // Placeholder for generating ARM64 specific prologue
+    // Actual implementation will depend on your specific requirements
+    o << "stp x29, x30, [sp, #-16]!" << endl;
+    o << "mov x29, sp" << endl;
+    o << "sub sp, sp, #16" << endl;
+    o << endl;
+}
+
+
+void CFG::gen_asm_epilogue_arm64(ostream &o)
+{
+
+    int alloc_size = nextFreeSymbolIndex;
+
+    o << endl;
+    o << "";
+    o << "add sp, sp, " << alloc_size << endl;
+    o << "ldp x29, x30, [sp], #16" << endl;
     o << "ret" << endl;
 }
 
