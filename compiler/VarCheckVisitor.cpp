@@ -4,7 +4,6 @@ using namespace std;
 
 antlrcpp::Any VarCheckVisitor::visitVar_decl(ifccParser::Var_declContext *ctx)
 {
-    cout << "appel de la fonction VisitVarDecl" << endl;
     int int_size = 8;
     int char_size = 8;
 
@@ -74,7 +73,7 @@ antlrcpp::Any VarCheckVisitor::visitProg(ifccParser::ProgContext *ctx)
 antlrcpp::Any VarCheckVisitor::visitVar_ass(ifccParser::Var_assContext *ctx)
 {
     string name1 = ctx->ID()->getText();
-    cout << name1 << endl;
+
     auto it1 = this->adrTable.find(name1);
     if (it1 == this->adrTable.end())
     {
@@ -91,7 +90,6 @@ antlrcpp::Any VarCheckVisitor::visitVar(ifccParser::VarContext *ctx)
 {
 
     string name = ctx->ID()->getText();
-    cout << name << endl;
     auto it = this->adrTable.find(name);
     if (it == this->adrTable.end())
     {

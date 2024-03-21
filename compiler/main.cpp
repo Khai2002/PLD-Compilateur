@@ -46,20 +46,21 @@ int main(int argn, const char **argv)
   }
   // cout << "I'm coming 1" << endl;
   VarCheckVisitor varCheckVisitor;
-  cout << "0" << endl;
+
   varCheckVisitor.visit(tree);
-  cout << '1' << endl;
+
   int temp = 0;
   temp = varCheckVisitor.getNumber_errors();
 
-  // cout << "nombre d'erreurs " << varCheckVisitor.getNumber_errors() << endl;
+  // cout << "#nombre d'erreurs  :" << varCheckVisitor.getNumber_errors() << endl;
   if (temp == 0)
   {
     IRVisitor irv;
     irv.visit(tree);
-    irv.getCurrentCFG()->printCFG();
     irv.getCurrentCFG()->gen_asm(cout);
+
     /*
+    irv.getCurrentCFG()->printCFG();
     auto symbolIndex = irv.getCurrentCFG()->getSymbolIndex();
     for (const auto& pair : symbolIndex) {
       cout << "Key: " << pair.first << ", Value: " << pair.second << std::endl;
