@@ -8,7 +8,7 @@
 #include "generated/ifccParser.h"
 #include "generated/ifccBaseVisitor.h"
 
-//#include "CodeGenVisitor.h"
+// #include "CodeGenVisitor.h"
 #include "VarCheckVisitor.h"
 #include "IRVisitor.h"
 
@@ -46,23 +46,18 @@ int main(int argn, const char **argv)
   }
   // cout << "I'm coming 1" << endl;
   VarCheckVisitor varCheckVisitor;
-  //varCheckVisitor.visit(tree);
+  cout << "0" << endl;
+  varCheckVisitor.visit(tree);
+  cout << '1' << endl;
   int temp = 0;
-  //temp = varCheckVisitor.getNumber_errors();
+  temp = varCheckVisitor.getNumber_errors();
 
   // cout << "nombre d'erreurs " << varCheckVisitor.getNumber_errors() << endl;
   if (temp == 0)
   {
-    // CodeGenVisitor v(varCheckVisitor.getAdrTable(), varCheckVisitor.getCurPointer());
-    // v.visit(tree);
     IRVisitor irv;
-    // cout << "I'm coming" << endl;
     irv.visit(tree);
-    /*cout << endl;
-    cout << endl;
     irv.getCurrentCFG()->printCFG();
-    cout << endl;
-    cout << endl;*/
     irv.getCurrentCFG()->gen_asm(cout);
     /*
     auto symbolIndex = irv.getCurrentCFG()->getSymbolIndex();

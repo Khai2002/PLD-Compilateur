@@ -4,8 +4,9 @@ using namespace std;
 
 antlrcpp::Any VarCheckVisitor::visitVar_decl(ifccParser::Var_declContext *ctx)
 {
-    int int_size = 4;
-    int char_size = 1;
+    cout << "appel de la fonction VisitVarDecl" << endl;
+    int int_size = 8;
+    int char_size = 8;
 
     for (auto id : ctx->ID())
     {
@@ -41,8 +42,21 @@ antlrcpp::Any VarCheckVisitor::visitProg(ifccParser::ProgContext *ctx)
 
     for (auto line : func_ctx->line())
     {
-        auto stmt = line->stmt();
-        visit(stmt);
+        if (line->stmt() != nullptr)
+        {
+            auto stmt = line->stmt();
+            visit(stmt);
+        }
+        else if (line->if_block() != nullptr)
+        {
+            auto if_block = line->if_block();
+            visit(if_block);
+        }
+        else if (line->while_block() != nullptr)
+        {
+            auto while_block = line->while_block();
+            visit(while_block);
+        }
     }
     this->visit(func_ctx->return_stmt());
     for (const auto &entry : adrTable)
@@ -60,7 +74,7 @@ antlrcpp::Any VarCheckVisitor::visitProg(ifccParser::ProgContext *ctx)
 antlrcpp::Any VarCheckVisitor::visitVar_ass(ifccParser::Var_assContext *ctx)
 {
     string name1 = ctx->ID()->getText();
-
+    cout << name1 << endl;
     auto it1 = this->adrTable.find(name1);
     if (it1 == this->adrTable.end())
     {
@@ -75,12 +89,13 @@ antlrcpp::Any VarCheckVisitor::visitVar_ass(ifccParser::Var_assContext *ctx)
 
 antlrcpp::Any VarCheckVisitor::visitVar(ifccParser::VarContext *ctx)
 {
-    string name = ctx->ID()->getText();
 
+    string name = ctx->ID()->getText();
+    cout << name << endl;
     auto it = this->adrTable.find(name);
     if (it == this->adrTable.end())
     {
-        cout << "#Erreur : Variable '" << name << "' n'a pas été déclarée." << endl;
+        cerr << "#Erreur : Variable '" << name << "' n'a pas été déclarée." << endl;
         this->number_errors++;
         return 0;
     }

@@ -41,6 +41,7 @@ expr :
     | ID                                # Var
     | INT_CONST                         # IntConst
     | CHAR_CONST                        # CharConst
+
     ;
 
 type : 'int' | 'char' | 'void' ;

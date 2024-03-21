@@ -82,7 +82,6 @@ antlrcpp::Any IRVisitor::visitVar_decl(ifccParser::Var_declContext *ctx)
         }
         */
     }
-    
 
     return 0;
 }
@@ -151,11 +150,12 @@ antlrcpp::Any IRVisitor::visitVar_ass(ifccParser::Var_assContext *ctx)
     // cout << "visiting variable assignments..." << endl;
 
     string name = ctx->ID()->getText();
+    string tempvar;
 
     if (ctx->expr())
     {
         string expr = visit(ctx->expr());
-        string tempvar = currentCFG->create_new_tempvar(Type::TypeEnum::INT);
+        tempvar = currentCFG->create_new_tempvar(Type::TypeEnum::INT);
         currentCFG->current_bb->add_IRInstr(IRInstr::Operation::copy, currentCFG->getSymbolType()[name], {name, expr, tempvar});
     }
 
@@ -203,7 +203,7 @@ antlrcpp::Any IRVisitor::visitCharConst(ifccParser::CharConstContext *ctx)
 
 antlrcpp::Any IRVisitor::visitIf_block(ifccParser::If_blockContext *ctx)
 {
-    //if_block : 'if' '(' expr ')' (line | block) else_block? ;
+    // if_block : 'if' '(' expr ')' (line | block) else_block? ;
     auto testBB = currentCFG->current_bb;
     auto thenBB = new BasicBlock(currentCFG, currentCFG->new_BB_name());
     auto elseBB = new BasicBlock(currentCFG, currentCFG->new_BB_name());
@@ -226,7 +226,7 @@ antlrcpp::Any IRVisitor::visitIf_block(ifccParser::If_blockContext *ctx)
 
     // Generate IRIntr in blocks
     string cond = visit(ctx->expr());
-    
+
     vector<string> params;
     params.push_back(cond);
     params.push_back(testBB->exit_true->label);
@@ -235,16 +235,18 @@ antlrcpp::Any IRVisitor::visitIf_block(ifccParser::If_blockContext *ctx)
     testBB->add_IRInstr(IRInstr::Operation::jmp_cond, Type::TypeEnum::INT, params);
 
     currentCFG->current_bb = thenBB;
-    if(ctx->line()) {
+    if (ctx->line())
+    {
         visit(ctx->line());
     }
-    if(ctx->block()){
+    if (ctx->block())
+    {
         visit(ctx->block());
     }
 
-
     currentCFG->current_bb = elseBB;
-    if(ctx->else_block()){
+    if (ctx->else_block())
+    {
         visit(ctx->else_block());
     }
 
@@ -256,10 +258,12 @@ antlrcpp::Any IRVisitor::visitElse_block(ifccParser::Else_blockContext *ctx)
 {
     // else_block : 'else' (line | block) ;
 
-    if(ctx->line()) {
+    if (ctx->line())
+    {
         visit(ctx->line());
     }
-    if(ctx->block()){
+    if (ctx->block())
+    {
         visit(ctx->block());
     }
     return 0;
@@ -285,7 +289,7 @@ antlrcpp::Any IRVisitor::visitWhile_block(ifccParser::While_blockContext *ctx)
     currentCFG->current_bb = testBB;
 
     string cond = visit(ctx->expr());
-    
+
     vector<string> params;
     params.push_back(cond);
     params.push_back(testBB->exit_true->label);
@@ -294,10 +298,12 @@ antlrcpp::Any IRVisitor::visitWhile_block(ifccParser::While_blockContext *ctx)
     testBB->add_IRInstr(IRInstr::Operation::jmp_cond, Type::TypeEnum::INT, params);
 
     currentCFG->current_bb = bodyBB;
-    if(ctx->line()) {
+    if (ctx->line())
+    {
         visit(ctx->line());
     }
-    if(ctx->block()){
+    if (ctx->block())
+    {
         visit(ctx->block());
     }
 
@@ -306,27 +312,36 @@ antlrcpp::Any IRVisitor::visitWhile_block(ifccParser::While_blockContext *ctx)
     return 0;
 }
 
-antlrcpp::Any IRVisitor::visitBlock(ifccParser::BlockContext *ctx)  {
+antlrcpp::Any IRVisitor::visitBlock(ifccParser::BlockContext *ctx)
+{
     // block : '{' line* '}' ;
-    for(auto line : ctx->line()){
+    for (auto line : ctx->line())
+    {
         visit(line);
     }
     return 0;
 }
 
-antlrcpp::Any IRVisitor::visitStmt(ifccParser::StmtContext *ctx)  {
+antlrcpp::Any IRVisitor::visitStmt(ifccParser::StmtContext *ctx)
+{
     // stmt : var_decl | var_ass | return_stmt ;
-    if(ctx->var_decl()){
+    if (ctx->var_decl())
+    {
         visit(ctx->var_decl());
-    } else if (ctx->var_ass()){
+    }
+    else if (ctx->var_ass())
+    {
         visit(ctx->var_ass());
-    } else if (ctx->return_stmt()){
+    }
+    else if (ctx->return_stmt())
+    {
         visit(ctx->return_stmt());
     }
     return 0;
 }
 
-antlrcpp::Any IRVisitor::visitAndExpr(ifccParser::AndExprContext *ctx)  {
+antlrcpp::Any IRVisitor::visitAndExpr(ifccParser::AndExprContext *ctx)
+{
     // cout << "visiting and expression..." << endl;
     auto left = ctx->expr(0);
     auto right = ctx->expr(1);
@@ -344,7 +359,8 @@ antlrcpp::Any IRVisitor::visitAndExpr(ifccParser::AndExprContext *ctx)  {
     return tempvar;
 }
 
-antlrcpp::Any IRVisitor::visitEqualExpr(ifccParser::EqualExprContext *ctx)  {
+antlrcpp::Any IRVisitor::visitEqualExpr(ifccParser::EqualExprContext *ctx)
+{
     // cout << "visiting equal / not equal expressions..." << endl;
     auto left = ctx->expr(0);
     auto right = ctx->expr(1);
@@ -393,7 +409,8 @@ antlrcpp::Any IRVisitor::visitUnaireExpr(ifccParser::UnaireExprContext *ctx)
     return tempvar;
 }
 
-antlrcpp::Any IRVisitor::visitXorExpr(ifccParser::XorExprContext *ctx)  {
+antlrcpp::Any IRVisitor::visitXorExpr(ifccParser::XorExprContext *ctx)
+{
     // cout << "visiting xor expression..." << endl;
     auto left = ctx->expr(0);
     auto right = ctx->expr(1);
@@ -418,7 +435,8 @@ antlrcpp::Any IRVisitor::visitParExpr(ifccParser::ParExprContext *ctx)
     return name;
 }
 
-antlrcpp::Any IRVisitor::visitMoreLessExpr(ifccParser::MoreLessExprContext *ctx)  {
+antlrcpp::Any IRVisitor::visitMoreLessExpr(ifccParser::MoreLessExprContext *ctx)
+{
     // cout << "visiting more less expressions..." << endl;
     auto left = ctx->expr(0);
     auto right = ctx->expr(1);
@@ -444,7 +462,8 @@ antlrcpp::Any IRVisitor::visitMoreLessExpr(ifccParser::MoreLessExprContext *ctx)
     return tempvar;
 }
 
-antlrcpp::Any IRVisitor::visitOrExpr(ifccParser::OrExprContext *ctx)  {
+antlrcpp::Any IRVisitor::visitOrExpr(ifccParser::OrExprContext *ctx)
+{
     // cout << "visiting or expression..." << endl;
     auto left = ctx->expr(0);
     auto right = ctx->expr(1);

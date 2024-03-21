@@ -1,8 +1,10 @@
 int main()
 {
     int x;
-    x = x = x+2;
-    if (x = 1)
-    x=10;
+    x = 4;
+    if (x == 1)
+    {
+        x = x + 1;
+    }
     return x;
 }
