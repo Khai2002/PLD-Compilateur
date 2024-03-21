@@ -175,7 +175,6 @@ void IRInstrCopy::gen_asm(ostream &o)
 
     int indexLvalue = bb->cfg->get_var_index(params[0]);
     int indexRValue = bb->cfg->get_var_index(params[1]);
-    int indexDest = bb->cfg->get_var_index(params[2]);
     o << "movq " << indexRValue << "(%rbp), %rax" << endl;
     o << "movq %rax, " << indexLvalue << "(%rbp)" << endl;
 }
@@ -327,7 +326,8 @@ void IRInstrNeg::gen_asm(ostream &o)
 
     o << "    negq " << indexParam << "(%rbp)" << endl;
     o << "    movq " << indexParam << "(%rbp), %rax" << endl;
-    o << "    movq " << "%rax, " << indexDest << "(%rbp)" << endl;
+    o << "    movq "
+      << "%rax, " << indexDest << "(%rbp)" << endl;
 }
 
 void IRInstrNot::gen_asm(ostream &o)
@@ -338,7 +338,8 @@ void IRInstrNot::gen_asm(ostream &o)
     o << "    cmpl $0, " << indexParam << "(%rbp)" << endl;
     o << "    sete %al" << endl;
     o << "    movzbq %al, %rax" << endl;
-    o << "    movq " << "%rax, " << indexDest << "(%rbp)" << endl;
+    o << "    movq "
+      << "%rax, " << indexDest << "(%rbp)" << endl;
 }
 
 void IRInstrRet::gen_asm(ostream &o)
@@ -350,9 +351,9 @@ void IRInstrRet::gen_asm(ostream &o)
 void IRInstrJumpCond::gen_asm(ostream &o)
 {
     // cmpl	$0, -4(%rbp)
-	// je	.L2
-	// movl	$4, -4(%rbp)
-	// jmp	.L3
+    // je	.L2
+    // movl	$4, -4(%rbp)
+    // jmp	.L3
     int indexCond = bb->cfg->get_var_index(params[0]);
     string trueBBLabel = params[1];
     string falseBBLabel = params[2];
@@ -360,8 +361,6 @@ void IRInstrJumpCond::gen_asm(ostream &o)
     o << "cmpq $0, " << indexCond << "(%rbp)" << endl;
     o << "je ." << falseBBLabel << endl;
     o << "jmp ." << trueBBLabel << endl;
-
-
 }
 
 // ======== BasicBlock ==========================================================================================
@@ -377,7 +376,9 @@ void BasicBlock::gen_asm(ostream &o)
     if (label == cfg->getFuncName())
     {
         cfg->gen_asm_prologue(o);
-    }else{
+    }
+    else
+    {
         o << "\n." << label << ":\n\n";
     }
     for (IRInstr *instr : instrs)
@@ -548,7 +549,8 @@ void CFG::gen_asm_prologue(ostream &o)
         alloc_size = nextFreeSymbolIndex + 8;
     }
     // alloc_size += 16 - (alloc_size % 16);
-    o << this->funcName << ":" << endl << endl;
+    o << this->funcName << ":" << endl
+      << endl;
 
     o << "pushq  %rbp" << endl;
     o << "movq  %rsp, %rbp" << endl;

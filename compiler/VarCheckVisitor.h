@@ -19,10 +19,9 @@ public:
         int getNumber_warnings() { return this->number_warnings; }
         virtual antlrcpp::Any visitVar_decl(ifccParser::Var_declContext *ctx) override;
         virtual antlrcpp::Any visitProg(ifccParser::ProgContext *ctx) override;
-        virtual antlrcpp::Any visitVar_ass(ifccParser::Var_assContext *ctx) override;
+        virtual antlrcpp::Any visitVar_Assignment(ifccParser::Var_AssignmentContext *ctx) override;
         virtual antlrcpp::Any visitReturn_stmt(ifccParser::Return_stmtContext *ctx) override;
         virtual antlrcpp::Any visitVar(ifccParser::VarContext *ctx) override;
-        
 
 protected:
         unordered_map<string, VariableInfo> adrTable;

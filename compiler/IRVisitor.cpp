@@ -40,7 +40,11 @@ antlrcpp::Any IRVisitor::visitFunc_decl(ifccParser::Func_declContext *ctx)
 antlrcpp::Any IRVisitor::visitLine(ifccParser::LineContext *ctx)
 {
     // cout << "visiting lines..." << endl;
-    if (ctx->stmt())
+    if (ctx->expr())
+    {
+        visit(ctx->expr());
+    }
+    else if (ctx->stmt())
     {
         visit(ctx->stmt());
     }
@@ -145,7 +149,7 @@ antlrcpp::Any IRVisitor::visitMultDivModExpr(ifccParser::MultDivModExprContext *
     return tempvar;
 }
 
-antlrcpp::Any IRVisitor::visitVar_ass(ifccParser::Var_assContext *ctx)
+antlrcpp::Any IRVisitor::visitVar_Assignment(ifccParser::Var_AssignmentContext *ctx)
 {
     // cout << "visiting variable assignments..." << endl;
 
@@ -156,7 +160,8 @@ antlrcpp::Any IRVisitor::visitVar_ass(ifccParser::Var_assContext *ctx)
     {
         string expr = visit(ctx->expr());
         tempvar = currentCFG->create_new_tempvar(Type::TypeEnum::INT);
-        currentCFG->current_bb->add_IRInstr(IRInstr::Operation::copy, currentCFG->getSymbolType()[name], {name, expr, tempvar});
+        currentCFG->current_bb->add_IRInstr(IRInstr::Operation::copy, currentCFG->getSymbolType()[name], {name, expr});
+        currentCFG->current_bb->add_IRInstr(IRInstr::Operation::copy, currentCFG->getSymbolType()[tempvar], {tempvar, name});
     }
 
     return tempvar;
@@ -329,10 +334,7 @@ antlrcpp::Any IRVisitor::visitStmt(ifccParser::StmtContext *ctx)
     {
         visit(ctx->var_decl());
     }
-    else if (ctx->var_ass())
-    {
-        visit(ctx->var_ass());
-    }
+
     else if (ctx->return_stmt())
     {
         visit(ctx->return_stmt());
