@@ -67,6 +67,8 @@ string IRInstr::operationToString(Operation op)
         return "call";
     case putchar:
         return "putchar";
+    case getchar:
+        return "getchar";
     default:
         return "Unknown Operation";
     }
@@ -287,6 +289,21 @@ void IRInstrPutChar::gen_asm(ostream &o)
     o << "call putchar@PLT" << endl;
 }
 
+void IRInstrGetchar::gen_asm(ostream &o)
+{
+    // call	getchar@PLT
+    // movb	%al, -9(%rbp)
+    // movsbl	-9(%rbp), %eax
+
+    int param = bb->cfg->get_var_index(params[0]);
+
+    o << "call getchar@PLT" << endl;
+    o << "movb %al," << param << "(%rbp)" << endl;
+    o << "movsbq " << param << "(%rbp),"
+      << "%rax" << endl;
+    o << "movq %rax , " << param << "(%rbp)" << endl;
+}
+
 // ======== BasicBlock ==========================================================================================
 
 // Constructor
@@ -385,6 +402,9 @@ void BasicBlock::add_IRInstr(IRInstr::Operation op, Type t, vector<string> param
         break;
     case IRInstr::Operation::putchar:
         newInstr = new IRInstrPutChar(this, op, t, params);
+        break;
+    case IRInstr::Operation::getchar:
+        newInstr = new IRInstrGetchar(this, op, t, params);
     }
 
     // newInstr = new IRInstr(this, op, t, params); // Assuming IRInstr constructor takes BasicBlock* as first argument
@@ -537,7 +557,7 @@ int CFG::get_type_size(Type type)
     case Type::TypeEnum::INT:
         return 8;
     case Type::TypeEnum::CHAR:
-        return 8;
+        return 1;
     case Type::TypeEnum::VOID:
         return 0;
     }

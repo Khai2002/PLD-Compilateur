@@ -1,7 +1,8 @@
 int main()
 {
-    int x = 17;
-    int y = 42;
-    int z = 'a';
-    putchar(z + 1);
+    int z;
+    int x = 2;
+    char a = getchar();
+    int Q = 3;
+    return a;
 }

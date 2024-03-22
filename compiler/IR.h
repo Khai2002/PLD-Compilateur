@@ -67,6 +67,7 @@ public:
 		neg,
 		unary_not,
 		putchar,
+		getchar,
 		rmem,
 		wmem,
 		call,
@@ -226,6 +227,14 @@ public:
 	IRInstrPutChar(BasicBlock *bb, Operation op, Type t, vector<string> params) : IRInstr(bb, op, t, params){};
 	void gen_asm(ostream &o) override;
 };
+
+class IRInstrGetchar : public IRInstr
+{
+public:
+	IRInstrGetchar(BasicBlock *bb, Operation op, Type t, vector<string> params) : IRInstr(bb, op, t, params){};
+	void gen_asm(ostream &o) override;
+};
+
 
 /**  The class for a basic block */
 

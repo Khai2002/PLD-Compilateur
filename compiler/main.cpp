@@ -65,6 +65,7 @@ int main(int argn, const char **argv)
       cout << "Key: " << pair.first << ", Value: " << pair.second << std::endl;
     }
     */
+
     irv.getCurrentCFG()->gen_asm(cout);
   }
   else

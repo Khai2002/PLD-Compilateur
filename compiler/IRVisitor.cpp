@@ -440,7 +440,7 @@ antlrcpp::Any IRVisitor::visitParExpr(ifccParser::ParExprContext *ctx)
 
 antlrcpp::Any IRVisitor::visitMoreLessExpr(ifccParser::MoreLessExprContext *ctx)
 {
-    cout << "visiting more less expressions..." << endl;
+    // cout << "#visiting more less expressions..." << endl;
     auto left = ctx->expr(0);
     auto right = ctx->expr(1);
     string op = ctx->MORE_LESS()->getText();
@@ -491,6 +491,13 @@ antlrcpp::Any IRVisitor::visitPutchar(ifccParser::PutcharContext *ctx)
     string param = visit(expr);
     currentCFG->current_bb->add_IRInstr(IRInstr::Operation::putchar, Type::TypeEnum::CHAR, {param});
     return param;
+}
+
+antlrcpp::Any IRVisitor::visitGetchar(ifccParser::GetcharContext *ctx)
+{
+    string tempvar = currentCFG->create_new_tempvar(Type::TypeEnum::CHAR);
+    currentCFG->current_bb->add_IRInstr(IRInstr::Operation::getchar, Type::TypeEnum::CHAR, {tempvar});
+    return tempvar;
 }
 // antlrcpp::Any IRVisitor::visitType(ifccParser::TypeContext *ctx)  {
 //     return 0;

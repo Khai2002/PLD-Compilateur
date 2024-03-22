@@ -28,7 +28,7 @@ var_decl : type ID (',' ID)* ';' ;
 return_stmt: RETURN (expr)? ';' ;
 
 expr : 
-     UNAIRE=('-'|'!') expr              # UnaireExpr
+    UNAIRE=('-'|'!') expr              # UnaireExpr
     | expr MULT_DIV_MOD expr            # MultDivModExpr
     | expr ADD_SUB=('+' | '-') expr     # AddSubExpr
     | expr MORE_LESS expr               # MoreLessExpr
@@ -37,11 +37,13 @@ expr :
     | expr XOR expr                     # XorExpr
     | expr OR expr                      # OrExpr 
     | ID '=' expr                       # Var_Assignment
+    |'putchar''('expr')'                # putchar
+    |'getchar()'                        # getchar
     |'(' expr ')'                       # ParExpr
     | ID                                # Var
     | INT_CONST                         # IntConst
     | CHAR_CONST                        # CharConst
-    |'putchar''('expr')'                # putchar
+    
 ;
 
 type : 'int' | 'char' | 'void' ;
