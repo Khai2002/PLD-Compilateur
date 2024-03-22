@@ -63,7 +63,7 @@ int main(int argn, const char **argv)
     irv.getCurrentCFG()->printCFG();
     cout << endl;
     cout << endl;*/
-    irv.getCurrentCFG()->gen_asm(cout);
+    irv.getCurrentCFG()->gen_asm_arm64(cout);
     /*
     auto symbolIndex = irv.getCurrentCFG()->getSymbolIndex();
     for (const auto& pair : symbolIndex) {

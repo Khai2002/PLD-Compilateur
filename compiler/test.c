@@ -1,5 +1,7 @@
 int main()
 {
-    int x = (1);
-    return x ; 
+    int x;
+    x = 5;
+    return x;
 }
+

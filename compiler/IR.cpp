@@ -372,15 +372,15 @@ void IRInstrJumpCond::gen_asm(ostream &o)
 
 void IRInstrConst::gen_asm_arm64(ostream &o) {
     int indexDest = this->bb->cfg->get_var_index(params[0]);
-    o << "mov x9, #" << params[1] << endl; // Use a temporary register, e.g., x9
-    o << "str x9, [x29," << indexDest << "]" << endl; // x29 is the frame pointer (equivalent to %rbp in x86)
+    o << "mov w8, #" << params[1] << endl; // Use a temporary register, e.g., w8
+    o << "str w8, [sp, #" << - indexDest << "]" << endl; 
 }
 
 void IRInstrCopy::gen_asm_arm64(ostream &o) {
     int indexLvalue = bb->cfg->get_var_index(params[0]);
     int indexRValue = bb->cfg->get_var_index(params[1]);
-    o << "ldr x9, [x29," << indexRValue << "]" << endl; // Load from stack to x9
-    o << "str x9, [x29," << indexLvalue << "]" << endl; // Store x9 to stack
+    o << "ldr w8, [sp, #" << - indexRValue << "]" << endl; // Load from stack to x9
+    o << "str w8, [sp, #" << - indexLvalue << "]" << endl; // Store x9 to stack
 }
 
 void IRInstrAdd::gen_asm_arm64(ostream &o) {
@@ -498,7 +498,7 @@ void BasicBlock::gen_asm(ostream &o)
 void BasicBlock::gen_asm_arm64(ostream &o)
 {
     // ARM64 assembly code generation for this basic block
-    o << label << ":\n";
+    o << "_" << label << ":\n";
     if (label == cfg->getFuncName())
     {
         cfg->gen_asm_prologue_arm64(o); // Generate ARM64 specific prologue
@@ -508,10 +508,12 @@ void BasicBlock::gen_asm_arm64(ostream &o)
         instr->gen_asm_arm64(o); // Ensure that each instruction generates ARM64 code
     }
 
+    /*
     if (this->exit_true)
     {
         o << "b " << this->exit_true->label << endl; // ARM64 branch instruction
     }
+    */
 
     if (!(this->exit_true && this->exit_false))
     {
@@ -652,7 +654,7 @@ void CFG::gen_asm_arm64(ostream &o)
     // Placeholder for ARM64 code generation
     // This method should generate ARM64 assembly code for the entire CFG
     // Actual implementation will depend on your specific requirements
-    o << ".globl main\n";
+    o << ".globl _main\n";
 
     for (auto bb : bbs)
     {
@@ -707,9 +709,13 @@ void CFG::gen_asm_prologue_arm64(ostream &o)
 {
     // Placeholder for generating ARM64 specific prologue
     // Actual implementation will depend on your specific requirements
-    o << "stp x29, x30, [sp, #-16]!" << endl;
-    o << "mov x29, sp" << endl;
-    o << "sub sp, sp, #16" << endl;
+    int alloc_size = nextFreeSymbolIndex;
+    if (nextFreeSymbolIndex % 16 != 8)
+    {
+        alloc_size =  - nextFreeSymbolIndex - 8;
+    }
+    o << "sub sp, sp, #" << alloc_size << endl;
+    o << "str wzr, [sp, #" << alloc_size - 4 << "]" << endl;
     o << endl;
 }
 
@@ -718,11 +724,14 @@ void CFG::gen_asm_epilogue_arm64(ostream &o)
 {
 
     int alloc_size = nextFreeSymbolIndex;
+    if (nextFreeSymbolIndex % 16 != 8)
+    {
+        alloc_size =  - nextFreeSymbolIndex - 8;
+    }
 
     o << endl;
     o << "";
-    o << "add sp, sp, " << alloc_size << endl;
-    o << "ldp x29, x30, [sp], #16" << endl;
+    o << "add sp, sp, #" << alloc_size << endl;
     o << "ret" << endl;
 }
 
