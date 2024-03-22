@@ -647,6 +647,20 @@ void CFG::gen_asm(ostream &o)
     }
 }
 
+void CFG::gen_asm_arm64(ostream &o)
+{
+    // Placeholder for ARM64 code generation
+    // This method should generate ARM64 assembly code for the entire CFG
+    // Actual implementation will depend on your specific requirements
+    o << ".globl main\n";
+
+    for (auto bb : bbs)
+    {
+        bb->gen_asm_arm64(o);
+    }
+}
+
+
 // Method implementation for IR_reg_to_asm
 string CFG::IR_reg_to_asm(string reg)
 {
