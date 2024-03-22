@@ -57,16 +57,16 @@ int main(int argn, const char **argv)
   {
     IRVisitor irv;
     irv.visit(tree);
-    irv.getCurrentCFG()->gen_asm(cout);
-
     /*
     irv.getCurrentCFG()->printCFG();
     auto symbolIndex = irv.getCurrentCFG()->getSymbolIndex();
-    for (const auto& pair : symbolIndex) {
+    for (const auto &pair : symbolIndex)
+    {
       cout << "Key: " << pair.first << ", Value: " << pair.second << std::endl;
     }
     */
-    }
+    irv.getCurrentCFG()->gen_asm(cout);
+  }
   else
   {
     return 1;

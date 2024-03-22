@@ -1,7 +1,8 @@
 int main()
 {
-    int x;
-    x = (x = 1);
 
-    return x;
+    int z;
+    z = 1;
+    putchar(z);
+    return 0;
 }

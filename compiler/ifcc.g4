@@ -41,6 +41,7 @@ expr :
     | ID                                # Var
     | INT_CONST                         # IntConst
     | CHAR_CONST                        # CharConst
+    |'putchar''('expr')'                # putchar
 ;
 
 type : 'int' | 'char' | 'void' ;

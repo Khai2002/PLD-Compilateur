@@ -36,6 +36,7 @@ public:
   virtual antlrcpp::Any visitParExpr(ifccParser::ParExprContext *ctx) override;
   virtual antlrcpp::Any visitMoreLessExpr(ifccParser::MoreLessExprContext *ctx) override;
   virtual antlrcpp::Any visitOrExpr(ifccParser::OrExprContext *ctx) override;
+  virtual antlrcpp::Any visitPutchar(ifccParser::PutcharContext *ctx) override ; 
   // virtual antlrcpp::Any visitType(ifccParser::TypeContext *ctx) override;
   CFG *getCurrentCFG() { return currentCFG; }
 

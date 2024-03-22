@@ -66,6 +66,7 @@ public:
 		gt,
 		neg,
 		unary_not,
+		putchar,
 		rmem,
 		wmem,
 		call,
@@ -82,7 +83,7 @@ public:
 	IRInstr(BasicBlock *bb, Operation op, Type t, vector<string> params) : bb(bb), op(op), t(t), params(params){};
 
 	/** Actual code generation */
-	virtual void gen_asm(ostream &o); /**< x86 assembly code generation for this IR instruction */
+	virtual void gen_asm(ostream &o) {} /**< x86 assembly code generation for this IR instruction */
 	void print_IRInstr();
 
 protected:
@@ -216,6 +217,13 @@ class IRInstrJumpCond : public IRInstr
 {
 public:
 	IRInstrJumpCond(BasicBlock *bb, Operation op, Type t, vector<string> params) : IRInstr(bb, op, t, params){};
+	void gen_asm(ostream &o) override;
+};
+
+class IRInstrPutChar : public IRInstr
+{
+public:
+	IRInstrPutChar(BasicBlock *bb, Operation op, Type t, vector<string> params) : IRInstr(bb, op, t, params){};
 	void gen_asm(ostream &o) override;
 };
 

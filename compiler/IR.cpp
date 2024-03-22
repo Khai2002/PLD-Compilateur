@@ -12,96 +12,6 @@ using namespace std;
 
 // Method implementation for gen_asm
 
-void IRInstr::gen_asm(ostream &o)
-{
-    // Since we're returning 0, we don't need to do anything
-    int indDest;
-    int indParam1;
-    int indParam2;
-
-    switch (this->op)
-    {
-    case ldconst:
-        /*
-            movq	 $8, -4(%rbp)
-        */
-
-        cout << "Loading constant.\n";
-        break;
-    case copy:
-        /*
-            movq	-8(%rbp), %rax
-            movq	%rax, -4(%rbp)
-        */
-        cout << "Copying value.\n";
-        break;
-    case add:
-        /*
-            movq	[param1], %rdx
-            movq	[param2], %rax
-            addq	%rdx, %rax
-            movq	%rax, [dest]
-        */
-        cout << "Adding values.\n";
-        break;
-    case sub:
-        /*
-            movq	-16(%rbp), %rax
-            subq	-12(%rbp), %rax
-            movq	%rax, -8(%rbp)
-        */
-        cout << "Subtracting values.\n";
-        break;
-    case mul:
-        /*
-            movq	-16(%rbp), %rax
-            imulq	-12(%rbp), %rax
-            movq	%rax, -4(%rbp)
-        */
-        cout << "Multiplying values.\n";
-        break;
-    case bit_or:
-        cout << "Bitwise or\n";
-        break;
-    case bit_and:
-        cout << "Bitwise and\n";
-        break;
-    case bit_xor:
-        cout << "Bitwise xor\n";
-        break;
-    case eq:
-        cout << "Comparing equality\n";
-        break;
-    case neq:
-        cout << "Comparing not equal\n";
-        break;
-    case lt:
-        cout << "Comparing less\n";
-        break;
-    case gt:
-        cout << "Comparing more\n";
-        break;
-    case neg:
-        cout << "Negation of value.\n";
-        break;
-    case unary_not:
-        cout << "Unary not of value.\n";
-        break;
-    case rmem:
-        cout << "Reading from memory.\n";
-        break;
-    case wmem:
-        cout << "Writing to memory.\n";
-        break;
-    case call:
-        cout << "Calling a function.\n";
-        break;
-    default:
-        cout << "Unknown operation.\n";
-        break;
-    }
-}
-
 void IRInstr::print_IRInstr()
 {
 
@@ -155,6 +65,8 @@ string IRInstr::operationToString(Operation op)
         return "wmem";
     case call:
         return "call";
+    case putchar:
+        return "putchar";
     default:
         return "Unknown Operation";
     }
@@ -363,6 +275,18 @@ void IRInstrJumpCond::gen_asm(ostream &o)
     o << "jmp ." << trueBBLabel << endl;
 }
 
+void IRInstrPutChar::gen_asm(ostream &o)
+{
+    // movl	%eax, %edi
+    // call	putchar@PLT
+    // movl	$0, %eax
+    // leave
+    int param = bb->cfg->get_var_index(params[0]);
+    o << "movq " << param << "(%rbp), %rax" << endl;
+    o << "movq %rax, %rdi" << endl;
+    o << "call putchar@PLT" << endl;
+}
+
 // ======== BasicBlock ==========================================================================================
 
 // Constructor
@@ -459,6 +383,8 @@ void BasicBlock::add_IRInstr(IRInstr::Operation op, Type t, vector<string> param
     case IRInstr::Operation::jmp_cond:
         newInstr = new IRInstrJumpCond(this, op, t, params);
         break;
+    case IRInstr::Operation::putchar:
+        newInstr = new IRInstrPutChar(this, op, t, params);
     }
 
     // newInstr = new IRInstr(this, op, t, params); // Assuming IRInstr constructor takes BasicBlock* as first argument
