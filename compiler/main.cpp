@@ -57,16 +57,17 @@ int main(int argn, const char **argv)
   {
     IRVisitor irv;
     irv.visit(tree);
-    /*
-    irv.getCurrentCFG()->printCFG();
-    auto symbolIndex = irv.getCurrentCFG()->getSymbolIndex();
-    for (const auto &pair : symbolIndex)
+    vector<CFG *> CFGS = irv.getCFGS();
+    for (CFG *cfg : CFGS)
     {
-      cout << "Key: " << pair.first << ", Value: " << pair.second << std::endl;
+      // cfg->printCFG();
+      auto symbolIndex = cfg->getSymbolIndex();
+      for (const auto &pair : symbolIndex)
+      {
+        // cout << "Key: " << pair.first << ", Value: " << pair.second << std::endl;
+      }
+      cfg->gen_asm(cout, cfg->getFuncName());
     }
-    */
-
-    irv.getCurrentCFG()->gen_asm(cout);
   }
   else
   {

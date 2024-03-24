@@ -8,8 +8,6 @@ antlrcpp::Any IRVisitor::visitProg(ifccParser::ProgContext *ctx)
     for (auto func_ctx : ctx->func_decl())
     {
         // Only execute main
-        if (func_ctx->ID()->getText() != "main")
-            continue;
         visit(func_ctx);
     }
 
@@ -18,7 +16,7 @@ antlrcpp::Any IRVisitor::visitProg(ifccParser::ProgContext *ctx)
 
 antlrcpp::Any IRVisitor::visitFunc_decl(ifccParser::Func_declContext *ctx)
 {
-    // cout << "visiting function declarations..." << endl;
+    cout << "#visiting function declarations..." << endl;
 
     CFG *cfg = new CFG(ctx->ID()->getText());
     currentCFG = cfg;
@@ -39,7 +37,7 @@ antlrcpp::Any IRVisitor::visitFunc_decl(ifccParser::Func_declContext *ctx)
 
 antlrcpp::Any IRVisitor::visitLine(ifccParser::LineContext *ctx)
 {
-    // cout << "visiting lines..." << endl;
+    cout << "#visiting lines..." << endl;
     if (ctx->expr())
     {
         visit(ctx->expr());
@@ -61,7 +59,7 @@ antlrcpp::Any IRVisitor::visitLine(ifccParser::LineContext *ctx)
 
 antlrcpp::Any IRVisitor::visitVar_decl(ifccParser::Var_declContext *ctx)
 {
-    // cout << "visiting variable declarations..." << endl;
+    cout << "#visiting variable declarations..." << endl;
     // var_decl : type ID (',' ID)* ';' ;
 
     string typeName = ctx->type()->getText();
@@ -345,7 +343,7 @@ antlrcpp::Any IRVisitor::visitStmt(ifccParser::StmtContext *ctx)
 
 antlrcpp::Any IRVisitor::visitAndExpr(ifccParser::AndExprContext *ctx)
 {
-    // cout << "visiting and expression..." << endl;
+    cout << "visiting and expression..." << endl;
     auto left = ctx->expr(0);
     auto right = ctx->expr(1);
     // Visit left and right expressions and get their adress in memory
@@ -499,6 +497,12 @@ antlrcpp::Any IRVisitor::visitGetchar(ifccParser::GetcharContext *ctx)
     currentCFG->current_bb->add_IRInstr(IRInstr::Operation::getchar, Type::TypeEnum::CHAR, {tempvar});
     return tempvar;
 }
-// antlrcpp::Any IRVisitor::visitType(ifccParser::TypeContext *ctx)  {
-//     return 0;
-// }
+
+antlrcpp::Any IRVisitor::visitFunctionCall(ifccParser::FunctionCallContext *ctx)
+{
+    cout << "#visiting function call " << endl;
+    string tempvar = currentCFG->create_new_tempvar(Type::TypeEnum::INT);
+    string func_name = ctx->ID()->getText();
+    currentCFG->current_bb->add_IRInstr(IRInstr::Operation::call, Type::TypeEnum::CHAR, {func_name, tempvar});
+    return tempvar;
+}

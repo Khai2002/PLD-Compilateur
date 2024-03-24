@@ -304,6 +304,14 @@ void IRInstrGetchar::gen_asm(ostream &o)
     o << "movq %rax , " << param << "(%rbp)" << endl;
 }
 
+void IRInstrCallFunc::gen_asm(ostream &o)
+{
+    string func_name = params[0];
+    int param = bb->cfg->get_var_index(params[1]);
+    o << "call " << func_name << endl;
+    o << "movq %rax, " << param << "(%rbp)" << endl;
+}
+
 // ======== BasicBlock ==========================================================================================
 
 // Constructor
@@ -405,6 +413,10 @@ void BasicBlock::add_IRInstr(IRInstr::Operation op, Type t, vector<string> param
         break;
     case IRInstr::Operation::getchar:
         newInstr = new IRInstrGetchar(this, op, t, params);
+        break;
+    case IRInstr::Operation::call:
+        newInstr = new IRInstrCallFunc(this, op, t, params);
+        break;
     }
 
     // newInstr = new IRInstr(this, op, t, params); // Assuming IRInstr constructor takes BasicBlock* as first argument
@@ -458,12 +470,15 @@ void CFG::add_bb(BasicBlock *bb)
 }
 
 // Method implementation for gen_asm
-void CFG::gen_asm(ostream &o)
+void CFG::gen_asm(ostream &o, string name)
 {
     // Placeholder for x86 code generation
     // This method should generate assembly code for the entire CFG
     // Actual implementation will depend on your specific requirements
-    o << ".globl main\n";
+    if (name == "main")
+    {
+        o << ".globl main\n";
+    }
 
     for (auto bb : bbs)
     {
@@ -579,7 +594,7 @@ void CFG::printCFG()
 // Method implementation for new_BB_name
 string CFG::new_BB_name()
 {
-    return "BB" + to_string(nextBBnumber++);
+    return getFuncName() + to_string(nextBBnumber++);
 }
 
 // ==============================================================================================================

@@ -4,7 +4,7 @@ using namespace std;
 
 antlrcpp::Any VarCheckVisitor::visitVar_decl(ifccParser::Var_declContext *ctx)
 {
-    // cout << "visitVar_decl" << endl;
+    // cout << "#visitVar_decl" << endl;
     int int_size = 8;
     int char_size = 8;
 
@@ -37,43 +37,47 @@ antlrcpp::Any VarCheckVisitor::visitVar_decl(ifccParser::Var_declContext *ctx)
 
 antlrcpp::Any VarCheckVisitor::visitProg(ifccParser::ProgContext *ctx)
 {
-    // cout << "visitProg" << endl;
-    //  To be completed
-    auto func_ctx = ctx->func_decl(0);
+    // cout << "#visitProg" << endl;
+    //   To be completed
 
-    for (auto line : func_ctx->line())
+    for (auto func : ctx->func_decl())
     {
-        if (line->stmt() != nullptr)
+        adrTable.clear();
+        for (auto line : func->line())
         {
-            auto stmt = line->stmt();
-            visit(stmt);
+            if (line->stmt() != nullptr)
+            {
+                auto stmt = line->stmt();
+                visit(stmt);
+            }
+            if (line->expr() != nullptr)
+            {
+                auto expr = line->expr();
+                visit(expr);
+            }
+            else if (line->if_block() != nullptr)
+            {
+                auto if_block = line->if_block();
+                visit(if_block);
+            }
+            else if (line->while_block() != nullptr)
+            {
+                auto while_block = line->while_block();
+                visit(while_block);
+            }
         }
-        if (line->expr() != nullptr)
+        this->visit(func->return_stmt());
+        for (const auto &entry : adrTable)
         {
-            auto expr = line->expr();
-            visit(expr);
-        }
-        else if (line->if_block() != nullptr)
-        {
-            auto if_block = line->if_block();
-            visit(if_block);
-        }
-        else if (line->while_block() != nullptr)
-        {
-            auto while_block = line->while_block();
-            visit(while_block);
+            const VariableInfo &variable = entry.second;
+            if (variable.callCount == 0)
+            {
+                cerr << "# Variable '" << entry.first << "' déclarée mais non utilisée" << endl;
+                this->number_warnings++;
+            }
         }
     }
-    this->visit(func_ctx->return_stmt());
-    for (const auto &entry : adrTable)
-    {
-        const VariableInfo &variable = entry.second;
-        if (variable.callCount == 0)
-        {
-            cerr << "# Variable '" << entry.first << "' déclarée mais non utilisée" << endl;
-            this->number_warnings++;
-        }
-    }
+
     return 0;
 }
 

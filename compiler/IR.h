@@ -235,6 +235,12 @@ public:
 	void gen_asm(ostream &o) override;
 };
 
+class IRInstrCallFunc : public IRInstr
+{
+public:
+	IRInstrCallFunc(BasicBlock *bb, Operation op, Type t, vector<string> params) : IRInstr(bb, op, t, params){};
+	void gen_asm(ostream &o) override;
+};
 
 /**  The class for a basic block */
 
@@ -298,7 +304,7 @@ public:
 	void add_bb(BasicBlock *bb);
 
 	// x86 code generation: could be encapsulated in a processor class in a retargetable compiler
-	void gen_asm(ostream &o);
+	void gen_asm(ostream &o, string name);
 	string IR_reg_to_asm(string reg); /**< helper method: inputs a IR reg or input variable, returns e.g. "-24(%rbp)" for the proper value of 24 */
 	void gen_asm_prologue(ostream &o);
 	void gen_asm_epilogue(ostream &o);

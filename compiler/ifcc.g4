@@ -13,6 +13,8 @@ line : stmt
     | while_block 
     ;
 
+
+
 if_block : 'if' '(' expr ')' (line | block) else_block? ;
 
 else_block : 'else' (line | block) ;
@@ -43,6 +45,7 @@ expr :
     | ID                                # Var
     | INT_CONST                         # IntConst
     | CHAR_CONST                        # CharConst
+    | ID'('')'                          # FunctionCall
     
 ;
 
