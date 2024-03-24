@@ -557,7 +557,7 @@ int CFG::get_type_size(Type type)
     case Type::TypeEnum::INT:
         return 8;
     case Type::TypeEnum::CHAR:
-        return 1;
+        return 8;
     case Type::TypeEnum::VOID:
         return 0;
     }
