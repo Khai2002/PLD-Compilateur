@@ -343,7 +343,7 @@ antlrcpp::Any IRVisitor::visitStmt(ifccParser::StmtContext *ctx)
 
 antlrcpp::Any IRVisitor::visitAndExpr(ifccParser::AndExprContext *ctx)
 {
-    cout << "visiting and expression..." << endl;
+    cout << "#visiting and expression..." << endl;
     auto left = ctx->expr(0);
     auto right = ctx->expr(1);
     // Visit left and right expressions and get their adress in memory
