@@ -10,7 +10,6 @@ antlrcpp::Any VarCheckVisitor::visitProg(ifccParser::ProgContext *ctx)
         visit(func);
     }
 
-
     // cout << "#visitProg" << endl;
     //   To be completed
 
@@ -58,8 +57,24 @@ antlrcpp::Any VarCheckVisitor::visitProg(ifccParser::ProgContext *ctx)
 
 antlrcpp::Any VarCheckVisitor::visitFunc_decl(ifccParser::Func_declContext *ctx)
 {
+    cout << "#visitFunc_decl ..." << endl;
     Function_info F_info;
-    this->func_table[ctx->ID()->getText()] = F_info;
+    int i = 1;
+
+    while (ctx->type(i) != nullptr)
+    {
+
+        if (ctx->type(i)->getText() == "int")
+        {
+            F_info.addType(Type::INT);
+        }
+        if (ctx->type(i)->getText() == "char")
+        {
+            F_info.addType(Type::CHAR);
+        }
+        i++;
+    }
+    this->func_table[ctx->ID(0)->getText()] = F_info;
 
     this->adrTable.clear();
     for (auto line : ctx->line())
@@ -173,6 +188,7 @@ antlrcpp::Any VarCheckVisitor::visitReturn_stmt(ifccParser::Return_stmtContext *
 
 antlrcpp::Any VarCheckVisitor::visitFunctionCall(ifccParser::FunctionCallContext *ctx)
 {
+    cout << "# visiting function call " << endl;
     string name1 = ctx->ID()->getText();
 
     auto it1 = this->func_table.find(name1);
@@ -182,5 +198,17 @@ antlrcpp::Any VarCheckVisitor::visitFunctionCall(ifccParser::FunctionCallContext
         this->number_errors++;
         return 0;
     }
+    int i = 0;
+    while (ctx->expr(i) != nullptr)
+    {
+        i++;
+    }
+    if (i != it1->second.get_number_params())
+    {
+        cerr << "Le nombre d'arguments passé en paramètre est incorrect" << endl;
+        this->number_errors++;
+        return 0;
+    }
+
     return 0;
 }

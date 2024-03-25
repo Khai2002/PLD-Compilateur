@@ -18,7 +18,7 @@ antlrcpp::Any IRVisitor::visitFunc_decl(ifccParser::Func_declContext *ctx)
 {
     cout << "#visiting function declarations..." << endl;
 
-    CFG *cfg = new CFG(ctx->ID()->getText());
+    CFG *cfg = new CFG(ctx->ID(0)->getText());
     currentCFG = cfg;
     cfgs.push_back(cfg);
 

@@ -5,7 +5,7 @@ axiom : prog EOF ;
 prog: func_decl*;
 
 
-func_decl : type ID '(' ')' '{' line* return_stmt '}';
+func_decl : type ID '('(type ID (',' type ID)*)? ')' '{' line* return_stmt '}';
 
 line : stmt
     | expr ';'
@@ -45,9 +45,11 @@ expr :
     | ID                                # Var
     | INT_CONST                         # IntConst
     | CHAR_CONST                        # CharConst
-    | ID'('')'                          # FunctionCall
+    | ID'('(expr (',' expr)*)?')'       # FunctionCall
     
 ;
+
+
 
 type : 'int' | 'char' | 'void' ;
 

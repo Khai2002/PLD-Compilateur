@@ -54,4 +54,7 @@ struct Function_info
     {
         Param.push_back(type);
     }
+    int get_number_params(){
+        return Param.size(); 
+    }
 };
