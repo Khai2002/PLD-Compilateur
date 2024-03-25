@@ -1,6 +1,6 @@
-int f()
+int f(int x)
 {
-    int x;
+
     x = 9;
     return x;
 }
@@ -8,6 +8,6 @@ int f()
 int main()
 {
     int c;
-    c = d();
+    c = f();
     return c;
 }
