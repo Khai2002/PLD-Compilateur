@@ -6,6 +6,7 @@
 #include <iostream>
 #include <initializer_list>
 #include <map>
+#include "util.h"
 
 using namespace std;
 
@@ -15,32 +16,6 @@ using namespace std;
 class BasicBlock;
 class CFG;
 class DefFonction;
-
-class Type
-{
-public:
-	// Enum definition
-	enum TypeEnum
-	{
-		INT,
-		CHAR,
-		VOID
-	};
-
-	// Constructor
-	Type(TypeEnum type) : type(type) {}
-	Type() : type(TypeEnum::INT) {}
-
-	// Getter for the type
-	TypeEnum getType() const
-	{
-		return type;
-	}
-
-protected:
-	// Protected member variable to store the enum value
-	TypeEnum type;
-};
 
 //! The class for one 3-address instruction
 class IRInstr

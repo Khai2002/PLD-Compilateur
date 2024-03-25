@@ -1,3 +1,11 @@
+int f1()
+{
+    int a;
+    a = 4;
+    return a;
+}
+
+
 int main()
 {
     int z;
@@ -5,9 +13,3 @@ int main()
     return z;
 }
 
-int f1()
-{
-    int a;
-    a = 4;
-    return a;
-}

@@ -30,7 +30,7 @@ var_decl : type ID (',' ID)* ';' ;
 return_stmt: RETURN (expr)? ';' ;
 
 expr : 
-    UNAIRE=('-'|'!') expr              # UnaireExpr
+    UNAIRE=('-'|'!') expr               # UnaireExpr
     | expr MULT_DIV_MOD expr            # MultDivModExpr
     | expr ADD_SUB=('+' | '-') expr     # AddSubExpr
     | expr MORE_LESS expr               # MoreLessExpr
