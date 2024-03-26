@@ -43,6 +43,8 @@ public:
 		unary_not,
 		putchar,
 		getchar,
+		InsertParam, // For inserting the params when defining a function
+		CallParam,	 // for instanciating the params in the right register before jumping to the function
 		rmem,
 		wmem,
 		call,
@@ -217,6 +219,21 @@ public:
 	void gen_asm(ostream &o) override;
 };
 
+class IRInstrInsertParam : public IRInstr
+{
+public:
+	IRInstrInsertParam(BasicBlock *bb, Operation op, Type t, vector<string> params) : IRInstr(bb, op, t, params){};
+	void gen_asm(ostream &o) override;
+	vector<string> registers_name = {"%rdi", "%rsi", "%rdx", "%rcx", "%r8", "%r9"};
+};
+
+class IRInstrCallParam : public IRInstr
+{
+public:
+	IRInstrCallParam(BasicBlock *bb, Operation op, Type t, vector<string> params) : IRInstr(bb, op, t, params){};
+	void gen_asm(ostream &o) override;
+	vector<string> registers_name = {"%rdi", "%rsi", "%rdx", "%rcx", "%r8", "%r9"};
+};
 /**  The class for a basic block */
 
 /* A few important comments.

@@ -1,13 +1,13 @@
-int f1(int a)
+int f1(int a, int b)
 {
-    int a;
-    a = 4;
+    int x;
+    x = a ;
     return a;
 }
 
 int main()
 {
     int z;
-    z = f1(2);
+    z = f1(2, 4);
     return z;
 }

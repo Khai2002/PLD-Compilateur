@@ -69,6 +69,10 @@ string IRInstr::operationToString(Operation op)
         return "putchar";
     case getchar:
         return "getchar";
+    case InsertParam:
+        return "InsertParam";
+    case CallParam:
+        return "CallParam";
     default:
         return "Unknown Operation";
     }
@@ -312,6 +316,21 @@ void IRInstrCallFunc::gen_asm(ostream &o)
     o << "movq %rax, " << param << "(%rbp)" << endl;
 }
 
+void IRInstrInsertParam::gen_asm(ostream &o)
+{
+    int indexParam1 = bb->cfg->get_var_index(params[0]);
+    int param_num = stoi(params[1]);
+
+    o << "movq " << this->registers_name[param_num - 1] << " , " << indexParam1 << "(%rbp)" << endl;
+}
+void IRInstrCallParam::gen_asm(ostream &o)
+{
+    int indexParam1 = bb->cfg->get_var_index(params[0]);
+    int param_num = stoi(params[1]);
+    
+    o << "movq " << indexParam1 << "(%rbp) , " << this->registers_name[param_num] << endl;
+}
+
 // ======== BasicBlock ==========================================================================================
 
 // Constructor
@@ -416,6 +435,12 @@ void BasicBlock::add_IRInstr(IRInstr::Operation op, Type t, vector<string> param
         break;
     case IRInstr::Operation::call:
         newInstr = new IRInstrCallFunc(this, op, t, params);
+        break;
+    case IRInstr::Operation::InsertParam:
+        newInstr = new IRInstrInsertParam(this, op, t, params);
+        break;
+    case IRInstr::Operation::CallParam:
+        newInstr = new IRInstrCallParam(this, op, t, params);
         break;
     }
 

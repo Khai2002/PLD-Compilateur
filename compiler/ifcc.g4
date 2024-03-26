@@ -42,10 +42,11 @@ expr :
     |'putchar''('expr')'                # putchar
     |'getchar()'                        # getchar
     |'(' expr ')'                       # ParExpr
+    | ID'('(expr (',' expr)*)?')'       # FunctionCall
     | ID                                # Var
     | INT_CONST                         # IntConst
     | CHAR_CONST                        # CharConst
-    | ID'('(expr (',' expr)*)?')'       # FunctionCall
+    
     
 ;
 
