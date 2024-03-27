@@ -530,7 +530,7 @@ void CFG::gen_asm_prologue(ostream &o)
         alloc_size += get_type_size(var.second);
     }*/
 
-    if (nextFreeSymbolIndex % 16 != 8)
+    if (nextFreeSymbolIndex % 16 != 0)
     {
         alloc_size = nextFreeSymbolIndex + 8;
     }
