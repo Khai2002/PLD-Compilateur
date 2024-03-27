@@ -27,6 +27,7 @@ public:
 	{
 		ldconst,
 		copy,
+		arr_copy,
 		add,
 		sub,
 		mul,
@@ -84,6 +85,13 @@ class IRInstrCopy : public IRInstr
 public:
 	IRInstrCopy(BasicBlock *bb, Operation op, Type t, vector<string> params) : IRInstr(bb, op, t, params){};
 	void gen_asm(ostream &o) override;
+};
+
+class IRInstrArrayCopy : public IRInstr
+{
+public:
+	IRInstrArrayCopy(BasicBlock *bb, Operation op, Type t, vector<string> params) : IRInstr(bb, op, t, params){};
+	void gen_asm(ostream &o);
 };
 
 class IRInstrAdd : public IRInstr

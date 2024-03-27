@@ -67,6 +67,11 @@ int main(int argn, const char **argv)
         // cout << "Key: " << pair.first << ", Value: " << pair.second << std::endl;
       }
       cfg->gen_asm(cout, cfg->getFuncName());
+      map<string, int> test = cfg->getSymbolIndex();
+      map<string, int>::iterator it;
+      for (it = test.begin(); it != test.end(); ++it) {
+        cout << "Key: " << it->first << ", Value: " << it->second << endl;
+    }
     }
   }
   else

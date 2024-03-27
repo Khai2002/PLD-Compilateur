@@ -108,6 +108,28 @@ antlrcpp::Any IRVisitor::visitVar_decl(ifccParser::Var_declContext *ctx)
     return 0;
 }
 
+antlrcpp::Any IRVisitor::visitArr_decl(ifccParser::Arr_declContext *ctx)
+{
+    // type ID '[' INT_CONST ']' ';' 
+    string name = ctx->ID()->getText();
+    string typeName = ctx->type()->getText();
+    int size = stoi(ctx->INT_CONST()->getText());
+    cout << "Size of the array : " << size << endl;
+
+    for(int i = 0; i<size; i++){
+        if (typeName == "int")
+        {
+            currentCFG->add_to_symbol_table(name + "_" + to_string(i), Type::TypeEnum::INT);
+        }
+        else if (typeName == "char")
+        {
+            currentCFG->add_to_symbol_table(name + "_" + to_string(i), Type::TypeEnum::CHAR);
+        }
+    }
+    
+    return 0;
+}
+
 antlrcpp::Any IRVisitor::visitAddSubExpr(ifccParser::AddSubExprContext *ctx)
 {
     //cout << "#visiting add sub expressions..." << endl;
@@ -182,6 +204,17 @@ antlrcpp::Any IRVisitor::visitVar_Assignment(ifccParser::Var_AssignmentContext *
     }
 
     return name;
+}
+
+antlrcpp::Any IRVisitor::visitArr_Assignment(ifccParser::Arr_AssignmentContext *ctx)
+{
+    // ID '[' expr ']' '=' expr 
+    string name = ctx->ID()->getText();
+    string generic_name = name + "_0";
+    string position = visit(ctx->expr(0));
+    string value = visit(ctx->expr(1));
+    currentCFG->current_bb->add_IRInstr(IRInstr::Operation::arr_copy, currentCFG->getSymbolType()[generic_name], {name, position, value});
+    return 0;
 }
 
 antlrcpp::Any IRVisitor::visitReturn_stmt(ifccParser::Return_stmtContext *ctx)
@@ -353,10 +386,13 @@ antlrcpp::Any IRVisitor::visitStmt(ifccParser::StmtContext *ctx)
     {
         visit(ctx->var_decl());
     }
-
     else if (ctx->return_stmt())
     {
         visit(ctx->return_stmt());
+    }
+    else if (ctx->arr_decl())
+    {
+        visit(ctx->arr_decl());
     }
     return 0;
 }

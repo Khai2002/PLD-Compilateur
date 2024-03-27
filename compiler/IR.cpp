@@ -97,6 +97,11 @@ void IRInstrCopy::gen_asm(ostream &o)
     o << "movq %rax, " << indexLvalue << "(%rbp)" << endl;
 }
 
+void IRInstrArrayCopy::gen_asm(ostream &o)
+{
+
+}
+
 void IRInstrAdd::gen_asm(ostream &o)
 {
     int indexParam1 = bb->cfg->get_var_index(params[0]);
@@ -378,6 +383,9 @@ void BasicBlock::add_IRInstr(IRInstr::Operation op, Type t, vector<string> param
         break;
     case IRInstr::Operation::copy:
         newInstr = new IRInstrCopy(this, op, t, params);
+        break;
+    case IRInstr::Operation::arr_copy:
+        newInstr = new IRInstrArrayCopy(this, op, t, params);
         break;
     case IRInstr::Operation::add:
         newInstr = new IRInstrAdd(this, op, t, params);

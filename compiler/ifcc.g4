@@ -23,9 +23,11 @@ while_block : 'while' '(' expr ')' (line | block);
 
 block : '{' line* '}' ;
 
-stmt : var_decl |  return_stmt ;
+stmt : var_decl | arr_decl | return_stmt ;
 
 var_decl : type ID (',' ID)* ';' ;
+
+arr_decl : type ID '[' INT_CONST ']' ';' ;
 
 return_stmt: RETURN (expr)? ';' ;
 
@@ -39,11 +41,13 @@ expr :
     | expr XOR expr                     # XorExpr
     | expr OR expr                      # OrExpr 
     | ID '=' expr                       # Var_Assignment
+    | ID '[' expr ']' '=' expr          # Arr_Assignment
     |'putchar''('expr')'                # putchar
     |'getchar()'                        # getchar
     |'(' expr ')'                       # ParExpr
     | ID'('(expr (',' expr)*)?')'       # FunctionCall
     | ID                                # Var
+    | ID '[' expr ']'                   # ArrVar
     | INT_CONST                         # IntConst
     | CHAR_CONST                        # CharConst
     
