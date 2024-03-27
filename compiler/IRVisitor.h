@@ -24,7 +24,6 @@ public:
   virtual antlrcpp::Any visitReturn_stmt(ifccParser::Return_stmtContext *ctx) override;
   virtual antlrcpp::Any visitIntConst(ifccParser::IntConstContext *ctx) override;
   virtual antlrcpp::Any visitCharConst(ifccParser::CharConstContext *ctx) override;
-  virtual antlrcpp::Any visitBlock(ifccParser::BlockContext *ctx) override;
   virtual antlrcpp::Any visitIf_block(ifccParser::If_blockContext *ctx) override;
   virtual antlrcpp::Any visitElse_block(ifccParser::Else_blockContext *ctx) override;
   virtual antlrcpp::Any visitWhile_block(ifccParser::While_blockContext *ctx) override;
