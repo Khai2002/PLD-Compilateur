@@ -44,7 +44,6 @@ antlrcpp::Any IRVisitor::visitFunc_decl(ifccParser::Func_declContext *ctx)
     for (auto line : ctx->line())
     {
         visit(line);
-        if(currentCFG->getReturned()) return 0;
     }
 
     return 0;
@@ -74,7 +73,6 @@ antlrcpp::Any IRVisitor::visitLine(ifccParser::LineContext *ctx)
         for (auto line : ctx->line())
         {
             visit(line);
-            if(currentCFG->getReturned()) return 0;
         }
     }
     
@@ -195,8 +193,6 @@ antlrcpp::Any IRVisitor::visitReturn_stmt(ifccParser::Return_stmtContext *ctx)
     auto expr = ctx->expr();
     string name = visit(expr);
     currentCFG->current_bb->add_IRInstr(IRInstr::Operation::ret, Type::TypeEnum::INT, {name});
-
-    currentCFG->setReturned();
     return 0;
 }
 

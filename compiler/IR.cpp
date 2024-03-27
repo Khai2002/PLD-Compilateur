@@ -362,6 +362,8 @@ void IRInstrRet::gen_asm(ostream &o)
 {
     int indexDest = bb->cfg->get_var_index(params[0]);
     o << "movq " << indexDest << "(%rbp), %rax" << endl;
+    o << "leave" << endl;
+    o << "ret" << endl;
 }
 
 void IRInstrJumpCond::gen_asm(ostream &o)
@@ -802,7 +804,7 @@ void BasicBlock::printBB()
 
 // Cosntructor
 
-CFG::CFG(string funcName) : funcName(funcName), nextFreeSymbolIndex(-8), nextBBnumber(0), returned(false)
+CFG::CFG(string funcName) : funcName(funcName), nextFreeSymbolIndex(-8), nextBBnumber(0)
 {
     auto firstBB = new BasicBlock(this, funcName);
     add_bb(firstBB);
@@ -1008,16 +1010,6 @@ void CFG::printCFG()
 string CFG::new_BB_name()
 {
     return getFuncName() + to_string(nextBBnumber++);
-}
-
-void CFG::setReturned()
-{
-    returned = true;
-}
-
-bool CFG::getReturned()
-{
-    return returned;
 }
 
 // ==============================================================================================================
