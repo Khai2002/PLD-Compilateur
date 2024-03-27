@@ -2,7 +2,7 @@ int main()
 {
     char x, z;
     x = 'z';
-    z = putchar(x) + putvhar('a');
+    z = putchar(x) + putchar('a');
 
     return z;
 }
