@@ -65,7 +65,7 @@ public:
 	// virtual void gen_asm(ostream &o); /**< x86 assembly code generation for this IR instruction */
 	virtual void gen_asm_arm64(ostream &o); /**< ARM64 assembly code generation for this IR instruction */
 
-	virtual void gen_asm(ostream &o) {} /**< x86 assembly code generation for this IR instruction */
+	virtual void gen_asm(ostream &o); /**< x86 assembly code generation for this IR instruction */
 
 	void print_IRInstr();
 
@@ -324,7 +324,7 @@ public:
 	void gen_asm_arm64(ostream &o);
 
 
-  void gen_asm(ostream &o, string name);
+  	void gen_asm(ostream &o, string name);
 
 	string IR_reg_to_asm(string reg); /**< helper method: inputs a IR reg or input variable, returns e.g. "-24(%rbp)" for the proper value of 24 */
 	void gen_asm_prologue(ostream &o);
