@@ -67,8 +67,8 @@ int main(int argn, const char **argv)
       {
         // cout << "Key: " << pair.first << ", Value: " << pair.second << std::endl;
       }
-      cfg->gen_asm(cout, cfg->getFuncName());
-      // cfg->gen_asm64(cout);
+      // cfg->gen_asm(cout, cfg->getFuncName());
+      cfg->gen_asm_arm64(cout);
     
     }
   }
