@@ -86,7 +86,7 @@ antlrcpp::Any VarCheckVisitor::visitFunc_decl(ifccParser::Func_declContext *ctx)
             visit(while_block);
         }
     }
-    this->visit(ctx->return_stmt());
+    
     for (const auto &entry : adrTable)
     {
         const VariableInfo &variable = entry.second;

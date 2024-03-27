@@ -352,12 +352,16 @@ public:
 	string new_BB_name();
 	BasicBlock *current_bb;
 
+	void setReturned();
+	bool getReturned();
+
 protected:
 	map<string, Type> SymbolType; /**< part of the symbol table  */
 	map<string, int> SymbolIndex; /**< part of the symbol table  */
 	int nextFreeSymbolIndex;	  /**< to allocate new symbols in the symbol table */
 	int nextBBnumber;			  /**< just for naming */
 	string funcName;
+	bool returned;
 
 	vector<BasicBlock *> bbs; /**< all the basic blocks of this CFG*/
 };
