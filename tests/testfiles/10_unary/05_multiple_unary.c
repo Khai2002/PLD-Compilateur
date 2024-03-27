@@ -5,6 +5,6 @@ int main()
     int y;
     y = 2;
     int e;
-    e = !!x + !-y + -!x + --y;
+    e = !!x + !-y + -!x + -(-y);
     return e;
 }
