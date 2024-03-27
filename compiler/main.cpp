@@ -57,6 +57,7 @@ int main(int argn, const char **argv)
   {
     IRVisitor irv;
     irv.visit(tree);
+
     vector<CFG *> CFGS = irv.getCFGS();
     for (CFG *cfg : CFGS)
     {
