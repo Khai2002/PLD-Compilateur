@@ -6,6 +6,7 @@
 #include <iostream>
 #include <initializer_list>
 #include <map>
+#include "util.h"
 
 using namespace std;
 
@@ -15,32 +16,6 @@ using namespace std;
 class BasicBlock;
 class CFG;
 class DefFonction;
-
-class Type
-{
-public:
-	// Enum definition
-	enum TypeEnum
-	{
-		INT,
-		CHAR,
-		VOID
-	};
-
-	// Constructor
-	Type(TypeEnum type) : type(type) {}
-	Type() : type(TypeEnum::INT) {}
-
-	// Getter for the type
-	TypeEnum getType() const
-	{
-		return type;
-	}
-
-protected:
-	// Protected member variable to store the enum value
-	TypeEnum type;
-};
 
 //! The class for one 3-address instruction
 class IRInstr
@@ -66,6 +41,10 @@ public:
 		gt,
 		neg,
 		unary_not,
+		putchar,
+		getchar,
+		InsertParam, // For inserting the params when defining a function
+		CallParam,	 // for instanciating the params in the right register before jumping to the function
 		rmem,
 		wmem,
 		call,
@@ -82,8 +61,12 @@ public:
 	IRInstr(BasicBlock *bb, Operation op, Type t, vector<string> params) : bb(bb), op(op), t(t), params(params){};
 
 	/** Actual code generation */
-	virtual void gen_asm(ostream &o); /**< x86 assembly code generation for this IR instruction */
+
+	// virtual void gen_asm(ostream &o); /**< x86 assembly code generation for this IR instruction */
 	virtual void gen_asm_arm64(ostream &o); /**< ARM64 assembly code generation for this IR instruction */
+
+	virtual void gen_asm(ostream &o) {} /**< x86 assembly code generation for this IR instruction */
+
 	void print_IRInstr();
 
 protected:
@@ -238,6 +221,42 @@ public:
 	void gen_asm_arm64(ostream &o) override;
 };
 
+class IRInstrPutChar : public IRInstr
+{
+public:
+	IRInstrPutChar(BasicBlock *bb, Operation op, Type t, vector<string> params) : IRInstr(bb, op, t, params){};
+	void gen_asm(ostream &o) override;
+};
+
+class IRInstrGetchar : public IRInstr
+{
+public:
+	IRInstrGetchar(BasicBlock *bb, Operation op, Type t, vector<string> params) : IRInstr(bb, op, t, params){};
+	void gen_asm(ostream &o) override;
+};
+
+class IRInstrCallFunc : public IRInstr
+{
+public:
+	IRInstrCallFunc(BasicBlock *bb, Operation op, Type t, vector<string> params) : IRInstr(bb, op, t, params){};
+	void gen_asm(ostream &o) override;
+};
+
+class IRInstrInsertParam : public IRInstr
+{
+public:
+	IRInstrInsertParam(BasicBlock *bb, Operation op, Type t, vector<string> params) : IRInstr(bb, op, t, params){};
+	void gen_asm(ostream &o) override;
+	vector<string> registers_name = {"%rdi", "%rsi", "%rdx", "%rcx", "%r8", "%r9"};
+};
+
+class IRInstrCallParam : public IRInstr
+{
+public:
+	IRInstrCallParam(BasicBlock *bb, Operation op, Type t, vector<string> params) : IRInstr(bb, op, t, params){};
+	void gen_asm(ostream &o) override;
+	vector<string> registers_name = {"%rdi", "%rsi", "%rdx", "%rcx", "%r8", "%r9"};
+};
 /**  The class for a basic block */
 
 /* A few important comments.
@@ -300,8 +319,12 @@ public:
 	void add_bb(BasicBlock *bb);
 
 	// x86 code generation: could be encapsulated in a processor class in a retargetable compiler
+
 	void gen_asm(ostream &o);
 	void gen_asm_arm64(ostream &o);
+
+
+  void gen_asm(ostream &o, string name);
 
 	string IR_reg_to_asm(string reg); /**< helper method: inputs a IR reg or input variable, returns e.g. "-24(%rbp)" for the proper value of 24 */
 	void gen_asm_prologue(ostream &o);

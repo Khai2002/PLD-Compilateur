@@ -1,10 +1,13 @@
-int main()
+int f1(int a, int b)
 {
     int x;
-    x=3;
-    while(x<4){
-        x = x+1;
-    }
-    x=10;
-    return x;
+    x = a ;
+    return a;
+}
+
+int main()
+{
+    int z;
+    z = f1(2, 4);
+    return z;
 }

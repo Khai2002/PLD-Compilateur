@@ -35,3 +35,7 @@ where `N` is a positive integer constant.
 # WSL
 If you are using WSL please run this command for the tests 
 dos2unix ifcc-wrapper.sh
+
+# Execute the tests 
+To run all the tests run this command on the folder /tests : 
+python3 ifcc-test.py ./testfiles

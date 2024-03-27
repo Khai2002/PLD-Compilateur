@@ -8,7 +8,7 @@
 #include "generated/ifccParser.h"
 #include "generated/ifccBaseVisitor.h"
 
-//#include "CodeGenVisitor.h"
+// #include "CodeGenVisitor.h"
 #include "VarCheckVisitor.h"
 #include "IRVisitor.h"
 
@@ -46,30 +46,29 @@ int main(int argn, const char **argv)
   }
   // cout << "I'm coming 1" << endl;
   VarCheckVisitor varCheckVisitor;
-  //varCheckVisitor.visit(tree);
-  int temp = 0;
-  //temp = varCheckVisitor.getNumber_errors();
 
-  // cout << "nombre d'erreurs " << varCheckVisitor.getNumber_errors() << endl;
+  varCheckVisitor.visit(tree);
+
+  int temp = 0;
+  temp = varCheckVisitor.getNumber_errors();
+
+  // cout << "#nombre d'erreurs  :" << varCheckVisitor.getNumber_errors() << endl;
   if (temp == 0)
   {
-    // CodeGenVisitor v(varCheckVisitor.getAdrTable(), varCheckVisitor.getCurPointer());
-    // v.visit(tree);
     IRVisitor irv;
-    // cout << "I'm coming" << endl;
     irv.visit(tree);
-    /*cout << endl;
-    cout << endl;
-    irv.getCurrentCFG()->printCFG();
-    cout << endl;
-    cout << endl;*/
-    irv.getCurrentCFG()->gen_asm_arm64(cout);
-    /*
-    auto symbolIndex = irv.getCurrentCFG()->getSymbolIndex();
-    for (const auto& pair : symbolIndex) {
-      cout << "Key: " << pair.first << ", Value: " << pair.second << std::endl;
+
+    vector<CFG *> CFGS = irv.getCFGS();
+    for (CFG *cfg : CFGS)
+    {
+      // cfg->printCFG();
+      auto symbolIndex = cfg->getSymbolIndex();
+      for (const auto &pair : symbolIndex)
+      {
+        // cout << "Key: " << pair.first << ", Value: " << pair.second << std::endl;
+      }
+      cfg->gen_asm(cout, cfg->getFuncName());
     }
-    */
   }
   else
   {

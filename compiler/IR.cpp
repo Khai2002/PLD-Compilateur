@@ -12,6 +12,7 @@ using namespace std;
 
 // Method implementation for gen_asm
 
+
 void IRInstr::gen_asm(ostream &o)
 {
     // Since we're returning 0, we don't need to do anything
@@ -108,6 +109,7 @@ void IRInstr::gen_asm_arm64(ostream &o)
 }
 
 
+
 void IRInstr::print_IRInstr()
 {
 
@@ -161,6 +163,14 @@ string IRInstr::operationToString(Operation op)
         return "wmem";
     case call:
         return "call";
+    case putchar:
+        return "putchar";
+    case getchar:
+        return "getchar";
+    case InsertParam:
+        return "InsertParam";
+    case CallParam:
+        return "CallParam";
     default:
         return "Unknown Operation";
     }
@@ -332,7 +342,8 @@ void IRInstrNeg::gen_asm(ostream &o)
 
     o << "    negq " << indexParam << "(%rbp)" << endl;
     o << "    movq " << indexParam << "(%rbp), %rax" << endl;
-    o << "    movq " << "%rax, " << indexDest << "(%rbp)" << endl;
+    o << "    movq "
+      << "%rax, " << indexDest << "(%rbp)" << endl;
 }
 
 void IRInstrNot::gen_asm(ostream &o)
@@ -343,7 +354,8 @@ void IRInstrNot::gen_asm(ostream &o)
     o << "    cmpl $0, " << indexParam << "(%rbp)" << endl;
     o << "    sete %al" << endl;
     o << "    movzbq %al, %rax" << endl;
-    o << "    movq " << "%rax, " << indexDest << "(%rbp)" << endl;
+    o << "    movq "
+      << "%rax, " << indexDest << "(%rbp)" << endl;
 }
 
 void IRInstrRet::gen_asm(ostream &o)
@@ -355,9 +367,9 @@ void IRInstrRet::gen_asm(ostream &o)
 void IRInstrJumpCond::gen_asm(ostream &o)
 {
     // cmpl	$0, -4(%rbp)
-	// je	.L2
-	// movl	$4, -4(%rbp)
-	// jmp	.L3
+    // je	.L2
+    // movl	$4, -4(%rbp)
+    // jmp	.L3
     int indexCond = bb->cfg->get_var_index(params[0]);
     string trueBBLabel = params[1];
     string falseBBLabel = params[2];
@@ -365,8 +377,56 @@ void IRInstrJumpCond::gen_asm(ostream &o)
     o << "cmpq $0, " << indexCond << "(%rbp)" << endl;
     o << "je ." << falseBBLabel << endl;
     o << "jmp ." << trueBBLabel << endl;
+}
 
+void IRInstrPutChar::gen_asm(ostream &o)
+{
+    // movl	%eax, %edi
+    // call	putchar@PLT
+    // movl	$0, %eax
+    // leave
+    int param = bb->cfg->get_var_index(params[0]);
+    o << "movq " << param << "(%rbp), %rax" << endl;
+    o << "movq %rax, %rdi" << endl;
+    o << "call putchar@PLT" << endl;
+}
 
+void IRInstrGetchar::gen_asm(ostream &o)
+{
+    // call	getchar@PLT
+    // movb	%al, -9(%rbp)
+    // movsbl	-9(%rbp), %eax
+
+    int param = bb->cfg->get_var_index(params[0]);
+
+    o << "call getchar@PLT" << endl;
+    o << "movb %al," << param << "(%rbp)" << endl;
+    o << "movsbq " << param << "(%rbp),"
+      << "%rax" << endl;
+    o << "movq %rax , " << param << "(%rbp)" << endl;
+}
+
+void IRInstrCallFunc::gen_asm(ostream &o)
+{
+    string func_name = params[0];
+    int param = bb->cfg->get_var_index(params[1]);
+    o << "call " << func_name << endl;
+    o << "movq %rax, " << param << "(%rbp)" << endl;
+}
+
+void IRInstrInsertParam::gen_asm(ostream &o)
+{
+    int indexParam1 = bb->cfg->get_var_index(params[0]);
+    int param_num = stoi(params[1]);
+
+    o << "movq " << this->registers_name[param_num - 1] << " , " << indexParam1 << "(%rbp)" << endl;
+}
+void IRInstrCallParam::gen_asm(ostream &o)
+{
+    int indexParam1 = bb->cfg->get_var_index(params[0]);
+    int param_num = stoi(params[1]);
+    
+    o << "movq " << indexParam1 << "(%rbp) , " << this->registers_name[param_num] << endl;
 }
 
 
@@ -591,7 +651,9 @@ void BasicBlock::gen_asm(ostream &o)
     if (label == cfg->getFuncName())
     {
         cfg->gen_asm_prologue(o);
-    }else{
+    }
+    else
+    {
         o << "\n." << label << ":\n\n";
     }
     for (IRInstr *instr : instrs)
@@ -698,6 +760,21 @@ void BasicBlock::add_IRInstr(IRInstr::Operation op, Type t, vector<string> param
     case IRInstr::Operation::jmp_cond:
         newInstr = new IRInstrJumpCond(this, op, t, params);
         break;
+    case IRInstr::Operation::putchar:
+        newInstr = new IRInstrPutChar(this, op, t, params);
+        break;
+    case IRInstr::Operation::getchar:
+        newInstr = new IRInstrGetchar(this, op, t, params);
+        break;
+    case IRInstr::Operation::call:
+        newInstr = new IRInstrCallFunc(this, op, t, params);
+        break;
+    case IRInstr::Operation::InsertParam:
+        newInstr = new IRInstrInsertParam(this, op, t, params);
+        break;
+    case IRInstr::Operation::CallParam:
+        newInstr = new IRInstrCallParam(this, op, t, params);
+        break;
     }
 
     // newInstr = new IRInstr(this, op, t, params); // Assuming IRInstr constructor takes BasicBlock* as first argument
@@ -751,12 +828,15 @@ void CFG::add_bb(BasicBlock *bb)
 }
 
 // Method implementation for gen_asm
-void CFG::gen_asm(ostream &o)
+void CFG::gen_asm(ostream &o, string name)
 {
     // Placeholder for x86 code generation
     // This method should generate assembly code for the entire CFG
     // Actual implementation will depend on your specific requirements
-    o << ".globl main\n";
+    if (name == "main")
+    {
+        o << ".globl main\n";
+    }
 
     for (auto bb : bbs)
     {
@@ -797,12 +877,13 @@ void CFG::gen_asm_prologue(ostream &o)
         alloc_size += get_type_size(var.second);
     }*/
 
-    if (nextFreeSymbolIndex % 16 != 8)
+    if (nextFreeSymbolIndex % 16 != 0)
     {
         alloc_size = nextFreeSymbolIndex + 8;
     }
     // alloc_size += 16 - (alloc_size % 16);
-    o << this->funcName << ":" << endl << endl;
+    o << this->funcName << ":" << endl
+      << endl;
 
     o << "pushq  %rbp" << endl;
     o << "movq  %rsp, %rbp" << endl;
@@ -926,7 +1007,7 @@ void CFG::printCFG()
 // Method implementation for new_BB_name
 string CFG::new_BB_name()
 {
-    return "BB" + to_string(nextBBnumber++);
+    return getFuncName() + to_string(nextBBnumber++);
 }
 
 // ==============================================================================================================

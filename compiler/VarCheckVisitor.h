@@ -17,15 +17,18 @@ public:
         int getCurPointer() { return this->cur_pointer; }
         int getNumber_errors() { return this->number_errors; }
         int getNumber_warnings() { return this->number_warnings; }
-        virtual antlrcpp::Any visitVar_decl(ifccParser::Var_declContext *ctx) override;
+        void insertParam(string name, string type);
         virtual antlrcpp::Any visitProg(ifccParser::ProgContext *ctx) override;
-        virtual antlrcpp::Any visitVar_ass(ifccParser::Var_assContext *ctx) override;
+        virtual antlrcpp::Any visitFunc_decl(ifccParser::Func_declContext *ctx) override;
+        virtual antlrcpp::Any visitVar_decl(ifccParser::Var_declContext *ctx) override;
+        virtual antlrcpp::Any visitVar_Assignment(ifccParser::Var_AssignmentContext *ctx) override;
         virtual antlrcpp::Any visitReturn_stmt(ifccParser::Return_stmtContext *ctx) override;
         virtual antlrcpp::Any visitVar(ifccParser::VarContext *ctx) override;
-        
+        virtual antlrcpp::Any visitFunctionCall(ifccParser::FunctionCallContext *ctx) override;
 
 protected:
         unordered_map<string, VariableInfo> adrTable;
+        unordered_map<string, Function_info> func_table;
         int cur_pointer;
         int number_errors;
         int number_warnings;

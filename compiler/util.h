@@ -2,6 +2,9 @@
 
 #include <iostream>
 #include <string>
+#include <vector>
+
+using namespace std  ; 
 struct VariableInfo
 {
     int index;     // Index de la variable
@@ -13,4 +16,45 @@ struct VariableInfo
 
     // Constructeur avec des valeurs spécifiques
     VariableInfo(int index, int value = 0, int callCount = 0) : index(index), value(value), callCount(callCount) {}
+};
+
+class Type
+{
+public:
+    // Enum definition
+    enum TypeEnum
+    {
+        INT,
+        CHAR,
+        VOID
+    };
+
+    // Constructor
+    Type(TypeEnum type) : type(type) {}
+    Type() : type(TypeEnum::INT) {}
+
+    // Getter for the type
+    TypeEnum getType() const
+    {
+        return type;
+    }
+
+protected:
+    // Protected member variable to store the enum value
+    TypeEnum type;
+};
+struct Function_info
+{
+    vector<Type> Param;
+
+    // Constructeur pour initialiser les valeurs par défaut
+    Function_info() {}
+
+    void addType(const Type &type)
+    {
+        Param.push_back(type);
+    }
+    int get_number_params(){
+        return Param.size(); 
+    }
 };

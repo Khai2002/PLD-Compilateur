@@ -5,12 +5,15 @@ axiom : prog EOF ;
 prog: func_decl*;
 
 
-func_decl : type ID '(' ')' '{' line* return_stmt '}';
+func_decl : type ID '('(type ID (',' type ID)*)? ')' '{' line* return_stmt '}';
 
-line : stmt 
+line : stmt
+    | expr ';'
     | if_block 
     | while_block 
     ;
+
+
 
 if_block : 'if' '(' expr ')' (line | block) else_block? ;
 
@@ -20,16 +23,14 @@ while_block : 'while' '(' expr ')' (line | block);
 
 block : '{' line* '}' ;
 
-stmt : var_decl | var_ass | return_stmt ;
+stmt : var_decl |  return_stmt ;
 
 var_decl : type ID (',' ID)* ';' ;
-
-var_ass: ID '=' expr ';' ; 
 
 return_stmt: RETURN (expr)? ';' ;
 
 expr : 
-     UNAIRE=('-'|'!') expr             # UnaireExpr
+    UNAIRE=('-'|'!') expr               # UnaireExpr
     | expr MULT_DIV_MOD expr            # MultDivModExpr
     | expr ADD_SUB=('+' | '-') expr     # AddSubExpr
     | expr MORE_LESS expr               # MoreLessExpr
@@ -37,11 +38,19 @@ expr :
     | expr AND expr                     # AndExpr
     | expr XOR expr                     # XorExpr
     | expr OR expr                      # OrExpr 
-    |'(' expr ')'                       # ParExpr   
+    | ID '=' expr                       # Var_Assignment
+    |'putchar''('expr')'                # putchar
+    |'getchar()'                        # getchar
+    |'(' expr ')'                       # ParExpr
+    | ID'('(expr (',' expr)*)?')'       # FunctionCall
     | ID                                # Var
     | INT_CONST                         # IntConst
     | CHAR_CONST                        # CharConst
-    ;
+    
+    
+;
+
+
 
 type : 'int' | 'char' | 'void' ;
 
