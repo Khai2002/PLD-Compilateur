@@ -469,7 +469,7 @@ void BasicBlock::printBB()
 
 // Cosntructor
 
-CFG::CFG(string funcName) : funcName(funcName), nextFreeSymbolIndex(-8), nextBBnumber(0)
+CFG::CFG(string funcName) : funcName(funcName), nextFreeSymbolIndex(-8), nextBBnumber(0), returned(false)
 {
     auto firstBB = new BasicBlock(this, funcName);
     add_bb(firstBB);
@@ -620,6 +620,16 @@ void CFG::printCFG()
 string CFG::new_BB_name()
 {
     return getFuncName() + to_string(nextBBnumber++);
+}
+
+void CFG::setReturned()
+{
+    returned = true;
+}
+
+bool CFG::getReturned()
+{
+    return returned;
 }
 
 // ==============================================================================================================
