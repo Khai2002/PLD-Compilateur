@@ -69,6 +69,15 @@ antlrcpp::Any IRVisitor::visitLine(ifccParser::LineContext *ctx)
     {
         visit(ctx->while_block());
     }
+    else 
+    {
+        for (auto line : ctx->line())
+        {
+            visit(line);
+            if(currentCFG->getReturned()) return 0;
+        }
+    }
+    
     return 0;
 }
 
@@ -256,14 +265,7 @@ antlrcpp::Any IRVisitor::visitIf_block(ifccParser::If_blockContext *ctx)
     testBB->add_IRInstr(IRInstr::Operation::jmp_cond, Type::TypeEnum::INT, params);
 
     currentCFG->current_bb = thenBB;
-    if (ctx->line())
-    {
-        visit(ctx->line());
-    }
-    if (ctx->block())
-    {
-        visit(ctx->block());
-    }
+    visit(ctx->line());
 
     currentCFG->current_bb = elseBB;
     if (ctx->else_block())
@@ -277,16 +279,7 @@ antlrcpp::Any IRVisitor::visitIf_block(ifccParser::If_blockContext *ctx)
 
 antlrcpp::Any IRVisitor::visitElse_block(ifccParser::Else_blockContext *ctx)
 {
-    // else_block : 'else' (line | block) ;
-
-    if (ctx->line())
-    {
-        visit(ctx->line());
-    }
-    if (ctx->block())
-    {
-        visit(ctx->block());
-    }
+    visit(ctx->line());
     return 0;
 }
 
@@ -319,28 +312,10 @@ antlrcpp::Any IRVisitor::visitWhile_block(ifccParser::While_blockContext *ctx)
     testBB->add_IRInstr(IRInstr::Operation::jmp_cond, Type::TypeEnum::INT, params);
 
     currentCFG->current_bb = bodyBB;
-    if (ctx->line())
-    {
-        visit(ctx->line());
-    }
-    if (ctx->block())
-    {
-        visit(ctx->block());
-    }
+    visit(ctx->line());
 
     currentCFG->current_bb = testBB->exit_false;
 
-    return 0;
-}
-
-antlrcpp::Any IRVisitor::visitBlock(ifccParser::BlockContext *ctx)
-{
-    // block : '{' line* '}' ;
-    for (auto line : ctx->line())
-    {
-        visit(line);
-        if(currentCFG->getReturned()) return 0;
-    }
     return 0;
 }
 
