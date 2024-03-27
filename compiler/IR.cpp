@@ -436,11 +436,23 @@ void IRInstrMod::gen_asm_arm64(ostream &o) {
     int indexParam2 = bb->cfg->get_var_index(params[1]);
     int indexDest = bb->cfg->get_var_index(params[2]);
 
-    o << "ldr w8, [sp," << - indexParam1 << "]" << endl; // Load first param
-    o << "ldr w9, [sp," << - indexParam2 << "]" << endl; // Load second param
-    o << "sdiv w8, w8, w9" << endl; 
-    o << "madd w8, w8, w9, w8" << endl; 
-    o << "str w8, [sp," << - indexDest << "]" << endl; // Store result
+    // Load the first parameter
+    o << "ldr w8, [sp," << - indexParam1 << "]" << endl;
+
+    // Load the second parameter
+    o << "ldr w9, [sp," << - indexParam2 << "]" << endl;
+
+    // Perform signed division, quotient in w10
+    o << "sdiv w10, w8, w9" << endl;
+
+    // Multiply quotient with divisor, result in w11
+    o << "mul w11, w10, w9" << endl;
+
+    // Subtract to get the remainder, result in w8
+    o << "sub w8, w8, w11" << endl;
+
+    // Store the result
+    o << "str w8, [sp," << - indexDest << "]" << endl;
 
 }
 
@@ -528,10 +540,17 @@ void IRInstrGt::gen_asm_arm64(ostream &o) {
 
 
 void IRInstrNeg::gen_asm_arm64(ostream &o) {
-    /* int indexParam = bb->cfg->get_var_index(params[0]);
+    int indexParam = bb->cfg->get_var_index(params[0]);
     int indexDest = bb->cfg->get_var_index(params[1]);
 
-    o << "-" << indexParam << endl; */
+    // Load the parameter value into a register
+    o << "    ldr w8, [sp, #" << -indexParam << "]" << endl;
+    
+    // Negate the value in the register
+    o << "    neg w8, w8" << endl;
+    
+    // Store the result back to the destination on the stack
+    o << "    str w8, [sp, #" << -indexDest << "]" << endl;
     
 
 }
