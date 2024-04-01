@@ -65,7 +65,7 @@ public:
 	// virtual void gen_asm(ostream &o); /**< x86 assembly code generation for this IR instruction */
 	virtual void gen_asm_arm64(ostream &o); /**< ARM64 assembly code generation for this IR instruction */
 
-	virtual void gen_asm(ostream &o); /**< x86 assembly code generation for this IR instruction */
+	virtual void gen_asm(ostream &o) = 0; /**< x86 assembly code generation for this IR instruction */
 
 	void print_IRInstr();
 
@@ -287,7 +287,7 @@ class BasicBlock
 {
 public:
 	BasicBlock(CFG *cfg, string entry_label);
-	void gen_asm(ostream &o); /**< x86 assembly code generation for this basic block (very simple) */
+	void gen_asm(ostream &o);		/**< x86 assembly code generation for this basic block (very simple) */
 	void gen_asm_arm64(ostream &o); /**< ARM64 assembly code generation for this basic block (very simple) */
 	void add_IRInstr(IRInstr::Operation op, Type t, vector<string> params);
 	void printBB();
@@ -323,8 +323,7 @@ public:
 	void gen_asm(ostream &o);
 	void gen_asm_arm64(ostream &o);
 
-
-  	void gen_asm(ostream &o, string name);
+	void gen_asm(ostream &o, string name);
 
 	string IR_reg_to_asm(string reg); /**< helper method: inputs a IR reg or input variable, returns e.g. "-24(%rbp)" for the proper value of 24 */
 	void gen_asm_prologue(ostream &o);
@@ -332,7 +331,6 @@ public:
 
 	void gen_asm_prologue_arm64(ostream &o);
 	void gen_asm_epilogue_arm64(ostream &o);
-
 
 	// symbol table methods
 	void add_to_symbol_table(string name, Type t);
