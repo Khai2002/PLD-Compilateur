@@ -155,7 +155,7 @@ antlrcpp::Any VarCheckVisitor::visitVar_Assignment(ifccParser::Var_AssignmentCon
     {
         cout << "# Erreur : Variable '" << name1 << "' n'a pas été déclarée." << endl;
         this->number_errors++;
-        return 0;
+        return INT_Type;
     }
 
     string expr = visit(ctx->expr());
@@ -165,7 +165,7 @@ antlrcpp::Any VarCheckVisitor::visitVar_Assignment(ifccParser::Var_AssignmentCon
     {
         cerr << "wrong Type for the expresion" << endl;
         this->number_errors++;
-        return 0;
+        return INT_Type;
     }
 
     it1->second.callCount++;
@@ -196,7 +196,7 @@ antlrcpp::Any VarCheckVisitor::visitUnaireExpr(ifccParser::UnaireExprContext *ct
     {
         cerr << "wrong Type for the expresion" << endl;
         this->number_errors++;
-        return 0;
+        return INT_Type;
     }
     return (INT_Type);
 }
@@ -211,7 +211,7 @@ antlrcpp::Any VarCheckVisitor::visitMultDivModExpr(ifccParser::MultDivModExprCon
     {
         cerr << "wrong Type for the expresion" << endl;
         this->number_errors++;
-        return 0;
+        return INT_Type;
     }
 
     return INT_Type;
@@ -227,7 +227,7 @@ antlrcpp::Any VarCheckVisitor::visitAddSubExpr(ifccParser::AddSubExprContext *ct
     {
         cerr << "wrong Type for the expresion" << endl;
         this->number_errors++;
-        return 0;
+        return INT_Type;
     }
 
     return (INT_Type);
@@ -243,7 +243,7 @@ antlrcpp::Any VarCheckVisitor::visitMoreLessExpr(ifccParser::MoreLessExprContext
     {
         cerr << "wrong Type for the expresion" << endl;
         this->number_errors++;
-        return 0;
+        return INT_Type;
     }
 
     return (INT_Type);
@@ -259,7 +259,7 @@ antlrcpp::Any VarCheckVisitor::visitEqualExpr(ifccParser::EqualExprContext *ctx)
     {
         cerr << "wrong Type for the expresion" << endl;
         this->number_errors++;
-        return 0;
+        return INT_Type;
     }
 
     return (INT_Type);
@@ -275,7 +275,7 @@ antlrcpp::Any VarCheckVisitor::visitAndExpr(ifccParser::AndExprContext *ctx)
     {
         cerr << "wrong Type for the expresion" << endl;
         this->number_errors++;
-        return 0;
+        return INT_Type;
     }
 
     return (INT_Type);
@@ -291,7 +291,7 @@ antlrcpp::Any VarCheckVisitor::visitXorExpr(ifccParser::XorExprContext *ctx)
     {
         cerr << "wrong Type for the expresion" << endl;
         this->number_errors++;
-        return 0;
+        return INT_Type;
     }
 
     return (INT_Type);
@@ -307,7 +307,7 @@ antlrcpp::Any VarCheckVisitor::visitOrExpr(ifccParser::OrExprContext *ctx)
     {
         cerr << "wrong Type for the expresion" << endl;
         this->number_errors++;
-        return 0;
+        return INT_Type;
     }
 
     return (INT_Type);
@@ -323,7 +323,7 @@ antlrcpp::Any VarCheckVisitor::visitPutchar(ifccParser::PutcharContext *ctx)
     {
         cerr << "wrong Type for the expresion" << endl;
         this->number_errors++;
-        return 0;
+        return INT_Type;
     }
 
     return (INT_Type);
@@ -345,7 +345,7 @@ antlrcpp::Any VarCheckVisitor::visitParExpr(ifccParser::ParExprContext *ctx)
     {
         cerr << "wrong Type for the expresion" << endl;
         this->number_errors++;
-        return 0;
+        return INT_Type;
     }
 
     return (INT_Type);
@@ -380,7 +380,7 @@ antlrcpp::Any VarCheckVisitor::visitFunctionCall(ifccParser::FunctionCallContext
     {
         cout << "# Erreur : la fonction '" << name1 << "' n'a pas été déclarée." << endl;
         this->number_errors++;
-        return 0;
+        return INT_Type;
     }
     int i = 0;
     while (ctx->expr(i) != nullptr)
