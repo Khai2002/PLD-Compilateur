@@ -61,7 +61,12 @@ public:
 	IRInstr(BasicBlock *bb, Operation op, Type t, vector<string> params) : bb(bb), op(op), t(t), params(params){};
 
 	/** Actual code generation */
-	virtual void gen_asm(ostream &o) {} /**< x86 assembly code generation for this IR instruction */
+
+	// virtual void gen_asm(ostream &o); /**< x86 assembly code generation for this IR instruction */
+	virtual void gen_asm_arm64(ostream &o); /**< ARM64 assembly code generation for this IR instruction */
+
+	virtual void gen_asm(ostream &o); /**< x86 assembly code generation for this IR instruction */
+
 	void print_IRInstr();
 
 protected:
@@ -77,6 +82,7 @@ class IRInstrConst : public IRInstr
 public:
 	IRInstrConst(BasicBlock *bb, Operation op, Type t, vector<string> params) : IRInstr(bb, op, t, params){};
 	void gen_asm(ostream &o) override;
+	void gen_asm_arm64(ostream &o) override;
 };
 
 class IRInstrCopy : public IRInstr
@@ -84,20 +90,23 @@ class IRInstrCopy : public IRInstr
 public:
 	IRInstrCopy(BasicBlock *bb, Operation op, Type t, vector<string> params) : IRInstr(bb, op, t, params){};
 	void gen_asm(ostream &o) override;
+	void gen_asm_arm64(ostream &o) override;
 };
 
 class IRInstrAdd : public IRInstr
 {
 public:
 	IRInstrAdd(BasicBlock *bb, Operation op, Type t, vector<string> params) : IRInstr(bb, op, t, params){};
-	void gen_asm(ostream &o);
+	void gen_asm(ostream &o) override;
+	void gen_asm_arm64(ostream &o) override;
 };
 
 class IRInstrSub : public IRInstr
 {
 public:
 	IRInstrSub(BasicBlock *bb, Operation op, Type t, vector<string> params) : IRInstr(bb, op, t, params){};
-	void gen_asm(ostream &o);
+	void gen_asm(ostream &o) override;
+	void gen_asm_arm64(ostream &o) override;
 };
 
 class IRInstrMul : public IRInstr
@@ -105,6 +114,7 @@ class IRInstrMul : public IRInstr
 public:
 	IRInstrMul(BasicBlock *bb, Operation op, Type t, vector<string> params) : IRInstr(bb, op, t, params){};
 	void gen_asm(ostream &o) override;
+	void gen_asm_arm64(ostream &o) override;
 };
 
 class IRInstrDiv : public IRInstr
@@ -112,6 +122,7 @@ class IRInstrDiv : public IRInstr
 public:
 	IRInstrDiv(BasicBlock *bb, Operation op, Type t, vector<string> params) : IRInstr(bb, op, t, params){};
 	void gen_asm(ostream &o) override;
+	void gen_asm_arm64(ostream &o) override;
 };
 
 class IRInstrMod : public IRInstr
@@ -119,6 +130,7 @@ class IRInstrMod : public IRInstr
 public:
 	IRInstrMod(BasicBlock *bb, Operation op, Type t, vector<string> params) : IRInstr(bb, op, t, params){};
 	void gen_asm(ostream &o) override;
+	void gen_asm_arm64(ostream &o) override;
 };
 
 class IRInstrOr : public IRInstr
@@ -126,6 +138,7 @@ class IRInstrOr : public IRInstr
 public:
 	IRInstrOr(BasicBlock *bb, Operation op, Type t, vector<string> params) : IRInstr(bb, op, t, params){};
 	void gen_asm(ostream &o) override;
+	void gen_asm_arm64(ostream &o) override;
 };
 
 class IRInstrAnd : public IRInstr
@@ -133,6 +146,7 @@ class IRInstrAnd : public IRInstr
 public:
 	IRInstrAnd(BasicBlock *bb, Operation op, Type t, vector<string> params) : IRInstr(bb, op, t, params){};
 	void gen_asm(ostream &o) override;
+	void gen_asm_arm64(ostream &o) override;
 };
 
 class IRInstrXor : public IRInstr
@@ -140,6 +154,7 @@ class IRInstrXor : public IRInstr
 public:
 	IRInstrXor(BasicBlock *bb, Operation op, Type t, vector<string> params) : IRInstr(bb, op, t, params){};
 	void gen_asm(ostream &o) override;
+	void gen_asm_arm64(ostream &o) override;
 };
 
 class IRInstrEq : public IRInstr
@@ -147,6 +162,7 @@ class IRInstrEq : public IRInstr
 public:
 	IRInstrEq(BasicBlock *bb, Operation op, Type t, vector<string> params) : IRInstr(bb, op, t, params){};
 	void gen_asm(ostream &o) override;
+	void gen_asm_arm64(ostream &o) override;
 };
 
 class IRInstrNeq : public IRInstr
@@ -154,6 +170,7 @@ class IRInstrNeq : public IRInstr
 public:
 	IRInstrNeq(BasicBlock *bb, Operation op, Type t, vector<string> params) : IRInstr(bb, op, t, params){};
 	void gen_asm(ostream &o) override;
+	void gen_asm_arm64(ostream &o) override;
 };
 
 class IRInstrLt : public IRInstr
@@ -161,6 +178,7 @@ class IRInstrLt : public IRInstr
 public:
 	IRInstrLt(BasicBlock *bb, Operation op, Type t, vector<string> params) : IRInstr(bb, op, t, params){};
 	void gen_asm(ostream &o) override;
+	void gen_asm_arm64(ostream &o) override;
 };
 
 class IRInstrGt : public IRInstr
@@ -168,6 +186,7 @@ class IRInstrGt : public IRInstr
 public:
 	IRInstrGt(BasicBlock *bb, Operation op, Type t, vector<string> params) : IRInstr(bb, op, t, params){};
 	void gen_asm(ostream &o) override;
+	void gen_asm_arm64(ostream &o) override;
 };
 
 class IRInstrNeg : public IRInstr
@@ -175,6 +194,7 @@ class IRInstrNeg : public IRInstr
 public:
 	IRInstrNeg(BasicBlock *bb, Operation op, Type t, vector<string> params) : IRInstr(bb, op, t, params){};
 	void gen_asm(ostream &o) override;
+	void gen_asm_arm64(ostream &o) override;
 };
 
 class IRInstrNot : public IRInstr
@@ -182,6 +202,7 @@ class IRInstrNot : public IRInstr
 public:
 	IRInstrNot(BasicBlock *bb, Operation op, Type t, vector<string> params) : IRInstr(bb, op, t, params){};
 	void gen_asm(ostream &o) override;
+	void gen_asm_arm64(ostream &o) override;
 };
 
 class IRInstrRet : public IRInstr
@@ -189,6 +210,7 @@ class IRInstrRet : public IRInstr
 public:
 	IRInstrRet(BasicBlock *bb, Operation op, Type t, vector<string> params) : IRInstr(bb, op, t, params){};
 	void gen_asm(ostream &o) override;
+	void gen_asm_arm64(ostream &o) override;
 };
 
 class IRInstrJumpCond : public IRInstr
@@ -196,6 +218,7 @@ class IRInstrJumpCond : public IRInstr
 public:
 	IRInstrJumpCond(BasicBlock *bb, Operation op, Type t, vector<string> params) : IRInstr(bb, op, t, params){};
 	void gen_asm(ostream &o) override;
+	void gen_asm_arm64(ostream &o) override;
 };
 
 class IRInstrPutChar : public IRInstr
@@ -265,7 +288,7 @@ class BasicBlock
 public:
 	BasicBlock(CFG *cfg, string entry_label);
 	void gen_asm(ostream &o); /**< x86 assembly code generation for this basic block (very simple) */
-
+	void gen_asm_arm64(ostream &o); /**< ARM64 assembly code generation for this basic block (very simple) */
 	void add_IRInstr(IRInstr::Operation op, Type t, vector<string> params);
 	void printBB();
 	// No encapsulation whatsoever here. Feel free to do better.
@@ -296,10 +319,20 @@ public:
 	void add_bb(BasicBlock *bb);
 
 	// x86 code generation: could be encapsulated in a processor class in a retargetable compiler
-	void gen_asm(ostream &o, string name);
+
+	void gen_asm(ostream &o);
+	void gen_asm_arm64(ostream &o);
+
+
+  	void gen_asm(ostream &o, string name);
+
 	string IR_reg_to_asm(string reg); /**< helper method: inputs a IR reg or input variable, returns e.g. "-24(%rbp)" for the proper value of 24 */
 	void gen_asm_prologue(ostream &o);
 	void gen_asm_epilogue(ostream &o);
+
+	void gen_asm_prologue_arm64(ostream &o);
+	void gen_asm_epilogue_arm64(ostream &o);
+
 
 	// symbol table methods
 	void add_to_symbol_table(string name, Type t);
