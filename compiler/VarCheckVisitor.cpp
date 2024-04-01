@@ -362,7 +362,15 @@ antlrcpp::Any VarCheckVisitor::visitCharConst(ifccParser::CharConstContext *ctx)
 antlrcpp::Any VarCheckVisitor::visitReturn_stmt(ifccParser::Return_stmtContext *ctx)
 {
     cout << "# visiting return statement" << endl;
-    auto expr = visitChildren(ctx);
+
+    auto expr = visit(ctx->expr());
+
+    if ((string)expr == VOID_Type)
+    {
+        cerr << "wrong Type for the expresion" << endl;
+        this->number_errors++;
+        return INT_Type;
+    }
     return 0;
 }
 
