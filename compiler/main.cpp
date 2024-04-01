@@ -55,6 +55,7 @@ int main(int argn, const char **argv)
   // cout << "#nombre d'erreurs  :" << varCheckVisitor.getNumber_errors() << endl;
   if (temp == 0)
   {
+    //cout << "Je passe le varCheckVisitor" << endl;
     IRVisitor irv;
     irv.visit(tree);
     vector<CFG *> CFGS = irv.getCFGS();

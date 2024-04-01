@@ -1,6 +1,7 @@
 void f()
 {
-    return;
+    int a ; 
+    a = 3 ; 
 }
 
 int main()

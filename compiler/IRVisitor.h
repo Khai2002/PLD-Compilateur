@@ -6,6 +6,7 @@
 #include <vector>
 #include "util.h"
 #include "IR.h"
+#include "util.h"
 using namespace std;
 
 class IRVisitor : public ifccBaseVisitor
@@ -38,13 +39,13 @@ public:
   virtual antlrcpp::Any visitOrExpr(ifccParser::OrExprContext *ctx) override;
   virtual antlrcpp::Any visitPutchar(ifccParser::PutcharContext *ctx) override;
   virtual antlrcpp::Any visitGetchar(ifccParser::GetcharContext *ctx) override;
-  virtual antlrcpp::Any visitFunctionCall(ifccParser::FunctionCallContext *ctx) override ; 
+  virtual antlrcpp::Any visitFunctionCall(ifccParser::FunctionCallContext *ctx) override;
   // virtual antlrcpp::Any visitType(ifccParser::TypeContext *ctx) override;
   CFG *getCurrentCFG() { return currentCFG; }
-  vector<CFG *> getCFGS(){return cfgs ; }
-  
+  vector<CFG *> getCFGS() { return cfgs; }
 
 protected:
   vector<CFG *> cfgs;
   CFG *currentCFG;
+  map<string, string> functionTypesMap;
 };

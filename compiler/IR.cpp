@@ -312,8 +312,12 @@ void IRInstrCallFunc::gen_asm(ostream &o)
 {
     string func_name = params[0];
     int param = bb->cfg->get_var_index(params[1]);
+    string return_type = params[2];
     o << "call " << func_name << endl;
-    o << "movq %rax, " << param << "(%rbp)" << endl;
+    if (return_type == "int" || return_type == "char")
+    {
+        o << "movq %rax, " << param << "(%rbp)" << endl;
+    }
 }
 
 void IRInstrInsertParam::gen_asm(ostream &o)
@@ -327,7 +331,7 @@ void IRInstrCallParam::gen_asm(ostream &o)
 {
     int indexParam1 = bb->cfg->get_var_index(params[0]);
     int param_num = stoi(params[1]);
-    
+
     o << "movq " << indexParam1 << "(%rbp) , " << this->registers_name[param_num] << endl;
 }
 

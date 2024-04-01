@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 
-using namespace std  ; 
+using namespace std;
 struct VariableInfo
 {
     int index;     // Index de la variable
@@ -46,15 +46,25 @@ protected:
 struct Function_info
 {
     vector<Type> Param;
+    string Return_type;
 
     // Constructeur pour initialiser les valeurs par défaut
     Function_info() {}
-
+    void addReturnType(const string type)
+    {
+        Return_type = type;
+    }
     void addType(const Type &type)
     {
         Param.push_back(type);
     }
-    int get_number_params(){
-        return Param.size(); 
+    int get_number_params()
+    {
+        return Param.size();
+    }
+
+    string Get_Return_type()
+    {
+        return Return_type;
     }
 };
