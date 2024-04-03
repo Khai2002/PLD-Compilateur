@@ -143,7 +143,8 @@ void IRInstrDiv::gen_asm(ostream &o)
 {
     o << "movq " << getValueString(params[0]) << ", %rax" << endl;
     o << "cltd" << endl;
-    o << "idivl " << getValueString(params[1]) << endl;
+    o << "movq " << getValueString(params[1]) << ", %rcx" << endl;
+    o << "idivq %rcx" << endl;
     o << "movq %rax, " << getValueString(params[2]) << endl;
 }
 
@@ -151,7 +152,8 @@ void IRInstrMod::gen_asm(ostream &o)
 {
     o << "movq " << getValueString(params[0]) << ", %rax" << endl;
     o << "cltd" << endl;
-    o << "idivl " << getValueString(params[1]) << endl;
+    o << "movq " << getValueString(params[1]) << ", %rcx" << endl;
+    o << "idivq %rcx" << endl;
     o << "movq %rdx, " << getValueString(params[2]) << endl;
 }
 
