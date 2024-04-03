@@ -645,6 +645,15 @@ void IRInstrJumpCond::gen_asm_arm64(ostream &o) {
     o << "b " << trueBBLabel << endl;
 }
 
+void IRInstrPutChar::gen_asm_arm64(ostream &o)
+{
+
+    int param = bb->cfg->get_var_index(params[0]);
+    o << "ldr w0, [sp, #" << -param << "]" << endl;
+    o << "bl putchar" << endl;
+    o << "ldr w0, #0" << endl;
+}
+
 
 
 // ======== BasicBlock ==========================================================================================
