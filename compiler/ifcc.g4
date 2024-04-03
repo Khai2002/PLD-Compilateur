@@ -37,11 +37,21 @@ expr :
     | expr AND expr                     # AndExpr
     | expr XOR expr                     # XorExpr
     | expr OR expr                      # OrExpr 
-    | ID '=' expr                       # Var_Assignment
     |'putchar''('expr')'                # putchar
     |'getchar()'                        # getchar
     |'(' expr ')'                       # ParExpr
     | ID'('(expr (',' expr)*)?')'       # FunctionCall
+    | ID'++'                            # VarPostIncrement
+    | '(' ID ')' '++'                   # VarParPostIncrement
+    | ID'--'                            # VarPostDecrement
+    | '(' ID ')' '--'                   # VarParPostDecrement
+    |'++' ID                            # VarPreIncrement
+    |'++' '('ID')'                      # VarParPreIncrement
+    |'--' ID                            # VarPreDecrement
+    |'--' '('ID')'                      # VarParPreDecrement
+    | ID '+=' expr                      #VarAdditionAssignment
+    | ID '-=' expr                      #VarSubstractionAssignment
+    | ID '=' expr                       # Var_Assignment
     | ID                                # Var
     | INT_CONST                         # IntConst
     | CHAR_CONST                        # CharConst

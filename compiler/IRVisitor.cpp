@@ -645,3 +645,95 @@ antlrcpp::Any IRVisitor::visitFunctionCall(ifccParser::FunctionCallContext *ctx)
     currentCFG->current_bb->add_IRInstr(IRInstr::Operation::call, Type::TypeEnum::CHAR, {func_name, tempvar, return_type});
     return tempvar;
 }
+
+antlrcpp::Any IRVisitor::visitVarPostIncrement(ifccParser::VarPostIncrementContext *ctx)
+{
+    string name = ctx->ID()->getText();
+    string tempvar = currentCFG->create_new_tempvar(Type::TypeEnum::INT);
+    currentCFG->current_bb->add_IRInstr(IRInstr::Operation::copy, currentCFG->getSymbolType()[name], {tempvar, name});
+    currentCFG->current_bb->add_IRInstr(IRInstr::Operation::PostIncr, currentCFG->getSymbolType()[name], {name, tempvar});
+    return tempvar;
+}
+
+antlrcpp::Any IRVisitor::visitVarPostDecrement(ifccParser::VarPostDecrementContext *ctx)
+{
+    string name = ctx->ID()->getText();
+    string tempvar = currentCFG->create_new_tempvar(Type::TypeEnum::INT);
+    currentCFG->current_bb->add_IRInstr(IRInstr::Operation::copy, currentCFG->getSymbolType()[name], {tempvar, name});
+    currentCFG->current_bb->add_IRInstr(IRInstr::Operation::PostDecr, currentCFG->getSymbolType()[name], {name, tempvar});
+    return tempvar;
+}
+
+antlrcpp::Any IRVisitor::visitVarParPostIncrement(ifccParser::VarParPostIncrementContext *ctx)
+{
+    string name = ctx->ID()->getText();
+    string tempvar = currentCFG->create_new_tempvar(Type::TypeEnum::INT);
+    currentCFG->current_bb->add_IRInstr(IRInstr::Operation::copy, currentCFG->getSymbolType()[name], {tempvar, name});
+    currentCFG->current_bb->add_IRInstr(IRInstr::Operation::PostIncr, currentCFG->getSymbolType()[name], {name, tempvar});
+    return tempvar;
+}
+
+antlrcpp::Any IRVisitor::visitVarParPostDecrement(ifccParser::VarParPostDecrementContext *ctx)
+{
+    string name = ctx->ID()->getText();
+    string tempvar = currentCFG->create_new_tempvar(Type::TypeEnum::INT);
+    currentCFG->current_bb->add_IRInstr(IRInstr::Operation::copy, currentCFG->getSymbolType()[name], {tempvar, name});
+    currentCFG->current_bb->add_IRInstr(IRInstr::Operation::PostDecr, currentCFG->getSymbolType()[name], {name, tempvar});
+    return tempvar;
+}
+
+antlrcpp::Any IRVisitor::visitVarPreIncrement(ifccParser::VarPreIncrementContext *ctx)
+{
+    // Visit left and right expressions and get their adress in memory
+    string value = "1";
+    string tempvar = currentCFG->create_new_tempvar(Type::TypeEnum::INT);
+    currentCFG->current_bb->add_IRInstr(IRInstr::Operation::ldconst, Type::TypeEnum::INT, {tempvar, value});
+    string name = ctx->ID()->getText();
+    currentCFG->current_bb->add_IRInstr(IRInstr::Operation::add, Type::TypeEnum::INT, {name, tempvar, name});
+    return name;
+}
+antlrcpp::Any IRVisitor::visitVarPreDecrement(ifccParser::VarPreDecrementContext *ctx)
+{
+    string value = "1";
+    string tempvar = currentCFG->create_new_tempvar(Type::TypeEnum::INT);
+    currentCFG->current_bb->add_IRInstr(IRInstr::Operation::ldconst, Type::TypeEnum::INT, {tempvar, value});
+    string name = ctx->ID()->getText();
+    currentCFG->current_bb->add_IRInstr(IRInstr::Operation::sub, Type::TypeEnum::INT, {name, tempvar, name});
+    return name;
+}
+antlrcpp::Any IRVisitor::visitVarParPreIncrement(ifccParser::VarParPreIncrementContext *ctx)
+{
+    string value = "1";
+    string tempvar = currentCFG->create_new_tempvar(Type::TypeEnum::INT);
+    currentCFG->current_bb->add_IRInstr(IRInstr::Operation::ldconst, Type::TypeEnum::INT, {tempvar, value});
+    string name = ctx->ID()->getText();
+    currentCFG->current_bb->add_IRInstr(IRInstr::Operation::add, Type::TypeEnum::INT, {name, tempvar, name});
+    return name;
+}
+antlrcpp::Any IRVisitor::visitVarParPreDecrement(ifccParser::VarParPreDecrementContext *ctx)
+{
+    string value = "1";
+    string tempvar = currentCFG->create_new_tempvar(Type::TypeEnum::INT);
+    currentCFG->current_bb->add_IRInstr(IRInstr::Operation::ldconst, Type::TypeEnum::INT, {tempvar, value});
+    string name = ctx->ID()->getText();
+    currentCFG->current_bb->add_IRInstr(IRInstr::Operation::sub, Type::TypeEnum::INT, {name, tempvar, name});
+    return name;
+}
+
+antlrcpp::Any IRVisitor::visitVarAdditionAssignment(ifccParser::VarAdditionAssignmentContext *ctx)
+{
+    auto expr = ctx->expr();
+    string param = visit(expr);
+    string name = ctx->ID()->getText();
+    currentCFG->current_bb->add_IRInstr(IRInstr::Operation::add, Type::TypeEnum::INT, {name, param, name});
+    return name;
+}
+
+antlrcpp::Any IRVisitor::visitVarSubstractionAssignment(ifccParser::VarSubstractionAssignmentContext *ctx)
+{
+    auto expr = ctx->expr();
+    string param = visit(expr);
+    string name = ctx->ID()->getText();
+    currentCFG->current_bb->add_IRInstr(IRInstr::Operation::sub, Type::TypeEnum::INT, {name, param, name});
+    return name;
+}

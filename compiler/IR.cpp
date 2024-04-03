@@ -62,6 +62,14 @@ string IRInstr::operationToString(Operation op)
         return "neg";
     case unary_not:
         return "unary_not";
+    case PostIncr:
+        return "PostIncr";
+    case PostDecr:
+        return "PostDecr";
+    case PreIncr:
+        return "PreIncr";
+    case PreDecr:
+        return "PreDecr";
     case ret:
         return "ret";
     case rmem:
@@ -288,6 +296,28 @@ void IRInstrCallFunc::gen_asm(ostream &o)
     {
         o << "movq %rax, " << param << endl;
     }
+}
+
+void IRInstrPostIncr::gen_asm(ostream &o)
+{
+    // movq    -8(%rbp), %rax
+    // leaq    1(%rax), %rdx
+    // movq    %rdx, -8(%rbp)
+    int index = bb->cfg->get_var_index(params[0]);
+
+    o << "movq " << index << "(%rbp), %rax" << endl;
+    o << "leaq "
+      << "1(%rax), %rdx" << endl;
+    o << "movq %rdx, " << index << "(%rbp) " << endl;
+}
+
+void IRInstrPostDecr::gen_asm(ostream &o)
+{
+    int index = bb->cfg->get_var_index(params[0]);
+    o << "movq " << index << "(%rbp), %rax" << endl;
+    o << "leaq "
+      << "-1(%rax), %rdx" << endl;
+    o << "movq    %rdx, " << index << "(%rbp) " << endl;
 }
 
 void IRInstrInsertParam::gen_asm(ostream &o)
@@ -602,6 +632,12 @@ void BasicBlock::add_IRInstr(IRInstr::Operation op, Type t, vector<string> param
         break;
     case IRInstr::Operation::unary_not:
         newInstr = new IRInstrNot(this, op, t, params);
+        break;
+    case IRInstr::Operation::PostIncr:
+        newInstr = new IRInstrPostIncr(this, op, t, params);
+        break;
+    case IRInstr::Operation::PostDecr:
+        newInstr = new IRInstrPostDecr(this, op, t, params);
         break;
     case IRInstr::Operation::ret:
         newInstr = new IRInstrRet(this, op, t, params);
