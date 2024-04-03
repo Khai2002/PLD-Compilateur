@@ -42,6 +42,7 @@ public:
   // virtual antlrcpp::Any visitType(ifccParser::TypeContext *ctx) override;
   CFG *getCurrentCFG() { return currentCFG; }
   vector<CFG *> getCFGS() { return cfgs; }
+  bool isConstant(string s) { return isdigit(s[0]) || s[0] == '-'; }
 
 protected:
   vector<CFG *> cfgs;

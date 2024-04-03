@@ -69,6 +69,9 @@ public:
 
 	void print_IRInstr();
 
+	string getValueString(string s);
+	string getValueString_arm64(string s);
+
 protected:
 	BasicBlock *bb; /**< The BB this instruction belongs to, which provides a pointer to the CFG this instruction belong to */
 	Operation op;
