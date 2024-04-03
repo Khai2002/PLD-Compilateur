@@ -85,7 +85,7 @@ string IRInstr::operationToString(Operation op)
 
 string IRInstr::getValueString(string s)
 {
-    if (s[0] >= '0' && s[0] <= '9') {
+    if (isdigit(s[0]) || s[0] == '-') {
         return "$" + s;
     }
     else {
@@ -95,7 +95,7 @@ string IRInstr::getValueString(string s)
 
 string IRInstr::getValueString_arm64(string s)
 {
-    if (s[0] >= '0' && s[0] <= '9') {
+    if (isdigit(s[0]) || s[0] == '-') {
         return "#" + s;
     }
     else {

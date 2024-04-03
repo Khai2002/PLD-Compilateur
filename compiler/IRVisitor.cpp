@@ -128,6 +128,26 @@ antlrcpp::Any IRVisitor::visitAddSubExpr(ifccParser::AddSubExprContext *ctx)
     // Visit left and right expressions and get their adress in memory
     string param2 = visit(left);
     string param3 = visit(right);
+
+    if (isConstant(param2) && isConstant(param3)) { // constant propagation
+        int res;
+        if (op == "+") {
+            res = stoi(param2) + stoi(param3);
+        }
+        else if (op == "-") {
+            res = stoi(param2) - stoi(param3);
+        }
+        return to_string(res);
+    }
+
+    if (param3 == "0") { // x+0 or x-0
+        return param2;
+    }
+
+    if (param2 == "0" && op == "+") { // 0+x
+        return param3;
+    }
+
     string tempvar = currentCFG->create_new_tempvar(Type::TypeEnum::INT);
     vector<string> params;
     params.push_back(param2);
@@ -155,6 +175,43 @@ antlrcpp::Any IRVisitor::visitMultDivModExpr(ifccParser::MultDivModExprContext *
 
     string param2 = visit(left);
     string param3 = visit(right);
+
+    if (isConstant(param2) && isConstant(param3)) { // constant propagation
+        int res;
+        bool div0 = false;
+        if (op == "*") {
+            res = stoi(param2) * stoi(param3);
+        }
+        else if (op == "/") {
+            if (stoi(param3) == 0) {
+                div0 = true;
+            }
+            else res = stoi(param2) / stoi(param3);
+        }
+        else if (op == "%") {
+            if (stoi(param3) == 0) {
+                div0 = true;
+            }
+            else res = stoi(param2) % stoi(param3);
+        }
+        
+        if (!div0) {
+            return to_string(res);
+        } // if divide by 0 we keep compiling without calculating the value
+    }
+
+    if (param2 == "0") { // 0*x or 0/x or 0%x
+        return "0";
+    }
+
+    if (param3 == "1" && (op == "*" || op == "/")) { // x*1 or x/1
+        return param2;
+    }
+
+    if (param2 == "1" && op == "*") { // 1*x
+        return param3;
+    }
+
     string tempvar = currentCFG->create_new_tempvar(Type::TypeEnum::INT);
     vector<string> params;
 
@@ -352,6 +409,15 @@ antlrcpp::Any IRVisitor::visitAndExpr(ifccParser::AndExprContext *ctx)
     // Visit left and right expressions and get their adress in memory
     string param2 = visit(left);
     string param3 = visit(right);
+
+    if (isConstant(param2) && isConstant(param3)) { // constant propagation
+        return to_string(stoi(param2) & stoi(param3));
+    }
+
+    if (param2 == "0" || param3 == "0") { // x&0 or 0&x
+        return "0";
+    }
+
     string tempvar = currentCFG->create_new_tempvar(Type::TypeEnum::INT);
     vector<string> params;
     params.push_back(param2);
@@ -372,6 +438,18 @@ antlrcpp::Any IRVisitor::visitEqualExpr(ifccParser::EqualExprContext *ctx)
     // Visit left and right expressions and get their adress in memory
     string param2 = visit(left);
     string param3 = visit(right);
+
+    if (isConstant(param2) && isConstant(param3)) { // constant propagation
+        int res;
+        if (op == "==") {
+            res = (param2 == param3);
+        }
+        else if (op == "!=") {
+            res = (param2 != param3);
+        }
+        return to_string(res);
+    }
+
     string tempvar = currentCFG->create_new_tempvar(Type::TypeEnum::INT);
     vector<string> params;
     params.push_back(param2);
@@ -421,6 +499,19 @@ antlrcpp::Any IRVisitor::visitXorExpr(ifccParser::XorExprContext *ctx)
     // Visit left and right expressions and get their adress in memory
     string param2 = visit(left);
     string param3 = visit(right);
+
+    if (isConstant(param2) && isConstant(param3)) { // constant propagation
+        return to_string(stoi(param2) ^ stoi(param3));
+    }
+
+    if (param3 == "0") { // x^0
+        return param2;
+    }
+
+    if (param2 == "0") { // 0^x
+        return param3;
+    }
+
     string tempvar = currentCFG->create_new_tempvar(Type::TypeEnum::INT);
     vector<string> params;
     params.push_back(param2);
@@ -448,6 +539,18 @@ antlrcpp::Any IRVisitor::visitMoreLessExpr(ifccParser::MoreLessExprContext *ctx)
     // Visit left and right expressions and get their adress in memory
     string param2 = visit(left);
     string param3 = visit(right);
+
+    if (isConstant(param2) && isConstant(param3)) { // constant propagation
+        int res;
+        if (op == "<") {
+            res = stoi(param2) < stoi(param3);
+        }
+        else if (op == ">") {
+            res = stoi(param2) > stoi(param3);
+        }
+        return to_string(res);
+    }
+
     string tempvar = currentCFG->create_new_tempvar(Type::TypeEnum::INT);
     vector<string> params;
     params.push_back(param2);
@@ -474,6 +577,19 @@ antlrcpp::Any IRVisitor::visitOrExpr(ifccParser::OrExprContext *ctx)
     // Visit left and right expressions and get their adress in memory
     string param2 = visit(left);
     string param3 = visit(right);
+
+    if (isConstant(param2) && isConstant(param3)) { // constant propagation
+        return to_string(stoi(param2) | stoi(param3));
+    }
+
+    if (param3 == "0") { // x|0
+        return param2;
+    }
+
+    if (param2 == "0") { // 0|x
+        return param3;
+    }
+
     string tempvar = currentCFG->create_new_tempvar(Type::TypeEnum::INT);
     vector<string> params;
     params.push_back(param2);
