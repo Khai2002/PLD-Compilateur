@@ -245,7 +245,9 @@ void IRInstrJumpCond::gen_asm(ostream &o)
     string trueBBLabel = params[1];
     string falseBBLabel = params[2];
 
-    o << "cmpq $0, " << getValueString(params[0]) << endl;
+    o << "movq " << getValueString(params[0]) << ", %rcx" << endl;
+    o << "cmpq $0, %rcx" << endl;
+
     o << "je ." << falseBBLabel << endl;
     o << "jmp ." << trueBBLabel << endl;
 }
