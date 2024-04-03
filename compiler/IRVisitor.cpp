@@ -78,7 +78,7 @@ antlrcpp::Any IRVisitor::visitLine(ifccParser::LineContext *ctx)
     }
     else
     {
-        for (auto line : ctx->line())
+        for (auto line : ctx->block()->line())
         {
             visit(line);
         }
@@ -119,6 +119,31 @@ antlrcpp::Any IRVisitor::visitVar_decl(ifccParser::Var_declContext *ctx)
     return 0;
 }
 
+antlrcpp::Any IRVisitor::visitVar_decl_ass(ifccParser::Var_decl_assContext *ctx)
+{
+    cout << "#visiting variable declarations Assignements..." << endl;
+    //  var_decl : type ID (',' ID)* ';' ;
+
+    string typeName = ctx->type()->getText();
+
+    string name = ctx->ID()->getText();
+    if (typeName == "int")
+    {
+        currentCFG->add_to_symbol_table(name, Type::TypeEnum::INT);
+    }
+    else if (typeName == "char")
+    {
+        currentCFG->add_to_symbol_table(name, Type::TypeEnum::CHAR);
+    }
+
+    string tempvar;
+    string expr = visit(ctx->expr());
+    tempvar = currentCFG->create_new_tempvar(Type::TypeEnum::INT);
+    currentCFG->current_bb->add_IRInstr(IRInstr::Operation::copy, currentCFG->getSymbolType()[name], {name, expr});
+
+    return 0;
+}
+
 antlrcpp::Any IRVisitor::visitAddSubExpr(ifccParser::AddSubExprContext *ctx)
 {
     // cout << "#visiting add sub expressions..." << endl;
@@ -129,22 +154,27 @@ antlrcpp::Any IRVisitor::visitAddSubExpr(ifccParser::AddSubExprContext *ctx)
     string param2 = visit(left);
     string param3 = visit(right);
 
-    if (isConstant(param2) && isConstant(param3)) { // constant propagation
+    if (isConstant(param2) && isConstant(param3))
+    { // constant propagation
         int res;
-        if (op == "+") {
+        if (op == "+")
+        {
             res = stoi(param2) + stoi(param3);
         }
-        else if (op == "-") {
+        else if (op == "-")
+        {
             res = stoi(param2) - stoi(param3);
         }
         return to_string(res);
     }
 
-    if (param3 == "0") { // x+0 or x-0
+    if (param3 == "0")
+    { // x+0 or x-0
         return param2;
     }
 
-    if (param2 == "0" && op == "+") { // 0+x
+    if (param2 == "0" && op == "+")
+    { // 0+x
         return param3;
     }
 
@@ -176,39 +206,51 @@ antlrcpp::Any IRVisitor::visitMultDivModExpr(ifccParser::MultDivModExprContext *
     string param2 = visit(left);
     string param3 = visit(right);
 
-    if (isConstant(param2) && isConstant(param3)) { // constant propagation
+    if (isConstant(param2) && isConstant(param3))
+    { // constant propagation
         int res;
         bool div0 = false;
-        if (op == "*") {
+        if (op == "*")
+        {
             res = stoi(param2) * stoi(param3);
         }
-        else if (op == "/") {
-            if (stoi(param3) == 0) {
+        else if (op == "/")
+        {
+            if (stoi(param3) == 0)
+            {
                 div0 = true;
             }
-            else res = stoi(param2) / stoi(param3);
+            else
+                res = stoi(param2) / stoi(param3);
         }
-        else if (op == "%") {
-            if (stoi(param3) == 0) {
+        else if (op == "%")
+        {
+            if (stoi(param3) == 0)
+            {
                 div0 = true;
             }
-            else res = stoi(param2) % stoi(param3);
+            else
+                res = stoi(param2) % stoi(param3);
         }
-        
-        if (!div0) {
+
+        if (!div0)
+        {
             return to_string(res);
         } // if divide by 0 we keep compiling without calculating the value
     }
 
-    if (param2 == "0") { // 0*x or 0/x or 0%x
+    if (param2 == "0")
+    { // 0*x or 0/x or 0%x
         return "0";
     }
 
-    if (param3 == "1" && (op == "*" || op == "/")) { // x*1 or x/1
+    if (param3 == "1" && (op == "*" || op == "/"))
+    { // x*1 or x/1
         return param2;
     }
 
-    if (param2 == "1" && op == "*") { // 1*x
+    if (param2 == "1" && op == "*")
+    { // 1*x
         return param3;
     }
 
@@ -393,6 +435,10 @@ antlrcpp::Any IRVisitor::visitStmt(ifccParser::StmtContext *ctx)
     {
         visit(ctx->var_decl());
     }
+    else if (ctx->var_decl_ass())
+    {
+        visit(ctx->var_decl_ass());
+    }
 
     else if (ctx->return_stmt())
     {
@@ -410,11 +456,13 @@ antlrcpp::Any IRVisitor::visitAndExpr(ifccParser::AndExprContext *ctx)
     string param2 = visit(left);
     string param3 = visit(right);
 
-    if (isConstant(param2) && isConstant(param3)) { // constant propagation
+    if (isConstant(param2) && isConstant(param3))
+    { // constant propagation
         return to_string(stoi(param2) & stoi(param3));
     }
 
-    if (param2 == "0" || param3 == "0") { // x&0 or 0&x
+    if (param2 == "0" || param3 == "0")
+    { // x&0 or 0&x
         return "0";
     }
 
@@ -439,12 +487,15 @@ antlrcpp::Any IRVisitor::visitEqualExpr(ifccParser::EqualExprContext *ctx)
     string param2 = visit(left);
     string param3 = visit(right);
 
-    if (isConstant(param2) && isConstant(param3)) { // constant propagation
+    if (isConstant(param2) && isConstant(param3))
+    { // constant propagation
         int res;
-        if (op == "==") {
+        if (op == "==")
+        {
             res = (param2 == param3);
         }
-        else if (op == "!=") {
+        else if (op == "!=")
+        {
             res = (param2 != param3);
         }
         return to_string(res);
@@ -500,15 +551,18 @@ antlrcpp::Any IRVisitor::visitXorExpr(ifccParser::XorExprContext *ctx)
     string param2 = visit(left);
     string param3 = visit(right);
 
-    if (isConstant(param2) && isConstant(param3)) { // constant propagation
+    if (isConstant(param2) && isConstant(param3))
+    { // constant propagation
         return to_string(stoi(param2) ^ stoi(param3));
     }
 
-    if (param3 == "0") { // x^0
+    if (param3 == "0")
+    { // x^0
         return param2;
     }
 
-    if (param2 == "0") { // 0^x
+    if (param2 == "0")
+    { // 0^x
         return param3;
     }
 
@@ -540,12 +594,15 @@ antlrcpp::Any IRVisitor::visitMoreLessExpr(ifccParser::MoreLessExprContext *ctx)
     string param2 = visit(left);
     string param3 = visit(right);
 
-    if (isConstant(param2) && isConstant(param3)) { // constant propagation
+    if (isConstant(param2) && isConstant(param3))
+    { // constant propagation
         int res;
-        if (op == "<") {
+        if (op == "<")
+        {
             res = stoi(param2) < stoi(param3);
         }
-        else if (op == ">") {
+        else if (op == ">")
+        {
             res = stoi(param2) > stoi(param3);
         }
         return to_string(res);
@@ -578,15 +635,18 @@ antlrcpp::Any IRVisitor::visitOrExpr(ifccParser::OrExprContext *ctx)
     string param2 = visit(left);
     string param3 = visit(right);
 
-    if (isConstant(param2) && isConstant(param3)) { // constant propagation
+    if (isConstant(param2) && isConstant(param3))
+    { // constant propagation
         return to_string(stoi(param2) | stoi(param3));
     }
 
-    if (param3 == "0") { // x|0
+    if (param3 == "0")
+    { // x|0
         return param2;
     }
 
-    if (param2 == "0") { // 0|x
+    if (param2 == "0")
+    { // 0|x
         return param3;
     }
 

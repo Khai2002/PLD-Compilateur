@@ -11,7 +11,7 @@ line : stmt
     | expr ';'
     | if_block 
     | while_block 
-    | '{' line* '}'
+    | block
     ;
 
 
@@ -20,11 +20,15 @@ if_block : 'if' '(' expr ')' line else_block? ;
 
 else_block : 'else' line ;
 
+block :  '{' line* '}' ; 
+
 while_block : 'while' '(' expr ')' line ;
 
-stmt : var_decl |  return_stmt ;
+stmt : var_decl | var_decl_ass |  return_stmt ;
 
 var_decl : type ID (',' ID)* ';' ;
+
+var_decl_ass : type ID '=' expr ';' ;
 
 return_stmt: RETURN (expr)? ';' ;
 

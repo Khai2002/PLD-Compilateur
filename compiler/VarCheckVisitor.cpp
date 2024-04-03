@@ -112,6 +112,11 @@ antlrcpp::Any VarCheckVisitor::visitFunc_decl(ifccParser::Func_declContext *ctx)
             auto while_block = line->while_block();
             visit(while_block);
         }
+        else if (line->block() != nullptr)
+        {
+            auto block = line->block();
+            visit(block);
+        }
     }
 
     for (const auto &entry : adrTable)
@@ -130,14 +135,20 @@ antlrcpp::Any VarCheckVisitor::visitFunc_decl(ifccParser::Func_declContext *ctx)
 antlrcpp::Any VarCheckVisitor::visitVar_decl(ifccParser::Var_declContext *ctx)
 {
     cout << "# visitVar_decl" << endl;
-    int int_size = 8;
-    int char_size = 8;
 
     for (auto id : ctx->ID())
     {
         insertParam(id->getText(), ctx->type()->getText());
     }
 
+    // cout << "Name :" << name << " index : " << this->adrTable[name].index << endl;
+    return 0;
+}
+
+antlrcpp::Any VarCheckVisitor::visitVar_decl_ass(ifccParser::Var_decl_assContext *ctx)
+{
+    cout << "# visitVar_decl_ass" << endl;
+    insertParam(ctx->ID()->getText(), ctx->type()->getText());
     // cout << "Name :" << name << " index : " << this->adrTable[name].index << endl;
     return 0;
 }
