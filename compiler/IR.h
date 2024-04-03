@@ -41,6 +41,11 @@ public:
 		gt,
 		neg,
 		unary_not,
+		PostIncr,
+		PostDecr,
+		PreIncr,
+		PreDecr,
+		postIncr,
 		putchar,
 		getchar,
 		InsertParam, // For inserting the params when defining a function
@@ -239,6 +244,20 @@ class IRInstrCallFunc : public IRInstr
 {
 public:
 	IRInstrCallFunc(BasicBlock *bb, Operation op, Type t, vector<string> params) : IRInstr(bb, op, t, params){};
+	void gen_asm(ostream &o) override;
+};
+
+class IRInstrPostIncr : public IRInstr
+{
+public:
+	IRInstrPostIncr(BasicBlock *bb, Operation op, Type t, vector<string> params) : IRInstr(bb, op, t, params){};
+	void gen_asm(ostream &o) override;
+};
+
+class IRInstrPostDecr : public IRInstr
+{
+public:
+	IRInstrPostDecr(BasicBlock *bb, Operation op, Type t, vector<string> params) : IRInstr(bb, op, t, params){};
 	void gen_asm(ostream &o) override;
 };
 

@@ -400,3 +400,67 @@ antlrcpp::Any VarCheckVisitor::visitFunctionCall(ifccParser::FunctionCallContext
 
     return this->func_table[name1].Get_Return_type();
 }
+
+antlrcpp::Any VarCheckVisitor::visitVarPostIncrement(ifccParser::VarPostIncrementContext *ctx)
+{
+    return INT_Type;
+}
+
+antlrcpp::Any VarCheckVisitor::visitVarPostDecrement(ifccParser::VarPostDecrementContext *ctx)
+{
+    return INT_Type;
+}
+
+antlrcpp::Any VarCheckVisitor::visitVarParPostIncrement(ifccParser::VarParPostIncrementContext *ctx)
+{
+    return INT_Type;
+}
+
+antlrcpp::Any VarCheckVisitor::visitVarParPostDecrement(ifccParser::VarParPostDecrementContext *ctx)
+{
+    return INT_Type;
+}
+
+antlrcpp::Any VarCheckVisitor::visitVarPreIncrement(ifccParser::VarPreIncrementContext *ctx)
+{
+    return INT_Type;
+}
+
+antlrcpp::Any VarCheckVisitor::visitVarPreDecrement(ifccParser::VarPreDecrementContext *ctx)
+{
+    return INT_Type;
+}
+
+antlrcpp::Any VarCheckVisitor::visitVarParPreIncrement(ifccParser::VarParPreIncrementContext *ctx)
+{
+    return INT_Type;
+}
+
+antlrcpp::Any VarCheckVisitor::visitVarParPreDecrement(ifccParser::VarParPreDecrementContext *ctx)
+{
+    return INT_Type;
+}
+
+antlrcpp::Any VarCheckVisitor::visitVarAdditionAssignment(ifccParser::VarAdditionAssignmentContext *ctx)
+{
+    auto expr = visit(ctx->expr());
+    if ((string)expr == VOID_Type)
+    {
+        cerr << "wrong Type for the expresion" << endl;
+        this->number_errors++;
+        return INT_Type;
+    }
+    return INT_Type;
+}
+
+antlrcpp::Any VarCheckVisitor::visitVarSubstractionAssignment(ifccParser::VarSubstractionAssignmentContext *ctx)
+{
+    auto expr = visit(ctx->expr());
+    if ((string)expr == VOID_Type)
+    {
+        cerr << "wrong Type for the expresion" << endl;
+        this->number_errors++;
+        return INT_Type;
+    }
+    return INT_Type;
+}

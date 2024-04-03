@@ -39,6 +39,17 @@ public:
   virtual antlrcpp::Any visitPutchar(ifccParser::PutcharContext *ctx) override;
   virtual antlrcpp::Any visitGetchar(ifccParser::GetcharContext *ctx) override;
   virtual antlrcpp::Any visitFunctionCall(ifccParser::FunctionCallContext *ctx) override;
+  virtual antlrcpp::Any visitVarPostIncrement(ifccParser::VarPostIncrementContext *ctx) override;
+  virtual antlrcpp::Any visitVarPostDecrement(ifccParser::VarPostDecrementContext *ctx) override;
+  virtual antlrcpp::Any visitVarParPostIncrement(ifccParser::VarParPostIncrementContext *ctx) override;
+  virtual antlrcpp::Any visitVarParPostDecrement(ifccParser::VarParPostDecrementContext *ctx) override;
+  virtual antlrcpp::Any visitVarPreIncrement(ifccParser::VarPreIncrementContext *ctx) override;
+  virtual antlrcpp::Any visitVarPreDecrement(ifccParser::VarPreDecrementContext *ctx) override;
+  virtual antlrcpp::Any visitVarParPreIncrement(ifccParser::VarParPreIncrementContext *ctx) override;
+  virtual antlrcpp::Any visitVarParPreDecrement(ifccParser::VarParPreDecrementContext *ctx) override;
+  virtual antlrcpp::Any visitVarAdditionAssignment(ifccParser::VarAdditionAssignmentContext *ctx) override;
+  virtual antlrcpp::Any visitVarSubstractionAssignment(ifccParser::VarSubstractionAssignmentContext *ctx) override;
+
   // virtual antlrcpp::Any visitType(ifccParser::TypeContext *ctx) override;
   CFG *getCurrentCFG() { return currentCFG; }
   vector<CFG *> getCFGS() { return cfgs; }

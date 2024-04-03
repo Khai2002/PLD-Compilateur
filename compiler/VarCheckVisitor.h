@@ -33,10 +33,24 @@ public:
         virtual antlrcpp::Any visitAndExpr(ifccParser::AndExprContext *ctx) override;
         virtual antlrcpp::Any visitXorExpr(ifccParser::XorExprContext *ctx) override;
         virtual antlrcpp::Any visitOrExpr(ifccParser::OrExprContext *ctx) override;
+
         virtual antlrcpp::Any visitPutchar(ifccParser::PutcharContext *ctx) override;
         virtual antlrcpp::Any visitGetchar(ifccParser::GetcharContext *ctx) override;
         virtual antlrcpp::Any visitParExpr(ifccParser::ParExprContext *ctx) override;
         virtual antlrcpp::Any visitFunctionCall(ifccParser::FunctionCallContext *ctx) override;
+
+        virtual antlrcpp::Any visitVarPostIncrement(ifccParser::VarPostIncrementContext *ctx) override;
+        virtual antlrcpp::Any visitVarPostDecrement(ifccParser::VarPostDecrementContext *ctx) override;
+        virtual antlrcpp::Any visitVarParPostIncrement(ifccParser::VarParPostIncrementContext *ctx) override;
+        virtual antlrcpp::Any visitVarParPostDecrement(ifccParser::VarParPostDecrementContext *ctx) override;
+        virtual antlrcpp::Any visitVarPreIncrement(ifccParser::VarPreIncrementContext *ctx) override;
+        virtual antlrcpp::Any visitVarPreDecrement(ifccParser::VarPreDecrementContext *ctx) override;
+        virtual antlrcpp::Any visitVarParPreIncrement(ifccParser::VarParPreIncrementContext *ctx) override;
+        virtual antlrcpp::Any visitVarParPreDecrement(ifccParser::VarParPreDecrementContext *ctx) override;
+
+        virtual antlrcpp::Any visitVarAdditionAssignment(ifccParser::VarAdditionAssignmentContext *ctx) override;
+        virtual antlrcpp::Any visitVarSubstractionAssignment(ifccParser::VarSubstractionAssignmentContext *ctx) override;
+
         virtual antlrcpp::Any visitIntConst(ifccParser::IntConstContext *ctx) override;
         virtual antlrcpp::Any visitCharConst(ifccParser::CharConstContext *ctx) override;
 

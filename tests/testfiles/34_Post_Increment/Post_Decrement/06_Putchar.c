@@ -1,9 +1,7 @@
 int main()
 {
-
     int x;
-    x = 2;
-
-    x++;
+    x = 'a';
+    putchar(x++);
     return x;
 }
