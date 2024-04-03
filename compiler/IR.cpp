@@ -214,8 +214,8 @@ void IRInstrGt::gen_asm(ostream &o)
 
 void IRInstrNeg::gen_asm(ostream &o)
 {
-    o << "negq " << getValueString(params[0]) << endl;
     o << "movq " << getValueString(params[0]) << ", %rax" << endl;
+    o << "negq %rax"  << endl;
     o << "movq %rax, " << getValueString(params[1]) << endl;
 }
 
