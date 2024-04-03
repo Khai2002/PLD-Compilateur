@@ -136,19 +136,24 @@ antlrcpp::Any VarCheckVisitor::visitVar_decl(ifccParser::Var_declContext *ctx)
 {
     cout << "# visitVar_decl" << endl;
 
-    for (auto id : ctx->ID())
+    for (auto Dec : ctx->declareAssign())
     {
-        insertParam(id->getText(), ctx->type()->getText());
+        visit(Dec);
     }
 
     // cout << "Name :" << name << " index : " << this->adrTable[name].index << endl;
     return 0;
 }
 
-antlrcpp::Any VarCheckVisitor::visitVar_decl_ass(ifccParser::Var_decl_assContext *ctx)
+antlrcpp::Any VarCheckVisitor::visitDeclareAssign(ifccParser::DeclareAssignContext *ctx)
 {
-    cout << "# visitVar_decl_ass" << endl;
-    insertParam(ctx->ID()->getText(), ctx->type()->getText());
+    cout << "# visit Declaration assignement" << endl;
+    if (ctx->expr() != nullptr)
+    {
+        visit(ctx->expr());
+    }
+
+    insertParam(ctx->ID()->getText(), "int");
     // cout << "Name :" << name << " index : " << this->adrTable[name].index << endl;
     return 0;
 }
