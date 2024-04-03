@@ -551,10 +551,30 @@ void IRInstrRet::gen_asm_arm64(ostream &o)
     o << "ldr w0, [sp, #" << -indexDest << "]" << endl;
 }
 
-void IRInstrJumpCond::gen_asm_arm64(ostream &o)
-{
-    // todo
+
+void IRInstrJumpCond::gen_asm_arm64(ostream &o) {
+
+    int indexCond = bb->cfg->get_var_index(params[0]);
+    string trueBBLabel = params[1];
+    string falseBBLabel = params[2];
+
+    o << "ldr w8, [sp, #" << - indexCond << "]" << endl;
+    o << "cmp w8, #0" << endl;
+    o << "beq " << falseBBLabel << endl;
+    o << "b " << trueBBLabel << endl;
 }
+
+void IRInstrPutChar::gen_asm_arm64(ostream &o)
+{
+
+    int param = bb->cfg->get_var_index(params[0]);
+    o << "ldr w0, [sp, #" << -param << "]" << endl;
+    o << "bl putchar" << endl;
+    o << "ldr w0, #0" << endl;
+}
+
+
+
 
 // ======== BasicBlock ==========================================================================================
 
@@ -592,24 +612,31 @@ void BasicBlock::gen_asm(ostream &o)
 
 void BasicBlock::gen_asm_arm64(ostream &o)
 {
-    // ARM64 assembly code generation for this basic block
-    o << "_" << label << ":\n";
-    if (label == cfg->getFuncName())
+    // Check if the label is for the main function
+    if (label == "main")
     {
-        cfg->gen_asm_prologue_arm64(o); // Generate ARM64 specific prologue
+        // For the main function, prepend with an underscore
+        o << "_main:\n";
     }
+    else
+    {
+        // For other functions or blocks, use the label as is
+        o << label << ":\n";
+    }
+
+    // Generate the prologue for the main function only
+    if (label == cfg->getFuncName() && label == "main")
+    {
+        cfg->gen_asm_prologue_arm64(o); // Generate ARM64 specific prologue for main
+    }
+
+    // Generate ARM64 assembly for each instruction in the basic block
     for (IRInstr *instr : instrs)
     {
-        instr->gen_asm_arm64(o); // Ensure that each instruction generates ARM64 code
+        instr->gen_asm_arm64(o); // Each instruction generates ARM64 code
     }
 
-    /*
-    if (this->exit_true)
-    {
-        o << "b " << this->exit_true->label << endl; // ARM64 branch instruction
-    }
-    */
-
+    // Generate the epilogue if there are no exit branches
     if (!(this->exit_true && this->exit_false))
     {
         cfg->gen_asm_epilogue_arm64(o); // Generate ARM64 specific epilogue
