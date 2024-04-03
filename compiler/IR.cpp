@@ -12,103 +12,10 @@ using namespace std;
 
 // Method implementation for gen_asm
 
-
-void IRInstr::gen_asm(ostream &o)
-{
-    // Since we're returning 0, we don't need to do anything
-    int indDest;
-    int indParam1;
-    int indParam2;
-
-    switch (this->op)
-    {
-    case ldconst:
-        /*
-            movq	 $8, -4(%rbp)
-        */
-
-        cout << "Loading constant.\n";
-        break;
-    case copy:
-        /*
-            movq	-8(%rbp), %rax
-            movq	%rax, -4(%rbp)
-        */
-        cout << "Copying value.\n";
-        break;
-    case add:
-        /*
-            movq	[param1], %rdx
-            movq	[param2], %rax
-            addq	%rdx, %rax
-            movq	%rax, [dest]
-        */
-        cout << "Adding values.\n";
-        break;
-    case sub:
-        /*
-            movq	-16(%rbp), %rax
-            subq	-12(%rbp), %rax
-            movq	%rax, -8(%rbp)
-        */
-        cout << "Subtracting values.\n";
-        break;
-    case mul:
-        /*
-            movq	-16(%rbp), %rax
-            imulq	-12(%rbp), %rax
-            movq	%rax, -4(%rbp)
-        */
-        cout << "Multiplying values.\n";
-        break;
-    case bit_or:
-        cout << "Bitwise or\n";
-        break;
-    case bit_and:
-        cout << "Bitwise and\n";
-        break;
-    case bit_xor:
-        cout << "Bitwise xor\n";
-        break;
-    case eq:
-        cout << "Comparing equality\n";
-        break;
-    case neq:
-        cout << "Comparing not equal\n";
-        break;
-    case lt:
-        cout << "Comparing less\n";
-        break;
-    case gt:
-        cout << "Comparing more\n";
-        break;
-    case neg:
-        cout << "Negation of value.\n";
-        break;
-    case unary_not:
-        cout << "Unary not of value.\n";
-        break;
-    case rmem:
-        cout << "Reading from memory.\n";
-        break;
-    case wmem:
-        cout << "Writing to memory.\n";
-        break;
-    case call:
-        cout << "Calling a function.\n";
-        break;
-    default:
-        cout << "Unknown operation.\n";
-        break;
-    }
-}
-
-void IRInstr::gen_asm_arm64(ostream &o) 
+void IRInstr::gen_asm_arm64(ostream &o)
 {
     cout << "Using arm64..." << endl;
 }
-
-
 
 void IRInstr::print_IRInstr()
 {
@@ -362,6 +269,8 @@ void IRInstrRet::gen_asm(ostream &o)
 {
     int indexDest = bb->cfg->get_var_index(params[0]);
     o << "movq " << indexDest << "(%rbp), %rax" << endl;
+    o << "leave" << endl;
+    o << "ret" << endl;
 }
 
 void IRInstrJumpCond::gen_asm(ostream &o)
@@ -410,8 +319,12 @@ void IRInstrCallFunc::gen_asm(ostream &o)
 {
     string func_name = params[0];
     int param = bb->cfg->get_var_index(params[1]);
+    string return_type = params[2];
     o << "call " << func_name << endl;
-    o << "movq %rax, " << param << "(%rbp)" << endl;
+    if (return_type == "int" || return_type == "char")
+    {
+        o << "movq %rax, " << param << "(%rbp)" << endl;
+    }
 }
 
 void IRInstrInsertParam::gen_asm(ostream &o)
@@ -425,82 +338,84 @@ void IRInstrCallParam::gen_asm(ostream &o)
 {
     int indexParam1 = bb->cfg->get_var_index(params[0]);
     int param_num = stoi(params[1]);
-    
+
     o << "movq " << indexParam1 << "(%rbp) , " << this->registers_name[param_num] << endl;
 }
 
-
-void IRInstrConst::gen_asm_arm64(ostream &o) {
+void IRInstrConst::gen_asm_arm64(ostream &o)
+{
     int indexDest = this->bb->cfg->get_var_index(params[0]);
     o << "mov w8, #" << params[1] << endl; // Use a temporary register, e.g., w8
-    o << "str w8, [sp, #" << - indexDest << "]" << endl; 
+    o << "str w8, [sp, #" << -indexDest << "]" << endl;
 }
 
-void IRInstrCopy::gen_asm_arm64(ostream &o) {
+void IRInstrCopy::gen_asm_arm64(ostream &o)
+{
     int indexLvalue = bb->cfg->get_var_index(params[0]);
     int indexRValue = bb->cfg->get_var_index(params[1]);
-    o << "ldr w8, [sp, #" << - indexRValue << "]" << endl; // Load from stack to w8
-    o << "str w8, [sp, #" << - indexLvalue << "]" << endl; // Store in stack
+    o << "ldr w8, [sp, #" << -indexRValue << "]" << endl; // Load from stack to w8
+    o << "str w8, [sp, #" << -indexLvalue << "]" << endl; // Store in stack
 }
 
-void IRInstrAdd::gen_asm_arm64(ostream &o) {
+void IRInstrAdd::gen_asm_arm64(ostream &o)
+{
     int indexParam1 = bb->cfg->get_var_index(params[0]);
     int indexParam2 = bb->cfg->get_var_index(params[1]);
     int indexDest = bb->cfg->get_var_index(params[2]);
 
-    o << "ldr w8, [sp," << - indexParam1 << "]" << endl; // Load first param
-    o << "ldr w9, [sp," << - indexParam2 << "]" << endl; // Load second param
-    o << "add w8, w8, w9" << endl; // Add w8 and w9, store result in w8
-    o << "str w8, [sp," << - indexDest << "]" << endl; // Store result
+    o << "ldr w8, [sp," << -indexParam1 << "]" << endl; // Load first param
+    o << "ldr w9, [sp," << -indexParam2 << "]" << endl; // Load second param
+    o << "add w8, w8, w9" << endl;                      // Add w8 and w9, store result in w8
+    o << "str w8, [sp," << -indexDest << "]" << endl;   // Store result
 }
 
-void IRInstrSub::gen_asm_arm64(ostream &o) {
+void IRInstrSub::gen_asm_arm64(ostream &o)
+{
     int indexParam1 = bb->cfg->get_var_index(params[0]);
     int indexParam2 = bb->cfg->get_var_index(params[1]);
     int indexDest = bb->cfg->get_var_index(params[2]);
 
-    o << "ldr w8, [sp," << - indexParam1 << "]" << endl; // Load first param
-    o << "ldr w9, [sp," << - indexParam2 << "]" << endl; // Load second param
-    o << "sub w8, w8, w9" << endl; // Sub w8 and w9, store result in w8
-    o << "str w8, [sp," << - indexDest << "]" << endl; // Store result
-
+    o << "ldr w8, [sp," << -indexParam1 << "]" << endl; // Load first param
+    o << "ldr w9, [sp," << -indexParam2 << "]" << endl; // Load second param
+    o << "sub w8, w8, w9" << endl;                      // Sub w8 and w9, store result in w8
+    o << "str w8, [sp," << -indexDest << "]" << endl;   // Store result
 }
 
-
-void IRInstrMul::gen_asm_arm64(ostream &o) {
+void IRInstrMul::gen_asm_arm64(ostream &o)
+{
     int indexParam1 = bb->cfg->get_var_index(params[0]);
     int indexParam2 = bb->cfg->get_var_index(params[1]);
     int indexDest = bb->cfg->get_var_index(params[2]);
 
-    o << "ldr w8, [sp," << - indexParam1 << "]" << endl; // Load first param
-    o << "ldr w9, [sp," << - indexParam2 << "]" << endl; // Load second param
-    o << "mul w8, w8, w9" << endl;                       // Multiply w8 and w9, store result in w8
-    o << "str w8, [sp," << - indexDest << "]" << endl; // Store result
+    o << "ldr w8, [sp," << -indexParam1 << "]" << endl; // Load first param
+    o << "ldr w9, [sp," << -indexParam2 << "]" << endl; // Load second param
+    o << "mul w8, w8, w9" << endl;                      // Multiply w8 and w9, store result in w8
+    o << "str w8, [sp," << -indexDest << "]" << endl;   // Store result
 }
 
-
-void IRInstrDiv::gen_asm_arm64(ostream &o) {
+void IRInstrDiv::gen_asm_arm64(ostream &o)
+{
     int indexParam1 = bb->cfg->get_var_index(params[0]);
     int indexParam2 = bb->cfg->get_var_index(params[1]);
     int indexDest = bb->cfg->get_var_index(params[2]);
 
-    o << "ldr w8, [sp," << - indexParam1 << "]" << endl; // Load first param
-    o << "ldr w9, [sp," << - indexParam2 << "]" << endl; // Load second param
+    o << "ldr w8, [sp," << -indexParam1 << "]" << endl; // Load first param
+    o << "ldr w9, [sp," << -indexParam2 << "]" << endl; // Load second param
     o << "sdiv w8, w8, w9" << endl;                     // Divide w8 by w9, store result in w8
-    o << "str w8, [sp," << - indexDest << "]" << endl; // Store result
+    o << "str w8, [sp," << -indexDest << "]" << endl;   // Store result
 }
 
-
-void IRInstrMod::gen_asm_arm64(ostream &o) {
+void IRInstrMod::gen_asm_arm64(ostream &o)
+{
     int indexParam1 = bb->cfg->get_var_index(params[0]);
     int indexParam2 = bb->cfg->get_var_index(params[1]);
     int indexDest = bb->cfg->get_var_index(params[2]);
 
     // Load the first parameter
-    o << "ldr w8, [sp," << - indexParam1 << "]" << endl;
+    o << "ldr w8, [sp," << -indexParam1 << "]" << endl;
 
     // Load the second parameter
-    o << "ldr w9, [sp," << - indexParam2 << "]" << endl;
+    o << "ldr w9, [sp," << -indexParam2 << "]" << endl;
 
     // Perform signed division, quotient in w10
     o << "sdiv w10, w8, w9" << endl;
@@ -512,126 +427,130 @@ void IRInstrMod::gen_asm_arm64(ostream &o) {
     o << "sub w8, w8, w11" << endl;
 
     // Store the result
-    o << "str w8, [sp," << - indexDest << "]" << endl;
-
+    o << "str w8, [sp," << -indexDest << "]" << endl;
 }
 
-void IRInstrOr::gen_asm_arm64(ostream &o) {
+void IRInstrOr::gen_asm_arm64(ostream &o)
+{
     int indexParam1 = bb->cfg->get_var_index(params[0]);
     int indexParam2 = bb->cfg->get_var_index(params[1]);
     int indexDest = bb->cfg->get_var_index(params[2]);
 
-    o << "ldr w8, [sp," << - indexParam1 << "]" << endl; // Load first param
-    o << "ldr w9, [sp," << - indexParam2 << "]" << endl; // Load second param
-    o << "orr w8, w8, w9" << endl;                       // Bitwise or w8 and w9, store result in w8
-    o << "str w8, [sp," << - indexDest << "]" << endl; // Store result
+    o << "ldr w8, [sp," << -indexParam1 << "]" << endl; // Load first param
+    o << "ldr w9, [sp," << -indexParam2 << "]" << endl; // Load second param
+    o << "orr w8, w8, w9" << endl;                      // Bitwise or w8 and w9, store result in w8
+    o << "str w8, [sp," << -indexDest << "]" << endl;   // Store result
 }
 
-void IRInstrAnd::gen_asm_arm64(ostream &o) {
+void IRInstrAnd::gen_asm_arm64(ostream &o)
+{
     int indexParam1 = bb->cfg->get_var_index(params[0]);
     int indexParam2 = bb->cfg->get_var_index(params[1]);
     int indexDest = bb->cfg->get_var_index(params[2]);
 
-    o << "ldr w8, [sp," << - indexParam1 << "]" << endl; // Load first param
-    o << "ldr w9, [sp," << - indexParam2 << "]" << endl; // Load second param
-    o << "and w8, w8, w9" << endl;                       // Bitwise and w8 and w9, store result in w8
-    o << "str w8, [sp," << - indexDest << "]" << endl; // Store result
+    o << "ldr w8, [sp," << -indexParam1 << "]" << endl; // Load first param
+    o << "ldr w9, [sp," << -indexParam2 << "]" << endl; // Load second param
+    o << "and w8, w8, w9" << endl;                      // Bitwise and w8 and w9, store result in w8
+    o << "str w8, [sp," << -indexDest << "]" << endl;   // Store result
 }
 
-void IRInstrXor::gen_asm_arm64(ostream &o) {
+void IRInstrXor::gen_asm_arm64(ostream &o)
+{
     int indexParam1 = bb->cfg->get_var_index(params[0]);
     int indexParam2 = bb->cfg->get_var_index(params[1]);
     int indexDest = bb->cfg->get_var_index(params[2]);
 
-    o << "ldr w8, [sp," << - indexParam1 << "]" << endl; // Load first param
-    o << "ldr w9, [sp," << - indexParam2 << "]" << endl; // Load second param
-    o << "eor w8, w8, w9" << endl;                       // Bitwise xor w8 and w9, store result in w8
-    o << "str w8, [sp," << - indexDest << "]" << endl; // Store result
+    o << "ldr w8, [sp," << -indexParam1 << "]" << endl; // Load first param
+    o << "ldr w9, [sp," << -indexParam2 << "]" << endl; // Load second param
+    o << "eor w8, w8, w9" << endl;                      // Bitwise xor w8 and w9, store result in w8
+    o << "str w8, [sp," << -indexDest << "]" << endl;   // Store result
 }
 
-void IRInstrEq::gen_asm_arm64(ostream &o) {
+void IRInstrEq::gen_asm_arm64(ostream &o)
+{
     int indexParam1 = bb->cfg->get_var_index(params[0]);
     int indexParam2 = bb->cfg->get_var_index(params[1]);
     int indexDest = bb->cfg->get_var_index(params[2]);
 
-    o << "ldr w8, [sp," << - indexParam1 << "]" << endl; // Load first param
-    o << "ldr w9, [sp," << - indexParam2 << "]" << endl; // Load second param
-    o << "cmp w8, w9" << endl; // Compare w8 and w9
-    o << "cset w8, eq" << endl; // Set w8 to 1 if equal, 0 otherwise
-    o << "str w8, [sp," << - indexDest << "]" << endl; // Store result
+    o << "ldr w8, [sp," << -indexParam1 << "]" << endl; // Load first param
+    o << "ldr w9, [sp," << -indexParam2 << "]" << endl; // Load second param
+    o << "cmp w8, w9" << endl;                          // Compare w8 and w9
+    o << "cset w8, eq" << endl;                         // Set w8 to 1 if equal, 0 otherwise
+    o << "str w8, [sp," << -indexDest << "]" << endl;   // Store result
 }
 
-void IRInstrNeq::gen_asm_arm64(ostream &o) {
+void IRInstrNeq::gen_asm_arm64(ostream &o)
+{
     int indexParam1 = bb->cfg->get_var_index(params[0]);
     int indexParam2 = bb->cfg->get_var_index(params[1]);
     int indexDest = bb->cfg->get_var_index(params[2]);
 
-    o << "ldr w8, [sp," << - indexParam1 << "]" << endl; // Load first param
-    o << "ldr w9, [sp," << - indexParam2 << "]" << endl; // Load second param
-    o << "cmp w8, w9" << endl; // Compare w8 and w9
-    o << "cset w8, ne" << endl; // Set w8 to 1 if not equal, 0 otherwise
-    o << "str w8, [sp," << - indexDest << "]" << endl; // Store result
+    o << "ldr w8, [sp," << -indexParam1 << "]" << endl; // Load first param
+    o << "ldr w9, [sp," << -indexParam2 << "]" << endl; // Load second param
+    o << "cmp w8, w9" << endl;                          // Compare w8 and w9
+    o << "cset w8, ne" << endl;                         // Set w8 to 1 if not equal, 0 otherwise
+    o << "str w8, [sp," << -indexDest << "]" << endl;   // Store result
 }
 
-
-void IRInstrLt::gen_asm_arm64(ostream &o) {
+void IRInstrLt::gen_asm_arm64(ostream &o)
+{
     int indexParam1 = bb->cfg->get_var_index(params[0]);
     int indexParam2 = bb->cfg->get_var_index(params[1]);
     int indexDest = bb->cfg->get_var_index(params[2]);
 
-    o << "ldr w8, [sp," << - indexParam1 << "]" << endl; // Load first param
-    o << "ldr w9, [sp," << - indexParam2 << "]" << endl; // Load second param
-    o << "cmp w8, w9" << endl; // Compare w8 and w9
-    o << "cset w8, lt" << endl; // Set w8 to 1 if less than, 0 otherwise
-    o << "str w8, [sp," << - indexDest << "]" << endl; // Store result
+    o << "ldr w8, [sp," << -indexParam1 << "]" << endl; // Load first param
+    o << "ldr w9, [sp," << -indexParam2 << "]" << endl; // Load second param
+    o << "cmp w8, w9" << endl;                          // Compare w8 and w9
+    o << "cset w8, lt" << endl;                         // Set w8 to 1 if less than, 0 otherwise
+    o << "str w8, [sp," << -indexDest << "]" << endl;   // Store result
 }
 
-void IRInstrGt::gen_asm_arm64(ostream &o) {
+void IRInstrGt::gen_asm_arm64(ostream &o)
+{
     int indexParam1 = bb->cfg->get_var_index(params[0]);
     int indexParam2 = bb->cfg->get_var_index(params[1]);
     int indexDest = bb->cfg->get_var_index(params[2]);
 
-    o << "ldr w8, [sp," << - indexParam1 << "]" << endl; // Load first param
-    o << "ldr w9, [sp," << - indexParam2 << "]" << endl; // Load second param
-    o << "cmp w8, w9" << endl; // Compare w8 and w9
-    o << "cset w8, gt" << endl; // Set w8 to 1 if greater than, 0 otherwise
-    o << "str w8, [sp," << - indexDest << "]" << endl; // Store result
+    o << "ldr w8, [sp," << -indexParam1 << "]" << endl; // Load first param
+    o << "ldr w9, [sp," << -indexParam2 << "]" << endl; // Load second param
+    o << "cmp w8, w9" << endl;                          // Compare w8 and w9
+    o << "cset w8, gt" << endl;                         // Set w8 to 1 if greater than, 0 otherwise
+    o << "str w8, [sp," << -indexDest << "]" << endl;   // Store result
 }
 
-
-void IRInstrNeg::gen_asm_arm64(ostream &o) {
+void IRInstrNeg::gen_asm_arm64(ostream &o)
+{
     int indexParam = bb->cfg->get_var_index(params[0]);
     int indexDest = bb->cfg->get_var_index(params[1]);
 
     // Load the parameter value into a register
     o << "    ldr w8, [sp, #" << -indexParam << "]" << endl;
-    
+
     // Negate the value in the register
     o << "    neg w8, w8" << endl;
-    
+
     // Store the result back to the destination on the stack
     o << "    str w8, [sp, #" << -indexDest << "]" << endl;
-    
-
 }
 
-void IRInstrNot::gen_asm_arm64(ostream &o) {
+void IRInstrNot::gen_asm_arm64(ostream &o)
+{
     int indexParam = bb->cfg->get_var_index(params[0]);
     int indexDest = bb->cfg->get_var_index(params[1]);
 
-    o << "ldr w8, [sp, #" << - indexParam << "]" << endl;
+    o << "ldr w8, [sp, #" << -indexParam << "]" << endl;
     o << "cmp w8, #0" << endl;
     o << "cset w8, eq" << endl;
-    o << "str w8, [sp, #" << - indexDest << "]" << endl;
-
+    o << "str w8, [sp, #" << -indexDest << "]" << endl;
 }
 
-void IRInstrRet::gen_asm_arm64(ostream &o) {
+void IRInstrRet::gen_asm_arm64(ostream &o)
+{
 
     int indexDest = bb->cfg->get_var_index(params[0]);
-    o << "ldr w0, [sp, #" << - indexDest << "]" << endl;
-
+    o << "ldr w0, [sp, #" << -indexDest << "]" << endl;
 }
+
 
 void IRInstrJumpCond::gen_asm_arm64(ostream &o) {
 
@@ -653,6 +572,7 @@ void IRInstrPutChar::gen_asm_arm64(ostream &o)
     o << "bl putchar" << endl;
     o << "ldr w0, #0" << endl;
 }
+
 
 
 
@@ -882,7 +802,6 @@ void CFG::gen_asm_arm64(ostream &o)
     }
 }
 
-
 // Method implementation for IR_reg_to_asm
 string CFG::IR_reg_to_asm(string reg)
 {
@@ -934,18 +853,16 @@ void CFG::gen_asm_prologue_arm64(ostream &o)
     int alloc_size;
     if (nextFreeSymbolIndex % 16 == 0)
     {
-        alloc_size = - nextFreeSymbolIndex;
-        
+        alloc_size = -nextFreeSymbolIndex;
     }
-    else 
+    else
     {
-        alloc_size = - nextFreeSymbolIndex + 8;
+        alloc_size = -nextFreeSymbolIndex + 8;
     }
     o << "sub sp, sp, #" << alloc_size << endl;
     o << "str wzr, [sp, #" << alloc_size - 4 << "]" << endl;
     o << endl;
 }
-
 
 void CFG::gen_asm_epilogue_arm64(ostream &o)
 {
@@ -953,12 +870,11 @@ void CFG::gen_asm_epilogue_arm64(ostream &o)
     int alloc_size;
     if (nextFreeSymbolIndex % 16 == 0)
     {
-        alloc_size = - nextFreeSymbolIndex;
-        
+        alloc_size = -nextFreeSymbolIndex;
     }
     else
     {
-        alloc_size = - nextFreeSymbolIndex + 8;
+        alloc_size = -nextFreeSymbolIndex + 8;
     }
 
     o << endl;

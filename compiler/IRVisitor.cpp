@@ -23,6 +23,14 @@ antlrcpp::Any IRVisitor::visitFunc_decl(ifccParser::Func_declContext *ctx)
     CFG *cfg = new CFG(ctx->ID(0)->getText());
     currentCFG = cfg;
     cfgs.push_back(cfg);
+    if (ctx->type(0)->getText() == "int" || ctx->type(0)->getText() == "char")
+    {
+        functionTypesMap[ctx->ID(0)->getText()] = "int";
+    }
+    else
+    {
+        functionTypesMap[ctx->ID(0)->getText()] = "void";
+    }
     int i = 1;
     while (ctx->ID(i) != nullptr)
     {
@@ -44,11 +52,6 @@ antlrcpp::Any IRVisitor::visitFunc_decl(ifccParser::Func_declContext *ctx)
     for (auto line : ctx->line())
     {
         visit(line);
-    }
-
-    if (ctx->return_stmt())
-    {
-        visit(ctx->return_stmt());
     }
 
     return 0;
@@ -73,13 +76,21 @@ antlrcpp::Any IRVisitor::visitLine(ifccParser::LineContext *ctx)
     {
         visit(ctx->while_block());
     }
+    else
+    {
+        for (auto line : ctx->line())
+        {
+            visit(line);
+        }
+    }
+
     return 0;
 }
 
 antlrcpp::Any IRVisitor::visitVar_decl(ifccParser::Var_declContext *ctx)
 {
-    //cout << "#visiting variable declarations..." << endl;
-    // var_decl : type ID (',' ID)* ';' ;
+    // cout << "#visiting variable declarations..." << endl;
+    //  var_decl : type ID (',' ID)* ';' ;
 
     string typeName = ctx->type()->getText();
 
@@ -110,7 +121,7 @@ antlrcpp::Any IRVisitor::visitVar_decl(ifccParser::Var_declContext *ctx)
 
 antlrcpp::Any IRVisitor::visitAddSubExpr(ifccParser::AddSubExprContext *ctx)
 {
-    //cout << "#visiting add sub expressions..." << endl;
+    // cout << "#visiting add sub expressions..." << endl;
     auto left = ctx->expr(0);
     auto right = ctx->expr(1);
     string op = ctx->ADD_SUB->getText();
@@ -137,7 +148,7 @@ antlrcpp::Any IRVisitor::visitAddSubExpr(ifccParser::AddSubExprContext *ctx)
 
 antlrcpp::Any IRVisitor::visitMultDivModExpr(ifccParser::MultDivModExprContext *ctx)
 {
-    //cout << "#visiting mult div mod expressions..." << endl;
+    // cout << "#visiting mult div mod expressions..." << endl;
     auto left = ctx->expr(0);
     auto right = ctx->expr(1);
     string op = ctx->MULT_DIV_MOD()->getText();
@@ -169,7 +180,7 @@ antlrcpp::Any IRVisitor::visitMultDivModExpr(ifccParser::MultDivModExprContext *
 
 antlrcpp::Any IRVisitor::visitVar_Assignment(ifccParser::Var_AssignmentContext *ctx)
 {
-    //cout << "#visiting variable assignments..." << endl;
+    // cout << "#visiting variable assignments..." << endl;
 
     string name = ctx->ID()->getText();
     string tempvar;
@@ -186,17 +197,16 @@ antlrcpp::Any IRVisitor::visitVar_Assignment(ifccParser::Var_AssignmentContext *
 
 antlrcpp::Any IRVisitor::visitReturn_stmt(ifccParser::Return_stmtContext *ctx)
 {
-    //cout << "#visiting return statements..." << endl;
+    // cout << "#visiting return statements..." << endl;
     auto expr = ctx->expr();
     string name = visit(expr);
     currentCFG->current_bb->add_IRInstr(IRInstr::Operation::ret, Type::TypeEnum::INT, {name});
-
     return 0;
 }
 
 antlrcpp::Any IRVisitor::visitVar(ifccParser::VarContext *ctx)
 {
-    //cout << "#Visiting Var expression " << endl;
+    // cout << "#Visiting Var expression " << endl;
     string name = ctx->ID()->getText();
     int ind = currentCFG->getSymbolIndex()[name];
     // cout << "Var named " << name << " at " << ind << endl;
@@ -206,7 +216,7 @@ antlrcpp::Any IRVisitor::visitVar(ifccParser::VarContext *ctx)
 
 antlrcpp::Any IRVisitor::visitIntConst(ifccParser::IntConstContext *ctx)
 {
-    //cout << "#Visiting IntConst " << endl;
+    // cout << "#Visiting IntConst " << endl;
     string value = ctx->INT_CONST()->getText();
     string tempvar = currentCFG->create_new_tempvar(Type::TypeEnum::INT);
     currentCFG->current_bb->add_IRInstr(IRInstr::Operation::ldconst, Type::TypeEnum::INT, {tempvar, value});
@@ -259,14 +269,7 @@ antlrcpp::Any IRVisitor::visitIf_block(ifccParser::If_blockContext *ctx)
     testBB->add_IRInstr(IRInstr::Operation::jmp_cond, Type::TypeEnum::INT, params);
 
     currentCFG->current_bb = thenBB;
-    if (ctx->line())
-    {
-        visit(ctx->line());
-    }
-    if (ctx->block())
-    {
-        visit(ctx->block());
-    }
+    visit(ctx->line());
 
     currentCFG->current_bb = elseBB;
     if (ctx->else_block())
@@ -280,16 +283,7 @@ antlrcpp::Any IRVisitor::visitIf_block(ifccParser::If_blockContext *ctx)
 
 antlrcpp::Any IRVisitor::visitElse_block(ifccParser::Else_blockContext *ctx)
 {
-    // else_block : 'else' (line | block) ;
-
-    if (ctx->line())
-    {
-        visit(ctx->line());
-    }
-    if (ctx->block())
-    {
-        visit(ctx->block());
-    }
+    visit(ctx->line());
     return 0;
 }
 
@@ -322,27 +316,10 @@ antlrcpp::Any IRVisitor::visitWhile_block(ifccParser::While_blockContext *ctx)
     testBB->add_IRInstr(IRInstr::Operation::jmp_cond, Type::TypeEnum::INT, params);
 
     currentCFG->current_bb = bodyBB;
-    if (ctx->line())
-    {
-        visit(ctx->line());
-    }
-    if (ctx->block())
-    {
-        visit(ctx->block());
-    }
+    visit(ctx->line());
 
     currentCFG->current_bb = testBB->exit_false;
 
-    return 0;
-}
-
-antlrcpp::Any IRVisitor::visitBlock(ifccParser::BlockContext *ctx)
-{
-    // block : '{' line* '}' ;
-    for (auto line : ctx->line())
-    {
-        visit(line);
-    }
     return 0;
 }
 
@@ -363,7 +340,7 @@ antlrcpp::Any IRVisitor::visitStmt(ifccParser::StmtContext *ctx)
 
 antlrcpp::Any IRVisitor::visitAndExpr(ifccParser::AndExprContext *ctx)
 {
-    //cout << "#visiting and expression..." << endl;
+    // cout << "#visiting and expression..." << endl;
     auto left = ctx->expr(0);
     auto right = ctx->expr(1);
     // Visit left and right expressions and get their adress in memory
@@ -521,7 +498,7 @@ antlrcpp::Any IRVisitor::visitGetchar(ifccParser::GetcharContext *ctx)
 antlrcpp::Any IRVisitor::visitFunctionCall(ifccParser::FunctionCallContext *ctx)
 {
 
-    //cout << "#visiting function call " << endl;
+    // cout << "#visiting function call " << endl;
     int i = 0;
 
     while (ctx->expr(i) != nullptr)
@@ -534,6 +511,15 @@ antlrcpp::Any IRVisitor::visitFunctionCall(ifccParser::FunctionCallContext *ctx)
 
     string tempvar = currentCFG->create_new_tempvar(Type::TypeEnum::INT);
     string func_name = ctx->ID()->getText();
-    currentCFG->current_bb->add_IRInstr(IRInstr::Operation::call, Type::TypeEnum::CHAR, {func_name, tempvar});
+    string return_type;
+    if (functionTypesMap[func_name] == "int")
+    {
+        return_type = "int";
+    }
+    else
+    {
+        return_type = "void";
+    }
+    currentCFG->current_bb->add_IRInstr(IRInstr::Operation::call, Type::TypeEnum::CHAR, {func_name, tempvar, return_type});
     return tempvar;
 }

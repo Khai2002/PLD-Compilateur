@@ -58,6 +58,8 @@ argparser.add_argument('-d','--debug',action="count",default=0,
                        help='Increase quantity of debugging messages (only useful to debug the test script itself)')
 argparser.add_argument('-v','--verbose',action="count",default=0,
                        help='Increase verbosity level. You can use this option multiple times.')
+argparser.add_argument('-a', '--auto',action='store_true',
+                       help='Use unix pipeline to input a single charecter x for getchar testing. Slows down the test.')
 argparser.add_argument('-w','--wrapper',metavar='PATH',
                        help='Invoke your compiler through the shell script at PATH. (default: `ifcc-wrapper.sh`)')
 
@@ -175,7 +177,9 @@ for jobname in jobs:
         # test-case is a valid program. we should run it
         gccstatus=command("gcc -o exe-gcc asm-gcc.s", "gcc-link.txt")
     if gccstatus == 0: # then both compile and link stage went well
-        exegccstatus=command("./exe-gcc", "gcc-execute.txt")
+        if args.auto : 
+            exegccstatus=command("echo \"x\" | ./exe-gcc", "gcc-execute.txt")
+        else: exegccstatus=command("./exe-gcc", "gcc-execute.txt")
         if args.verbose >=2:
             dumpfile("gcc-execute.txt")
             
@@ -208,7 +212,9 @@ for jobname in jobs:
     ## both compilers  did produce an  executable, so now we  run both
     ## these executables and compare the results.
         
-    command("./exe-ifcc","ifcc-execute.txt")
+    if args.auto : 
+        command("echo \"x\" | ./exe-ifcc","ifcc-execute.txt")
+    else: command("./exe-ifcc","ifcc-execute.txt")
     if open("gcc-execute.txt").read() != open("ifcc-execute.txt").read() :
         print("TEST FAIL (different results at execution)\n")
         if args.verbose:

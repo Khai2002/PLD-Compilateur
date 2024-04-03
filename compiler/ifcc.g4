@@ -5,23 +5,22 @@ axiom : prog EOF ;
 prog: func_decl*;
 
 
-func_decl : type ID '('(type ID (',' type ID)*)? ')' '{' line* return_stmt '}';
+func_decl : type ID '('(type ID (',' type ID)*)? ')' '{' line* '}';
 
 line : stmt
     | expr ';'
     | if_block 
     | while_block 
+    | '{' line* '}'
     ;
 
 
 
-if_block : 'if' '(' expr ')' (line | block) else_block? ;
+if_block : 'if' '(' expr ')' line else_block? ;
 
-else_block : 'else' (line | block) ;
+else_block : 'else' line ;
 
-while_block : 'while' '(' expr ')' (line | block);
-
-block : '{' line* '}' ;
+while_block : 'while' '(' expr ')' line ;
 
 stmt : var_decl |  return_stmt ;
 
