@@ -1,6 +1,7 @@
 int t1()
 {
     int t;
+    t = 0;
 
     return t;
 
