@@ -69,10 +69,15 @@ int main(int argn, const char **argv)
       }
 
       // cfg->gen_asm(cout, cfg->getFuncName());
-      // cfg->gen_asm_arm64(cout);
+#ifdef __APPLE__
+      cfg->gen_asm_arm64(cout);
+
+#else
+      cfg->gen_asm(cout, cfg->getFuncName());
+#endif
     
 
-      cfg->gen_asm(cout, cfg->getFuncName());
+      
 
     }
   }

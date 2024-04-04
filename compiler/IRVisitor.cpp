@@ -310,7 +310,7 @@ antlrcpp::Any IRVisitor::visitVar(ifccParser::VarContext *ctx)
 
 antlrcpp::Any IRVisitor::visitIntConst(ifccParser::IntConstContext *ctx)
 {
-    /*
+#ifdef __APPLE__
     // cout << "#Visiting IntConst " << endl;
     string value = ctx->INT_CONST()->getText();
     string tempvar = currentCFG->create_new_tempvar(Type::TypeEnum::INT);
@@ -319,19 +319,24 @@ antlrcpp::Any IRVisitor::visitIntConst(ifccParser::IntConstContext *ctx)
     // cout << "New Int Const with value [" << value << "] Decl as " << tempvar << endl;
 
     return tempvar;
-    */
+    
+#endif
+    
+    
     return ctx->INT_CONST()->getText();
 }
 
 antlrcpp::Any IRVisitor::visitCharConst(ifccParser::CharConstContext *ctx)
 {
-    /*
+#ifdef __APPLE__
+
     int char_value = (int)ctx->CHAR_CONST()->getText()[1];
     string value = to_string(char_value);
     string tempvar = currentCFG->create_new_tempvar(Type::TypeEnum::CHAR);
     currentCFG->current_bb->add_IRInstr(IRInstr::Operation::ldconst, Type::TypeEnum::CHAR, {tempvar, value});
     return tempvar;
-    */
+#endif
+
     return to_string(ctx->CHAR_CONST()->getText()[1]);
 }
 
