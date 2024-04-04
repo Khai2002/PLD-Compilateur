@@ -59,3 +59,5 @@ MIT license
 For those who are on WSL : please run this command before running all the tests : 
 
 dos2unix ifcc-wrapper.sh
+
+python3 ifcc-test.py testfiles/*

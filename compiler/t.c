@@ -1,8 +1,10 @@
-
-
 int main()
 {
-    int z = 1, x = 3, w;
-
-    return z + x;
+    int x;
+    x = 4;
+    if(x==4){
+        int x;
+        x = 5;
+    }
+    return x;
 }

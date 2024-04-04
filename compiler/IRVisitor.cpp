@@ -352,6 +352,10 @@ antlrcpp::Any IRVisitor::visitIf_block(ifccParser::If_blockContext *ctx)
     currentCFG->add_bb(endifBB);
 
     // Adjust pointers
+    thenBB->parent = testBB;
+    elseBB->parent = testBB;
+    endifBB->parent = testBB;
+
     endifBB->exit_true = testBB->exit_true;
     endifBB->exit_false = testBB->exit_false;
     testBB->exit_true = thenBB;
@@ -398,6 +402,9 @@ antlrcpp::Any IRVisitor::visitWhile_block(ifccParser::While_blockContext *ctx)
     auto pretestBB = currentCFG->current_bb;
     auto testBB = new BasicBlock(currentCFG, currentCFG->new_BB_name());
     auto bodyBB = new BasicBlock(currentCFG, currentCFG->new_BB_name());
+
+    testBB->parent = pretestBB;
+    bodyBB->parent = testBB;
 
     testBB->exit_false = pretestBB->exit_true;
     testBB->exit_true = bodyBB;

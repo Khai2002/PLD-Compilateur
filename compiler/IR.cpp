@@ -513,7 +513,7 @@ void IRInstrPutChar::gen_asm_arm64(ostream &o)
 // ======== BasicBlock ==========================================================================================
 
 // Constructor
-BasicBlock::BasicBlock(CFG *cfg, string entry_label) : cfg(cfg), label(entry_label) {}
+BasicBlock::BasicBlock(CFG *cfg, string entry_label) : cfg(cfg), label(entry_label), parent(nullptr) {}
 
 // Method implementation for gen_asm
 void BasicBlock::gen_asm(ostream &o)
@@ -700,6 +700,7 @@ CFG::CFG(string funcName) : funcName(funcName), nextFreeSymbolIndex(-8), nextBBn
 
     lastBB->exit_false = nullptr;
     lastBB->exit_true = nullptr;
+    lastBB->parent = firstBB;
 
     current_bb = firstBB;
 }
@@ -826,8 +827,10 @@ void CFG::gen_asm_epilogue_arm64(ostream &o)
 // Method implementation for add_to_symbol_table
 void CFG::add_to_symbol_table(string name, Type t)
 {
-    SymbolType[name] = t;
-    SymbolIndex[name] = nextFreeSymbolIndex;
+    //SymbolType[name] = t;
+    //SymbolIndex[name] = nextFreeSymbolIndex;
+    this->current_bb->SymbolType[name] = t;
+    this->current_bb->SymbolIndex[name] = nextFreeSymbolIndex;
     nextFreeSymbolIndex -= get_type_size(t);
 }
 
@@ -842,19 +845,30 @@ string CFG::create_new_tempvar(Type t)
 // Method implementation for get_var_index
 int CFG::get_var_index(string name)
 {
-    if (SymbolIndex.find(name) != SymbolIndex.end())
+    BasicBlock* cursor = this->current_bb;
+    
+    while(true)
     {
-        return SymbolIndex[name];
+        if (cursor->SymbolIndex.find(name) != cursor->SymbolIndex.end()) return cursor->SymbolIndex[name];
+        if (cursor->parent) return -1;
+        cursor = cursor->parent;
+        
     }
+    
     return -1; // Return -1 if the variable is not found
 }
 
 // Method implementation for get_var_type
 Type CFG::get_var_type(string name)
 {
-    if (SymbolType.find(name) != SymbolType.end())
+    BasicBlock* cursor = this->current_bb;
+
+    while(true)
     {
-        return SymbolType[name];
+        if (cursor->SymbolType.find(name) != cursor->SymbolType.end()) return cursor->SymbolType[name];
+        if (cursor->parent) return Type();
+        cursor = cursor->parent;
+        
     }
     return Type(); // Return default Type if the variable is not found
 }
