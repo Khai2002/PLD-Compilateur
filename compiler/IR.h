@@ -244,6 +244,7 @@ class IRInstrGetchar : public IRInstr
 public:
 	IRInstrGetchar(BasicBlock *bb, Operation op, Type t, vector<string> params) : IRInstr(bb, op, t, params){};
 	void gen_asm(ostream &o) override;
+	void gen_asm_arm64(ostream &o) override;
 	// void gen_asm_arm64(ostream &o) override;
 };
 
@@ -356,8 +357,8 @@ public:
 	void gen_asm_prologue(ostream &o);
 	void gen_asm_epilogue(ostream &o);
 
-	void gen_asm_prologue_arm64(ostream &o, bool hasPutchar);
-	void gen_asm_epilogue_arm64(ostream &o, bool hasPutchar);
+	void gen_asm_prologue_arm64(ostream &o, bool hasCharOp);
+	void gen_asm_epilogue_arm64(ostream &o, bool hasCharOp);
 
 	// symbol table methods
 	void add_to_symbol_table(string name, Type t);

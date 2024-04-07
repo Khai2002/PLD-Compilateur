@@ -507,6 +507,14 @@ void IRInstrPutChar::gen_asm_arm64(ostream &o)
     // o << "ldr w0, " << getValueString_arm64(params[0]) << endl;
 }
 
+void IRInstrGetchar::gen_asm_arm64(ostream &o)
+{
+    int param = bb->cfg->get_var_index(params[0]);
+    o << "bl _getchar" << endl;
+    o << "str w0, [sp, #" << -param << "]" << endl;
+}
+
+
 
 
 
@@ -558,14 +566,15 @@ void BasicBlock::gen_asm_arm64(ostream &o)
         o << label << ":\n";
     }
 
-    bool hasPutchar = false;
+    bool hasCharOp = false;
     // Generate ARM64 assembly for each instruction in the basic block
     for (IRInstr *instr : instrs)
     {
-        // if there's a putchar instr, set the hasPutchar flag to true
-        if (instr->getOperation() == IRInstr::Operation::putchar)
+        // if there's a putchar instr, set the hasCharOp flag to true
+        if (instr->getOperation() == IRInstr::Operation::putchar
+            || instr->getOperation() == IRInstr::Operation::getchar)
         {
-            hasPutchar = true;
+            hasCharOp = true;
         }  
         // instr->gen_asm_arm64(o); // Each instruction generates ARM64 code
     }
@@ -573,7 +582,7 @@ void BasicBlock::gen_asm_arm64(ostream &o)
     // Generate the prologue for the main function only
     if (label == cfg->getFuncName() && label == "main")
     {
-        cfg->gen_asm_prologue_arm64(o, hasPutchar); // Generate ARM64 specific prologue for main
+        cfg->gen_asm_prologue_arm64(o, hasCharOp); // Generate ARM64 specific prologue for main
     }
 
     for (IRInstr *instr : instrs)
@@ -585,7 +594,7 @@ void BasicBlock::gen_asm_arm64(ostream &o)
     // Generate the epilogue if there are no exit branches
     if (!(this->exit_true && this->exit_false))
     {
-        cfg->gen_asm_epilogue_arm64(o, hasPutchar); // Generate ARM64 specific epilogue
+        cfg->gen_asm_epilogue_arm64(o, hasCharOp); // Generate ARM64 specific epilogue
     }
 }
 
@@ -797,7 +806,7 @@ void CFG::gen_asm_epilogue(ostream &o)
     o << "ret" << endl;
 }
 
-void CFG::gen_asm_prologue_arm64(ostream &o, bool hasPutchar)
+void CFG::gen_asm_prologue_arm64(ostream &o, bool hasCharOp)
 {
     // Placeholder for generating ARM64 specific prologue
     // Actual implementation will depend on your specific requirements
@@ -814,7 +823,7 @@ void CFG::gen_asm_prologue_arm64(ostream &o, bool hasPutchar)
     o << "sub sp, sp, #" << alloc_size << endl;
     o << "str wzr, [sp, #" << alloc_size - 4 << "]" << endl;
     
-    if (hasPutchar)
+    if (hasCharOp)
     {
         o << "stp x29, x30, [sp, #16]"<< endl;   
     }
@@ -823,7 +832,7 @@ void CFG::gen_asm_prologue_arm64(ostream &o, bool hasPutchar)
     o << endl;
 }
 
-void CFG::gen_asm_epilogue_arm64(ostream &o, bool hasPutchar)
+void CFG::gen_asm_epilogue_arm64(ostream &o, bool hasCharOp)
 {
 
     int alloc_size;
@@ -838,7 +847,7 @@ void CFG::gen_asm_epilogue_arm64(ostream &o, bool hasPutchar)
 
     o << endl;
     o << "";
-    if (hasPutchar)
+    if (hasCharOp)
     {
         o << "ldp x29, x30, [sp, #16]" << endl;
     }
