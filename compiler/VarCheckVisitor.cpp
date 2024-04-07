@@ -10,7 +10,7 @@ void VarCheckVisitor::insertParam(string name, string type)
     auto it = this->adrTable.find(name);
     if (it != this->adrTable.end())
     {
-        cerr << "#Erreur : Variable '" << name << "' déjà déclarée." << endl;
+        cerr << "#Error:  the variable '" << name << "' has already been declared." << endl;
         exit(1);
     }
 
@@ -123,7 +123,7 @@ antlrcpp::Any VarCheckVisitor::visitFunc_decl(ifccParser::Func_declContext *ctx)
         const VariableInfo &variable = entry.second;
         if (variable.callCount == 0)
         {
-            cerr << "# Variable '" << entry.first << "' déclarée mais non utilisée" << endl;
+            cerr << "# Variable '" << entry.first << "' declared but not used " << endl;
             this->number_warnings++;
         }
     }
@@ -164,7 +164,7 @@ antlrcpp::Any VarCheckVisitor::visitVar_Assignment(ifccParser::Var_AssignmentCon
     auto it1 = this->adrTable.find(name1);
     if (it1 == this->adrTable.end())
     {
-        cout << "# Erreur : Variable '" << name1 << "' n'a pas été déclarée." << endl;
+        cerr << "#Error:  the variable '" << name1 << "' has already been declared." << endl;
         exit(1);
     }
 
@@ -188,7 +188,7 @@ antlrcpp::Any VarCheckVisitor::visitVar(ifccParser::VarContext *ctx)
     auto it = this->adrTable.find(name);
     if (it == this->adrTable.end())
     {
-        cerr << "#Erreur : Variable '" << name << "' n'a pas été déclarée." << endl;
+        cerr << "#Error:  the variable '" << name << "' has already been declared." << endl;
         exit(1);
     }
     // auto expr = visitChildren(ctx);
@@ -383,17 +383,30 @@ antlrcpp::Any VarCheckVisitor::visitFunctionCall(ifccParser::FunctionCallContext
     auto it1 = this->func_table.find(name1);
     if (it1 == this->func_table.end())
     {
-        cout << "# Erreur : la fonction '" << name1 << "' n'a pas été déclarée." << endl;
+        cout << "# Error  : the function  '" << name1 << "' has already been declare." << endl;
         exit(1);
     }
+    auto it2 = this->adrTable.find(name1);
+    if (it2 != this->adrTable.end())
+    {
+        cerr << "#Error : the variable '" << name1 << "' has already been declared as a variable." << endl;
+        exit(1);
+    }
+
     int i = 0;
     while (ctx->expr(i) != nullptr)
     {
+        auto expr = visit(ctx->expr(i));
+        if ((string)expr == VOID_Type)
+        {
+            cerr << "wrong Type for the at least one argument passed in parameter  " << endl;
+            exit(1);
+        }
         i++;
     }
     if (i != it1->second.get_number_params())
     {
-        cerr << "Le nombre d'arguments passé en paramètre est incorrect" << endl;
+        cerr << "The number of arguments passed in parameter is incorrect." << endl;
         exit(1);
     }
 
