@@ -77,6 +77,8 @@ public:
 	string getValueString(string s);
 	string getValueString_arm64(string s);
 
+	Operation getOperation() { return op; }
+
 protected:
 	BasicBlock *bb; /**< The BB this instruction belongs to, which provides a pointer to the CFG this instruction belong to */
 	Operation op;
@@ -354,8 +356,8 @@ public:
 	void gen_asm_prologue(ostream &o);
 	void gen_asm_epilogue(ostream &o);
 
-	void gen_asm_prologue_arm64(ostream &o);
-	void gen_asm_epilogue_arm64(ostream &o);
+	void gen_asm_prologue_arm64(ostream &o, bool hasPutchar);
+	void gen_asm_epilogue_arm64(ostream &o, bool hasPutchar);
 
 	// symbol table methods
 	void add_to_symbol_table(string name, Type t);
