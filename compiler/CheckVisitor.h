@@ -111,6 +111,7 @@ public:
         virtual antlrcpp::Any visitCharConst(ifccParser::CharConstContext *ctx) override;
 
 protected:
+        //----------------------------------------------------- Protected Attributs
         /**
          * An unordered map to hold information about variables.
          * It maps variable names to their respective `VariableInfo` objects.
