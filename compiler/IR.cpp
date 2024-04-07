@@ -14,7 +14,7 @@ using namespace std;
 
 void IRInstr::gen_asm_arm64(ostream &o)
 {
-    cout << "Using arm64..." << endl;
+    // cout << "Using arm64..." << endl;
 }
 
 void IRInstr::print_IRInstr()
@@ -498,16 +498,156 @@ void IRInstrJumpCond::gen_asm_arm64(ostream &o)
 void IRInstrPutChar::gen_asm_arm64(ostream &o)
 {
 
-    string param = getValueString_arm64(params[0]);
-    o << "ldr w0, " << param << endl;
-    o << "bl putchar" << endl;
-    o << "ldr w0, #0" << endl;
+    int param = bb->cfg->get_var_index(params[0]);
+    o << "ldr w0, [sp, #" << -param << "]" << endl;
+    o << "bl _putchar" << endl;
+    // o << "ldr w0, " << getValueString_arm64(params[0]) << endl;
 }
+
+
+void IRInstrGetchar::gen_asm_arm64(ostream &o)
+{
+    int param = bb->cfg->get_var_index(params[0]);
+    o << "bl _getchar" << endl;
+    o << "str w0, [sp, #" << -param << "]" << endl;
+}
+
+void IRInstrCallFunc::gen_asm_arm64(ostream &o) {
+    string func_name = params[0];
+    string param = getValueString_arm64(params[1]);
+    string return_type = params[2];
+
+    o << "bl _" << func_name << endl;
+
+    if (return_type == "int" || return_type == "char") {
+        o << "str w0, " << param << endl;
+    }
+}
+
+void IRInstrPostIncr::gen_asm_arm64(ostream &o)
+{
+    int index = bb->cfg->get_var_index(params[0]);
+    o << "ldr w8, [sp, #" << -index << "]" << endl;
+    o << "add w8, w8, #1" << endl;
+    o << "str w8, [sp, #" << -index << "]" << endl;
+}
+
+void IRInstrPostDecr::gen_asm_arm64(ostream &o)
+{
+    int index = bb->cfg->get_var_index(params[0]);
+    o << "ldr w8, [sp, #" << -index << "]" << endl;
+    o << "sub w8, w8, #1" << endl;
+    o << "str w8, [sp, #" << -index << "]" << endl;
+}
+
+void IRInstrInsertParam::gen_asm_arm64(ostream &o)
+{
+    string indexParam1 = getValueString_arm64(params[0]);
+    int param_num = stoi(params[1]);
+
+    o << "ldr w8, " << indexParam1 << endl;
+    o << "str w8, [sp, #" << param_num * 4 << "]" << endl;
+}
+
+void IRInstrCallParam::gen_asm_arm64(ostream &o)
+{
+    string indexParam1 = getValueString_arm64(params[0]);
+    int param_num = stoi(params[1]);
+
+    o << "ldr w8, " << indexParam1 << endl;
+    o << "str w8, [sp, #" << param_num * 4 << "]" << endl;
+}
+
+
+
+
+
+
+
+
 
 // ======== BasicBlock ==========================================================================================
 
 // Constructor
 BasicBlock::BasicBlock(CFG *cfg, string entry_label) : cfg(cfg), label(entry_label) {}
+
+
+// Method implementation for gen_asm
+void BasicBlock::gen_asm(ostream &o)
+{
+    // Very simple assembly code generation for this basic block
+    // This is a placeholder implementation. Actual implementation will depend on your specific requirements.
+    if (label == cfg->getFuncName())
+    {
+        cfg->gen_asm_prologue(o);
+    }
+    else
+    {
+        o << "\n." << label << ":\n\n";
+    }
+    for (IRInstr *instr : instrs)
+    {
+        instr->gen_asm(o);
+    }
+
+    if (this->exit_true && !this->exit_false)
+    {
+        o << "jmp ." << this->exit_true->label << endl;
+    }
+
+    if (!(this->exit_true || this->exit_false))
+    {
+        cfg->gen_asm_epilogue(o);
+    }
+}
+
+void BasicBlock::gen_asm_arm64(ostream &o)
+{
+    // Check if the label is for the main function
+    if (label == "main")
+    {
+        // For the main function, prepend with an underscore
+        o << "_main:\n";
+    }
+    else
+    {
+        // For other functions or blocks, use the label as is
+        o << "_" << label << ":\n";
+    }
+
+    bool hasCharOp = false;
+    // Generate ARM64 assembly for each instruction in the basic block
+    for (IRInstr *instr : instrs)
+    {
+        // if there's a putchar instr, set the hasCharOp flag to true
+        if (instr->getOperation() == IRInstr::Operation::putchar
+            || instr->getOperation() == IRInstr::Operation::getchar
+            || instr->getOperation() == IRInstr::Operation::call)
+        {
+            hasCharOp = true;
+        }  
+        // instr->gen_asm_arm64(o); // Each instruction generates ARM64 code
+    }
+
+    // Generate the prologue for the main function only
+    if (label == cfg->getFuncName()) // && label == "main")
+    {
+        cfg->gen_asm_prologue_arm64(o, hasCharOp); // Generate ARM64 specific prologue for main
+    }
+
+    for (IRInstr *instr : instrs)
+    {
+        instr->gen_asm_arm64(o); // Each instruction generates ARM64 code
+    }
+
+
+    // Generate the epilogue if there are no exit branches
+    if (!(this->exit_true && this->exit_false))
+    {
+        cfg->gen_asm_epilogue_arm64(o, hasCharOp); // Generate ARM64 specific epilogue
+    }
+}
+
 
 // Method implementation for add_IRInstr
 void BasicBlock::add_IRInstr(IRInstr::Operation op, Type t, vector<string> params)
@@ -777,7 +917,7 @@ void CFG::gen_asm_epilogue(ostream &o)
     o << "ret" << endl;
 }
 
-void CFG::gen_asm_prologue_arm64(ostream &o)
+void CFG::gen_asm_prologue_arm64(ostream &o, bool hasCharOp)
 {
     // Actual implementation will depend on your specific requirements
     // o << "nextFreeSymbolIndex" << nextFreeSymbolIndex << endl;
@@ -792,10 +932,17 @@ void CFG::gen_asm_prologue_arm64(ostream &o)
     }
     o << "sub sp, sp, #" << alloc_size << endl;
     o << "str wzr, [sp, #" << alloc_size - 4 << "]" << endl;
+    
+    if (hasCharOp)
+    {
+        o << "stp x29, x30, [sp, #16]"<< endl;   
+    }
+    // o << "add	x29, sp, #16" << endl;
+
     o << endl;
 }
 
-void CFG::gen_asm_epilogue_arm64(ostream &o)
+void CFG::gen_asm_epilogue_arm64(ostream &o, bool hasCharOp)
 {
 
     int alloc_size;
@@ -810,8 +957,13 @@ void CFG::gen_asm_epilogue_arm64(ostream &o)
 
     o << endl;
     o << "";
+    if (hasCharOp)
+    {
+        o << "ldp x29, x30, [sp, #16]" << endl;
+    }
+    
     o << "add sp, sp, #" << alloc_size << endl;
-    o << "ret" << endl;
+    o << "ret\n" << endl;
 }
 
 // Method implementation for add_to_symbol_table
