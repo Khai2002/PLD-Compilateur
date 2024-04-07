@@ -250,10 +250,6 @@ void IRInstrRet::gen_asm(ostream &o)
 
 void IRInstrJumpCond::gen_asm(ostream &o)
 {
-    // cmpl	$0, -4(%rbp)
-    // je	.L2
-    // movl	$4, -4(%rbp)
-    // jmp	.L3
     string trueBBLabel = params[1];
     string falseBBLabel = params[2];
 
@@ -266,10 +262,7 @@ void IRInstrJumpCond::gen_asm(ostream &o)
 
 void IRInstrPutChar::gen_asm(ostream &o)
 {
-    // movl	%eax, %edi
-    // call	putchar@PLT
-    // movl	$0, %eax
-    // leave
+    
     o << "movq " << getValueString(params[0]) << ", %rax" << endl;
     o << "movq %rax, %rdi" << endl;
     o << "call putchar@PLT" << endl;
@@ -667,8 +660,6 @@ void BasicBlock::gen_asm_arm64(ostream &o)
         cfg->gen_asm_epilogue_arm64(o); // Generate ARM64 specific epilogue
     }
 }
-
-
 
 void BasicBlock::printBB()
 {
