@@ -9,7 +9,7 @@
 #include "generated/ifccBaseVisitor.h"
 
 // #include "CodeGenVisitor.h"
-#include "VarCheckVisitor.h"
+#include "CheckVisitor.h"
 #include "IRVisitor.h"
 
 using namespace antlr4;
@@ -45,9 +45,9 @@ int main(int argn, const char **argv)
     exit(1);
   }
   // cout << "I'm coming 1" << endl;
-  VarCheckVisitor varCheckVisitor;
+  CheckVisitor CheckVisitor;
 
-  varCheckVisitor.visit(tree);
+  CheckVisitor.visit(tree);
 
   
     IRVisitor irv;

@@ -24,7 +24,7 @@ OBJECTS=build/ifccBaseVisitor.o \
 	build/ifccVisitor.o \
 	build/ifccParser.o \
 	build/main.o \
-	build/VarCheckVisitor.o \
+	build/CheckVisitor.o \
 	build/IR.o \
 	build/IRVisitor.o
 
