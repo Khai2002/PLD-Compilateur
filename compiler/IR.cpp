@@ -93,21 +93,25 @@ string IRInstr::operationToString(Operation op)
 
 string IRInstr::getValueString(string s)
 {
-    if (isdigit(s[0]) || s[0] == '-') {
+    if (isdigit(s[0]) || s[0] == '-')
+    {
         return "$" + s;
     }
-    else {
+    else
+    {
         return std::to_string(bb->cfg->get_var_index(s)) + "(%rbp)";
     }
 }
 
 string IRInstr::getValueString_arm64(string s)
 {
-    if (isdigit(s[0]) || s[0] == '-') {
+    if (isdigit(s[0]) || s[0] == '-')
+    {
         return "#" + s;
     }
-    else {
-        return "[sp, #" + std::to_string(- bb->cfg->get_var_index(s)) + "]";
+    else
+    {
+        return "[sp, #" + std::to_string(-bb->cfg->get_var_index(s)) + "]";
     }
 }
 
@@ -225,7 +229,7 @@ void IRInstrGt::gen_asm(ostream &o)
 void IRInstrNeg::gen_asm(ostream &o)
 {
     o << "movq " << getValueString(params[0]) << ", %rax" << endl;
-    o << "negq %rax"  << endl;
+    o << "negq %rax" << endl;
     o << "movq %rax, " << getValueString(params[1]) << endl;
 }
 
@@ -246,10 +250,6 @@ void IRInstrRet::gen_asm(ostream &o)
 
 void IRInstrJumpCond::gen_asm(ostream &o)
 {
-    // cmpl	$0, -4(%rbp)
-    // je	.L2
-    // movl	$4, -4(%rbp)
-    // jmp	.L3
     string trueBBLabel = params[1];
     string falseBBLabel = params[2];
 
@@ -262,10 +262,7 @@ void IRInstrJumpCond::gen_asm(ostream &o)
 
 void IRInstrPutChar::gen_asm(ostream &o)
 {
-    // movl	%eax, %edi
-    // call	putchar@PLT
-    // movl	$0, %eax
-    // leave
+    
     o << "movq " << getValueString(params[0]) << ", %rax" << endl;
     o << "movq %rax, %rdi" << endl;
     o << "call putchar@PLT" << endl;
@@ -351,32 +348,32 @@ void IRInstrAdd::gen_asm_arm64(ostream &o)
 {
     o << "ldr w8, " << getValueString_arm64(params[0]) << endl; // Load first param
     o << "ldr w9, " << getValueString_arm64(params[1]) << endl; // Load second param
-    o << "add w8, w8, w9" << endl;                      // Add w8 and w9, store result in w8
-    o << "str w8, " << getValueString_arm64(params[2]) << endl;   // Store result
+    o << "add w8, w8, w9" << endl;                              // Add w8 and w9, store result in w8
+    o << "str w8, " << getValueString_arm64(params[2]) << endl; // Store result
 }
 
 void IRInstrSub::gen_asm_arm64(ostream &o)
 {
     o << "ldr w8, " << getValueString_arm64(params[0]) << endl; // Load first param
     o << "ldr w9, " << getValueString_arm64(params[1]) << endl; // Load second param
-    o << "sub w8, w8, w9" << endl;                      // Sub w8 and w9, store result in w8
-    o << "str w8, " << getValueString_arm64(params[2]) << endl;   // Store result
+    o << "sub w8, w8, w9" << endl;                              // Sub w8 and w9, store result in w8
+    o << "str w8, " << getValueString_arm64(params[2]) << endl; // Store result
 }
 
 void IRInstrMul::gen_asm_arm64(ostream &o)
 {
     o << "ldr w8, " << getValueString_arm64(params[0]) << endl; // Load first param
     o << "ldr w9, " << getValueString_arm64(params[1]) << endl; // Load second param
-    o << "mul w8, w8, w9" << endl;                      // Multiply w8 and w9, store result in w8
-    o << "str w8, " << getValueString_arm64(params[2]) << endl;   // Store result
+    o << "mul w8, w8, w9" << endl;                              // Multiply w8 and w9, store result in w8
+    o << "str w8, " << getValueString_arm64(params[2]) << endl; // Store result
 }
 
 void IRInstrDiv::gen_asm_arm64(ostream &o)
 {
     o << "ldr w8, " << getValueString_arm64(params[0]) << endl; // Load first param
     o << "ldr w9, " << getValueString_arm64(params[1]) << endl; // Load second param
-    o << "sdiv w8, w8, w9" << endl;                     // Divide w8 by w9, store result in w8
-    o << "str w8, " << getValueString_arm64(params[2]) << endl;   // Store result
+    o << "sdiv w8, w8, w9" << endl;                             // Divide w8 by w9, store result in w8
+    o << "str w8, " << getValueString_arm64(params[2]) << endl; // Store result
 }
 
 void IRInstrMod::gen_asm_arm64(ostream &o)
@@ -404,60 +401,60 @@ void IRInstrOr::gen_asm_arm64(ostream &o)
 {
     o << "ldr w8, " << getValueString_arm64(params[0]) << endl; // Load first param
     o << "ldr w9, " << getValueString_arm64(params[1]) << endl; // Load second param
-    o << "orr w8, w8, w9" << endl;                      // Bitwise or w8 and w9, store result in w8
-    o << "str w8, " << getValueString_arm64(params[2]) << endl;   // Store result
+    o << "orr w8, w8, w9" << endl;                              // Bitwise or w8 and w9, store result in w8
+    o << "str w8, " << getValueString_arm64(params[2]) << endl; // Store result
 }
 
 void IRInstrAnd::gen_asm_arm64(ostream &o)
 {
     o << "ldr w8, " << getValueString_arm64(params[0]) << endl; // Load first param
     o << "ldr w9, " << getValueString_arm64(params[1]) << endl; // Load second param
-    o << "and w8, w8, w9" << endl;                      // Bitwise and w8 and w9, store result in w8
-    o << "str w8, " << getValueString_arm64(params[2]) << endl;   // Store result
+    o << "and w8, w8, w9" << endl;                              // Bitwise and w8 and w9, store result in w8
+    o << "str w8, " << getValueString_arm64(params[2]) << endl; // Store result
 }
 
 void IRInstrXor::gen_asm_arm64(ostream &o)
 {
     o << "ldr w8, " << getValueString_arm64(params[0]) << endl; // Load first param
     o << "ldr w9, " << getValueString_arm64(params[1]) << endl; // Load second param
-    o << "eor w8, w8, w9" << endl;                      // Bitwise xor w8 and w9, store result in w8
-    o << "str w8, " << getValueString_arm64(params[2]) << endl;   // Store result
+    o << "eor w8, w8, w9" << endl;                              // Bitwise xor w8 and w9, store result in w8
+    o << "str w8, " << getValueString_arm64(params[2]) << endl; // Store result
 }
 
 void IRInstrEq::gen_asm_arm64(ostream &o)
 {
     o << "ldr w8, " << getValueString_arm64(params[0]) << endl; // Load first param
     o << "ldr w9, " << getValueString_arm64(params[1]) << endl; // Load second param
-    o << "cmp w8, w9" << endl;                          // Compare w8 and w9
-    o << "cset w8, eq" << endl;                         // Set w8 to 1 if equal, 0 otherwise
-    o << "str w8, " << getValueString_arm64(params[2]) << endl;   // Store result
+    o << "cmp w8, w9" << endl;                                  // Compare w8 and w9
+    o << "cset w8, eq" << endl;                                 // Set w8 to 1 if equal, 0 otherwise
+    o << "str w8, " << getValueString_arm64(params[2]) << endl; // Store result
 }
 
 void IRInstrNeq::gen_asm_arm64(ostream &o)
 {
     o << "ldr w8, " << getValueString_arm64(params[0]) << endl; // Load first param
     o << "ldr w9, " << getValueString_arm64(params[1]) << endl; // Load second param
-    o << "cmp w8, w9" << endl;                          // Compare w8 and w9
-    o << "cset w8, ne" << endl;                         // Set w8 to 1 if not equal, 0 otherwise
-    o << "str w8, " << getValueString_arm64(params[2]) << endl;   // Store result
+    o << "cmp w8, w9" << endl;                                  // Compare w8 and w9
+    o << "cset w8, ne" << endl;                                 // Set w8 to 1 if not equal, 0 otherwise
+    o << "str w8, " << getValueString_arm64(params[2]) << endl; // Store result
 }
 
 void IRInstrLt::gen_asm_arm64(ostream &o)
 {
     o << "ldr w8, " << getValueString_arm64(params[0]) << endl; // Load first param
     o << "ldr w9, " << getValueString_arm64(params[1]) << endl; // Load second param
-    o << "cmp w8, w9" << endl;                          // Compare w8 and w9
-    o << "cset w8, lt" << endl;                         // Set w8 to 1 if less than, 0 otherwise
-    o << "str w8, " << getValueString_arm64(params[2]) << endl;   // Store result
+    o << "cmp w8, w9" << endl;                                  // Compare w8 and w9
+    o << "cset w8, lt" << endl;                                 // Set w8 to 1 if less than, 0 otherwise
+    o << "str w8, " << getValueString_arm64(params[2]) << endl; // Store result
 }
 
 void IRInstrGt::gen_asm_arm64(ostream &o)
 {
     o << "ldr w8, " << getValueString_arm64(params[0]) << endl; // Load first param
     o << "ldr w9, " << getValueString_arm64(params[1]) << endl; // Load second param
-    o << "cmp w8, w9" << endl;                          // Compare w8 and w9
-    o << "cset w8, gt" << endl;                         // Set w8 to 1 if greater than, 0 otherwise
-    o << "str w8, " << getValueString_arm64(params[2]) << endl;   // Store result
+    o << "cmp w8, w9" << endl;                                  // Compare w8 and w9
+    o << "cset w8, gt" << endl;                                 // Set w8 to 1 if greater than, 0 otherwise
+    o << "str w8, " << getValueString_arm64(params[2]) << endl; // Store result
 }
 
 void IRInstrNeg::gen_asm_arm64(ostream &o)
@@ -485,8 +482,8 @@ void IRInstrRet::gen_asm_arm64(ostream &o)
     o << "ldr w0, " << getValueString_arm64(params[0]) << endl;
 }
 
-
-void IRInstrJumpCond::gen_asm_arm64(ostream &o) {
+void IRInstrJumpCond::gen_asm_arm64(ostream &o)
+{
 
     string indexCond = getValueString_arm64(params[0]);
     string trueBBLabel = params[1];
@@ -506,6 +503,7 @@ void IRInstrPutChar::gen_asm_arm64(ostream &o)
     o << "bl _putchar" << endl;
     // o << "ldr w0, " << getValueString_arm64(params[0]) << endl;
 }
+
 
 void IRInstrGetchar::gen_asm_arm64(ostream &o)
 {
@@ -567,10 +565,12 @@ void IRInstrCallParam::gen_asm_arm64(ostream &o)
 
 
 
+
 // ======== BasicBlock ==========================================================================================
 
 // Constructor
 BasicBlock::BasicBlock(CFG *cfg, string entry_label) : cfg(cfg), label(entry_label) {}
+
 
 // Method implementation for gen_asm
 void BasicBlock::gen_asm(ostream &o)
@@ -652,6 +652,7 @@ void BasicBlock::gen_asm_arm64(ostream &o)
         cfg->gen_asm_epilogue_arm64(o, hasCharOp); // Generate ARM64 specific epilogue
     }
 }
+
 
 // Method implementation for add_IRInstr
 void BasicBlock::add_IRInstr(IRInstr::Operation op, Type t, vector<string> params)
@@ -741,6 +742,68 @@ void BasicBlock::add_IRInstr(IRInstr::Operation op, Type t, vector<string> param
     // newInstr = new IRInstr(this, op, t, params); // Assuming IRInstr constructor takes BasicBlock* as first argument
 
     instrs.push_back(newInstr);
+}
+
+// Method implementation for gen_asm
+void BasicBlock::gen_asm(ostream &o)
+{
+    // Very simple assembly code generation for this basic block
+
+    if (label == cfg->getFuncName())
+    {
+        cfg->gen_asm_prologue(o);
+    }
+    else
+    {
+        o << "\n." << label << ":\n\n";
+    }
+    for (IRInstr *instr : instrs)
+    {
+        instr->gen_asm(o);
+    }
+
+    if (this->exit_true && !this->exit_false)
+    {
+        o << "jmp ." << this->exit_true->label << endl;
+    }
+
+    if (!(this->exit_true || this->exit_false))
+    {
+        cfg->gen_asm_epilogue(o);
+    }
+}
+
+void BasicBlock::gen_asm_arm64(ostream &o)
+{
+    // Check if the label is for the main function
+    if (label == "main")
+    {
+        // For the main function, prepend with an underscore
+        o << "_main:\n";
+    }
+    else
+    {
+        // For other functions or blocks, use the label as is
+        o << label << ":\n";
+    }
+
+    // Generate the prologue for the main function only
+    if (label == cfg->getFuncName() && label == "main")
+    {
+        cfg->gen_asm_prologue_arm64(o); // Generate ARM64 specific prologue for main
+    }
+
+    // Generate ARM64 assembly for each instruction in the basic block
+    for (IRInstr *instr : instrs)
+    {
+        instr->gen_asm_arm64(o); // Each instruction generates ARM64 code
+    }
+
+    // Generate the epilogue if there are no exit branches
+    if (!(this->exit_true && this->exit_false))
+    {
+        cfg->gen_asm_epilogue_arm64(o); // Generate ARM64 specific epilogue
+    }
 }
 
 void BasicBlock::printBB()
@@ -855,15 +918,12 @@ void CFG::gen_asm_prologue(ostream &o)
 void CFG::gen_asm_epilogue(ostream &o)
 {
     // Placeholder for generating assembly code epilogue
-    // Actual implementation will depend on your specific requirements
-    // o << endl;
     o << "leave" << endl;
     o << "ret" << endl;
 }
 
 void CFG::gen_asm_prologue_arm64(ostream &o, bool hasCharOp)
 {
-    // Placeholder for generating ARM64 specific prologue
     // Actual implementation will depend on your specific requirements
     // o << "nextFreeSymbolIndex" << nextFreeSymbolIndex << endl;
     int alloc_size;
