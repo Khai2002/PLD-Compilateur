@@ -621,7 +621,7 @@ void BasicBlock::gen_asm_arm64(ostream &o)
     }
 
     // Generate the prologue for the main function only
-    if (label == cfg->getFuncName() && label == "main")
+    if (label == cfg->getFuncName()) // && label == "main")
     {
         cfg->gen_asm_prologue_arm64(o, hasCharOp); // Generate ARM64 specific prologue for main
     }
@@ -892,12 +892,9 @@ void CFG::gen_asm_epilogue_arm64(ostream &o, bool hasCharOp)
     {
         o << "ldp x29, x30, [sp, #16]" << endl;
     }
-    if (funcName == "main")
-    {
-        o << "add sp, sp, #" << alloc_size << endl;
-
-    }
-    o << "ret" << endl;
+    
+    o << "add sp, sp, #" << alloc_size << endl;
+    o << "ret\n" << endl;
 }
 
 // Method implementation for add_to_symbol_table
