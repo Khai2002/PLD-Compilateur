@@ -494,8 +494,8 @@ void IRInstrJumpCond::gen_asm_arm64(ostream &o) {
 
     o << "ldr w8, " << indexCond << endl;
     o << "cmp w8, #0" << endl;
-    o << "beq " << falseBBLabel << endl;
-    o << "b " << trueBBLabel << endl;
+    o << "beq _" << falseBBLabel << endl;
+    o << "b _" << trueBBLabel << endl;
 }
 
 void IRInstrPutChar::gen_asm_arm64(ostream &o)
@@ -638,6 +638,11 @@ void BasicBlock::gen_asm_arm64(ostream &o)
     for (IRInstr *instr : instrs)
     {
         instr->gen_asm_arm64(o); // Each instruction generates ARM64 code
+    }
+
+    if (this->exit_true && !this->exit_false)
+    {
+        o << "b _" << this->exit_true->label << endl;
     }
 
 
