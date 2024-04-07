@@ -138,7 +138,7 @@ antlrcpp::Any VarCheckVisitor::visitVar_decl(ifccParser::Var_declContext *ctx)
 
     for (auto Dec : ctx->declareAssign())
     {
-        visit(Dec);
+        visit(Dec) ;
     }
 
     // cout << "Name :" << name << " index : " << this->adrTable[name].index << endl;
