@@ -534,6 +534,24 @@ void IRInstrPostIncr::gen_asm_arm64(ostream &o)
     o << "str w8, [sp, #" << -index << "]" << endl;
 }
 
+void IRInstrPostDecr::gen_asm_arm64(ostream &o)
+{
+    int index = bb->cfg->get_var_index(params[0]);
+    o << "ldr w8, [sp, #" << -index << "]" << endl;
+    o << "sub w8, w8, #1" << endl;
+    o << "str w8, [sp, #" << -index << "]" << endl;
+}
+
+void IRInstrInsertParam::gen_asm_arm64(ostream &o)
+{
+    string indexParam1 = getValueString_arm64(params[0]);
+    int param_num = stoi(params[1]);
+
+    o << "ldr w8, " << indexParam1 << endl;
+    o << "str w8, [sp, #" << param_num * 4 << "]" << endl;
+}
+
+
 
 
 
