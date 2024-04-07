@@ -526,6 +526,15 @@ void IRInstrCallFunc::gen_asm_arm64(ostream &o) {
     }
 }
 
+void IRInstrPostIncr::gen_asm_arm64(ostream &o)
+{
+    int index = bb->cfg->get_var_index(params[0]);
+    o << "ldr w8, [sp, #" << -index << "]" << endl;
+    o << "add w8, w8, #1" << endl;
+    o << "str w8, [sp, #" << -index << "]" << endl;
+}
+
+
 
 
 
