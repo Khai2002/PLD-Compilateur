@@ -287,7 +287,9 @@ class IRInstrCallParam : public IRInstr
 public:
 	IRInstrCallParam(BasicBlock *bb, Operation op, Type t, vector<string> params) : IRInstr(bb, op, t, params){};
 	void gen_asm(ostream &o) override;
+	void gen_asm_arm64(ostream &o) override;
 	vector<string> registers_name = {"%rdi", "%rsi", "%rdx", "%rcx", "%r8", "%r9"};
+	vector<string> registers_name_arm64 = {"%x0", "%x1", "%x2", "%x3", "%x4", "%x5"};
 };
 /**  The class for a basic block */
 
