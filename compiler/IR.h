@@ -77,6 +77,8 @@ public:
 	string getValueString(string s);
 	string getValueString_arm64(string s);
 
+	Operation getOperation() { return op; }
+
 protected:
 	BasicBlock *bb; /**< The BB this instruction belongs to, which provides a pointer to the CFG this instruction belong to */
 	Operation op;
@@ -242,6 +244,7 @@ class IRInstrGetchar : public IRInstr
 public:
 	IRInstrGetchar(BasicBlock *bb, Operation op, Type t, vector<string> params) : IRInstr(bb, op, t, params){};
 	void gen_asm(ostream &o) override;
+	void gen_asm_arm64(ostream &o) override;
 	// void gen_asm_arm64(ostream &o) override;
 };
 
@@ -250,7 +253,7 @@ class IRInstrCallFunc : public IRInstr
 public:
 	IRInstrCallFunc(BasicBlock *bb, Operation op, Type t, vector<string> params) : IRInstr(bb, op, t, params){};
 	void gen_asm(ostream &o) override;
-	// void gen_asm_arm64(ostream &o) override;
+	void gen_asm_arm64(ostream &o) override;
 };
 
 class IRInstrPostIncr : public IRInstr
@@ -258,6 +261,7 @@ class IRInstrPostIncr : public IRInstr
 public:
 	IRInstrPostIncr(BasicBlock *bb, Operation op, Type t, vector<string> params) : IRInstr(bb, op, t, params){};
 	void gen_asm(ostream &o) override;
+	void gen_asm_arm64(ostream &o) override;
 };
 
 class IRInstrPostDecr : public IRInstr
@@ -265,6 +269,7 @@ class IRInstrPostDecr : public IRInstr
 public:
 	IRInstrPostDecr(BasicBlock *bb, Operation op, Type t, vector<string> params) : IRInstr(bb, op, t, params){};
 	void gen_asm(ostream &o) override;
+	void gen_asm_arm64(ostream &o) override;
 };
 
 class IRInstrInsertParam : public IRInstr
@@ -272,7 +277,9 @@ class IRInstrInsertParam : public IRInstr
 public:
 	IRInstrInsertParam(BasicBlock *bb, Operation op, Type t, vector<string> params) : IRInstr(bb, op, t, params){};
 	void gen_asm(ostream &o) override;
+	void gen_asm_arm64(ostream &o) override;
 	vector<string> registers_name = {"%rdi", "%rsi", "%rdx", "%rcx", "%r8", "%r9"};
+	vector<string> registers_name_arm64 = {"%x0", "%x1", "%x2", "%x3", "%x4", "%x5"};
 };
 
 class IRInstrCallParam : public IRInstr
@@ -280,7 +287,9 @@ class IRInstrCallParam : public IRInstr
 public:
 	IRInstrCallParam(BasicBlock *bb, Operation op, Type t, vector<string> params) : IRInstr(bb, op, t, params){};
 	void gen_asm(ostream &o) override;
+	void gen_asm_arm64(ostream &o) override;
 	vector<string> registers_name = {"%rdi", "%rsi", "%rdx", "%rcx", "%r8", "%r9"};
+	vector<string> registers_name_arm64 = {"%x0", "%x1", "%x2", "%x3", "%x4", "%x5"};
 };
 /**  The class for a basic block */
 
@@ -354,8 +363,8 @@ public:
 	void gen_asm_prologue(ostream &o);
 	void gen_asm_epilogue(ostream &o);
 
-	void gen_asm_prologue_arm64(ostream &o);
-	void gen_asm_epilogue_arm64(ostream &o);
+	void gen_asm_prologue_arm64(ostream &o, bool hasCharOp);
+	void gen_asm_epilogue_arm64(ostream &o, bool hasCharOp);
 
 	// symbol table methods
 	void add_to_symbol_table(string name, Type t);
