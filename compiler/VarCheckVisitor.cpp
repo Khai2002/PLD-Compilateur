@@ -11,8 +11,7 @@ void VarCheckVisitor::insertParam(string name, string type)
     if (it != this->adrTable.end())
     {
         cerr << "#Erreur : Variable '" << name << "' déjà déclarée." << endl;
-        this->number_errors++;
-        return;
+        exit(1);
     }
 
     if (type == INT_Type)
@@ -60,7 +59,7 @@ antlrcpp::Any VarCheckVisitor::visitFunc_decl(ifccParser::Func_declContext *ctx)
     {
         // cout << "acdvd" << endl;
         cerr << "# No type matches " << ctx->type(0)->getText();
-        this->number_errors++;
+        exit(1);
     }
     int i = 1;
     int int_size = 8;
@@ -82,7 +81,7 @@ antlrcpp::Any VarCheckVisitor::visitFunc_decl(ifccParser::Func_declContext *ctx)
         else
         {
             cerr << "# No type matches " << ctx->type(i)->getText() << endl;
-            this->number_errors++;
+            exit(1);
         }
         insertParam(ctx->ID(i)->getText(), ctx->type(i)->getText());
         i++;
@@ -138,7 +137,7 @@ antlrcpp::Any VarCheckVisitor::visitVar_decl(ifccParser::Var_declContext *ctx)
 
     for (auto Dec : ctx->declareAssign())
     {
-        visit(Dec) ;
+        visit(Dec);
     }
 
     // cout << "Name :" << name << " index : " << this->adrTable[name].index << endl;
@@ -166,8 +165,7 @@ antlrcpp::Any VarCheckVisitor::visitVar_Assignment(ifccParser::Var_AssignmentCon
     if (it1 == this->adrTable.end())
     {
         cout << "# Erreur : Variable '" << name1 << "' n'a pas été déclarée." << endl;
-        this->number_errors++;
-        return INT_Type;
+        exit(1);
     }
 
     string expr = visit(ctx->expr());
@@ -176,8 +174,7 @@ antlrcpp::Any VarCheckVisitor::visitVar_Assignment(ifccParser::Var_AssignmentCon
     if ((string)expr == VOID_Type)
     {
         cerr << "wrong Type for the expresion" << endl;
-        this->number_errors++;
-        return INT_Type;
+        exit(1);
     }
 
     it1->second.callCount++;
@@ -192,8 +189,7 @@ antlrcpp::Any VarCheckVisitor::visitVar(ifccParser::VarContext *ctx)
     if (it == this->adrTable.end())
     {
         cerr << "#Erreur : Variable '" << name << "' n'a pas été déclarée." << endl;
-        this->number_errors++;
-        return 0;
+        exit(1);
     }
     // auto expr = visitChildren(ctx);
     it->second.callCount++;
@@ -207,8 +203,7 @@ antlrcpp::Any VarCheckVisitor::visitUnaireExpr(ifccParser::UnaireExprContext *ct
     if ((string)expr == VOID_Type)
     {
         cerr << "wrong Type for the expresion" << endl;
-        this->number_errors++;
-        return INT_Type;
+        exit(1);
     }
     return (INT_Type);
 }
@@ -222,8 +217,7 @@ antlrcpp::Any VarCheckVisitor::visitMultDivModExpr(ifccParser::MultDivModExprCon
     if ((string)expr1 == VOID_Type || (string)expr2 == VOID_Type)
     {
         cerr << "wrong Type for the expresion" << endl;
-        this->number_errors++;
-        return INT_Type;
+        exit(1);
     }
 
     return INT_Type;
@@ -238,8 +232,7 @@ antlrcpp::Any VarCheckVisitor::visitAddSubExpr(ifccParser::AddSubExprContext *ct
     if ((string)expr1 == VOID_Type || (string)expr2 == VOID_Type)
     {
         cerr << "wrong Type for the expresion" << endl;
-        this->number_errors++;
-        return INT_Type;
+        exit(1);
     }
 
     return (INT_Type);
@@ -254,8 +247,7 @@ antlrcpp::Any VarCheckVisitor::visitMoreLessExpr(ifccParser::MoreLessExprContext
     if ((string)expr1 == VOID_Type || (string)expr2 == VOID_Type)
     {
         cerr << "wrong Type for the expresion" << endl;
-        this->number_errors++;
-        return INT_Type;
+        exit(1);
     }
 
     return (INT_Type);
@@ -270,8 +262,7 @@ antlrcpp::Any VarCheckVisitor::visitEqualExpr(ifccParser::EqualExprContext *ctx)
     if ((string)expr1 == VOID_Type || (string)expr2 == VOID_Type)
     {
         cerr << "wrong Type for the expresion" << endl;
-        this->number_errors++;
-        return INT_Type;
+        exit(1);
     }
 
     return (INT_Type);
@@ -286,8 +277,7 @@ antlrcpp::Any VarCheckVisitor::visitAndExpr(ifccParser::AndExprContext *ctx)
     if ((string)expr1 == VOID_Type || (string)expr2 == VOID_Type)
     {
         cerr << "wrong Type for the expresion" << endl;
-        this->number_errors++;
-        return INT_Type;
+        exit(1);
     }
 
     return (INT_Type);
@@ -302,8 +292,7 @@ antlrcpp::Any VarCheckVisitor::visitXorExpr(ifccParser::XorExprContext *ctx)
     if ((string)expr1 == VOID_Type || (string)expr2 == VOID_Type)
     {
         cerr << "wrong Type for the expresion" << endl;
-        this->number_errors++;
-        return INT_Type;
+        exit(1);
     }
 
     return (INT_Type);
@@ -318,8 +307,7 @@ antlrcpp::Any VarCheckVisitor::visitOrExpr(ifccParser::OrExprContext *ctx)
     if ((string)expr1 == VOID_Type || (string)expr2 == VOID_Type)
     {
         cerr << "wrong Type for the expresion" << endl;
-        this->number_errors++;
-        return INT_Type;
+        exit(1);
     }
 
     return (INT_Type);
@@ -334,8 +322,7 @@ antlrcpp::Any VarCheckVisitor::visitPutchar(ifccParser::PutcharContext *ctx)
     if ((string)expr == VOID_Type)
     {
         cerr << "wrong Type for the expresion" << endl;
-        this->number_errors++;
-        return INT_Type;
+        exit(1);
     }
 
     return (INT_Type);
@@ -356,8 +343,7 @@ antlrcpp::Any VarCheckVisitor::visitParExpr(ifccParser::ParExprContext *ctx)
     if ((string)expr == VOID_Type)
     {
         cerr << "wrong Type for the expresion" << endl;
-        this->number_errors++;
-        return INT_Type;
+        exit(1);
     }
 
     return (INT_Type);
@@ -383,9 +369,8 @@ antlrcpp::Any VarCheckVisitor::visitReturn_stmt(ifccParser::Return_stmtContext *
 
     if ((string)expr == VOID_Type)
     {
-        cerr << "wrong Type for the expresion" << endl;
-        this->number_errors++;
-        return INT_Type;
+        cerr << "wrong Type for the return statement " << endl;
+        exit(1);
     }
     return 0;
 }
@@ -399,8 +384,7 @@ antlrcpp::Any VarCheckVisitor::visitFunctionCall(ifccParser::FunctionCallContext
     if (it1 == this->func_table.end())
     {
         cout << "# Erreur : la fonction '" << name1 << "' n'a pas été déclarée." << endl;
-        this->number_errors++;
-        return INT_Type;
+        exit(1);
     }
     int i = 0;
     while (ctx->expr(i) != nullptr)
@@ -410,8 +394,7 @@ antlrcpp::Any VarCheckVisitor::visitFunctionCall(ifccParser::FunctionCallContext
     if (i != it1->second.get_number_params())
     {
         cerr << "Le nombre d'arguments passé en paramètre est incorrect" << endl;
-        this->number_errors++;
-        return 0;
+        exit(1);
     }
 
     return this->func_table[name1].Get_Return_type();
@@ -463,8 +446,8 @@ antlrcpp::Any VarCheckVisitor::visitVarAdditionAssignment(ifccParser::VarAdditio
     if ((string)expr == VOID_Type)
     {
         cerr << "wrong Type for the expresion" << endl;
-        this->number_errors++;
-        return INT_Type;
+
+        exit(1);
     }
     return INT_Type;
 }
@@ -475,8 +458,7 @@ antlrcpp::Any VarCheckVisitor::visitVarSubstractionAssignment(ifccParser::VarSub
     if ((string)expr == VOID_Type)
     {
         cerr << "wrong Type for the expresion" << endl;
-        this->number_errors++;
-        return INT_Type;
+        exit(1);
     }
     return INT_Type;
 }
