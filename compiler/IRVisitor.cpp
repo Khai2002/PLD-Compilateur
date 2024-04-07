@@ -53,6 +53,13 @@ antlrcpp::Any IRVisitor::visitFunc_decl(ifccParser::Func_declContext *ctx)
     {
         visit(line);
     }
+    if (!currentCFG->getReturnPresent())
+    {
+        string value = "0";
+        string tempvar = currentCFG->create_new_tempvar(Type::TypeEnum::INT);
+        currentCFG->current_bb->add_IRInstr(IRInstr::Operation::ldconst, Type::TypeEnum::INT, {tempvar, value});
+        currentCFG->current_bb->add_IRInstr(IRInstr::Operation::ret, Type::TypeEnum::INT, {tempvar});
+    }
 
     return 0;
 }
@@ -294,6 +301,7 @@ antlrcpp::Any IRVisitor::visitReturn_stmt(ifccParser::Return_stmtContext *ctx)
     // cout << "#visiting return statements..." << endl;
     auto expr = ctx->expr();
     string name = visit(expr);
+    currentCFG->changeReturnPresent();
     currentCFG->current_bb->add_IRInstr(IRInstr::Operation::ret, Type::TypeEnum::INT, {name});
     return 0;
 }
@@ -319,10 +327,9 @@ antlrcpp::Any IRVisitor::visitIntConst(ifccParser::IntConstContext *ctx)
     // cout << "New Int Const with value [" << value << "] Decl as " << tempvar << endl;
 
     return tempvar;
-    
+
 #endif
-    
-    
+
     return ctx->INT_CONST()->getText();
 }
 

@@ -378,6 +378,8 @@ public:
 	int getNextFreeSymbolIndex() { return nextFreeSymbolIndex; }
 	int getBBNumber() { return nextBBnumber; }
 	string getFuncName() { return funcName; }
+	bool getReturnPresent() { return ReturnPresent; }
+	void changeReturnPresent() { ReturnPresent = true; }
 	void printCFG(); // function for debugging
 
 	// basic block management
@@ -390,6 +392,7 @@ protected:
 	int nextFreeSymbolIndex;	  /**< to allocate new symbols in the symbol table */
 	int nextBBnumber;			  /**< just for naming */
 	string funcName;
+	bool ReturnPresent = false;
 
 	vector<BasicBlock *> bbs; /**< all the basic blocks of this CFG*/
 };

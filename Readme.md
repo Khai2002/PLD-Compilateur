@@ -40,17 +40,35 @@ Please note that the compiler currently only supports a minimal subset of the C 
 
 ## Supported functionalities
 
-- Declaration of variables of type INT and CHAR
-- Basic arithmetic operations with priorities
-    - Add
-    - Subtract
-    - Multiply
-    - Divide 
-    - Modulus
-    - Unary not
-    - Negation
-- Return value
+   - Declaration of variables of type INT and CHAR
+   - Basic arithmetic operations with priorities :
+      - Addition
+      - Subtraction
+      - Multiplication
+   - Division and modulus
+   - Bitwise logical operations: OR (|), AND (&), XOR (ˆ)
+   - Comparison operations: Equal (==), Not equal (!=), Less than (<), Greater than (>)  
+   - Declaration of variables anywhere
+   - Assignment (which also returns a value in C)
+   - Use of standard functions putchar and getchar for input/output
+   - Definition of functions with parameters, and return type int or void
+   - Checking the consistency of function calls and their parameters
+   - Block structure using { and }
+   - Control structures: if, else, while
+   - Support for return expression anywhere
+   - Verification that a used variable has been declared
+   - Verification that a variable is not declared multiple times
+   - Verification that a declared variable is used
+   - Propagation de constantes simple
+   - Support en largeur du type de données char (entier 8 bits)
+   - Possibilité d’initialiser une variable lors de sa déclaration
+   - Opérateurs d’affectation +=, -= etc., d’incrémentation ++ et décrémentation --   
 
+
+## Under development
+- Unary operations: Logical NOT (!) and Negation (-)
+- Support for variable scopes and shadowing
+- Reciblage vers plusieurs architectures : x86, MSP430, ARM
 ## License
 MIT license
 

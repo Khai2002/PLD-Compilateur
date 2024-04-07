@@ -9,7 +9,7 @@
 #include "generated/ifccBaseVisitor.h"
 
 // #include "CodeGenVisitor.h"
-#include "VarCheckVisitor.h"
+#include "CheckVisitor.h"
 #include "IRVisitor.h"
 
 using namespace antlr4;
@@ -45,17 +45,11 @@ int main(int argn, const char **argv)
     exit(1);
   }
   // cout << "I'm coming 1" << endl;
-  VarCheckVisitor varCheckVisitor;
+  CheckVisitor CheckVisitor;
 
-  varCheckVisitor.visit(tree);
+  CheckVisitor.visit(tree);
 
-  int temp = 0;
-  temp = varCheckVisitor.getNumber_errors();
-
-  // cout << "#nombre d'erreurs  :" << varCheckVisitor.getNumber_errors() << endl;
-  if (temp == 0)
-  {
-    //cout << "Je passe le varCheckVisitor" << endl;
+  
     IRVisitor irv;
     irv.visit(tree);
     vector<CFG *> CFGS = irv.getCFGS();
@@ -80,11 +74,8 @@ int main(int argn, const char **argv)
       
 
     }
-  }
-  else
-  {
-    return 1;
-  }
+
+  
 
   // cout << v.getVarMap().size()<< endl;
   // cout << v.getCurPointer() << endl;
