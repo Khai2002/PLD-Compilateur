@@ -14,7 +14,7 @@ using namespace std;
 
 void IRInstr::gen_asm_arm64(ostream &o)
 {
-    cout << "Using arm64..." << endl;
+    // cout << "Using arm64..." << endl;
 }
 
 void IRInstr::print_IRInstr()
@@ -514,6 +514,19 @@ void IRInstrGetchar::gen_asm_arm64(ostream &o)
     o << "str w0, [sp, #" << -param << "]" << endl;
 }
 
+void IRInstrCallFunc::gen_asm_arm64(ostream &o) {
+    string func_name = params[0];
+    string param = getValueString_arm64(params[1]);
+    string return_type = params[2];
+
+    o << "bl _" << func_name << endl;
+
+    if (return_type == "int" || return_type == "char") {
+        o << "str w0, " << param << endl;
+    }
+}
+
+
 
 
 
@@ -563,7 +576,7 @@ void BasicBlock::gen_asm_arm64(ostream &o)
     else
     {
         // For other functions or blocks, use the label as is
-        o << label << ":\n";
+        o << "_" << label << ":\n";
     }
 
     bool hasCharOp = false;
@@ -572,7 +585,8 @@ void BasicBlock::gen_asm_arm64(ostream &o)
     {
         // if there's a putchar instr, set the hasCharOp flag to true
         if (instr->getOperation() == IRInstr::Operation::putchar
-            || instr->getOperation() == IRInstr::Operation::getchar)
+            || instr->getOperation() == IRInstr::Operation::getchar
+            || instr->getOperation() == IRInstr::Operation::call)
         {
             hasCharOp = true;
         }  
@@ -851,7 +865,11 @@ void CFG::gen_asm_epilogue_arm64(ostream &o, bool hasCharOp)
     {
         o << "ldp x29, x30, [sp, #16]" << endl;
     }
-    o << "add sp, sp, #" << alloc_size << endl;
+    if (funcName == "main")
+    {
+        o << "add sp, sp, #" << alloc_size << endl;
+
+    }
     o << "ret" << endl;
 }
 
