@@ -44,38 +44,31 @@ int main(int argn, const char **argv)
     cerr << "error: syntax error during parsing" << endl;
     exit(1);
   }
-  // cout << "I'm coming 1" << endl;
+
   CheckVisitor CheckVisitor;
 
   CheckVisitor.visit(tree);
 
-  
-    IRVisitor irv;
-    irv.visit(tree);
-    vector<CFG *> CFGS = irv.getCFGS();
-    for (CFG *cfg : CFGS)
+  IRVisitor irv;
+  irv.visit(tree);
+  vector<CFG *> CFGS = irv.getCFGS();
+  for (CFG *cfg : CFGS)
+  {
+    // cfg->printCFG();
+    auto symbolIndex = cfg->getSymbolIndex();
+    for (const auto &pair : symbolIndex)
     {
-      // cfg->printCFG();
-      auto symbolIndex = cfg->getSymbolIndex();
-      for (const auto &pair : symbolIndex)
-      {
-        // cout << "Key: " << pair.first << ", Value: " << pair.second << std::endl;
-      }
-
-      // cfg->gen_asm(cout, cfg->getFuncName());
-#ifdef __APPLE__
-      cfg->gen_asm_arm64(cout);
-
-#else
-      cfg->gen_asm(cout, cfg->getFuncName());
-#endif
-    
-
-      
-
+      // cout << "Key: " << pair.first << ", Value: " << pair.second << std::endl;
     }
 
-  
+    // cfg->gen_asm(cout, cfg->getFuncName());
+#ifdef __APPLE__
+    cfg->gen_asm_arm64(cout);
+
+#else
+    cfg->gen_asm(cout, cfg->getFuncName());
+#endif
+  }
 
   // cout << v.getVarMap().size()<< endl;
   // cout << v.getCurPointer() << endl;

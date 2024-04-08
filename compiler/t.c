@@ -3,5 +3,6 @@
 int main()
 {
     int z = 1, x = 3, w;
-    return a;
+    z = z * 3;
+    return w;
 }
