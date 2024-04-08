@@ -640,7 +640,7 @@ void BasicBlock::gen_asm_arm64(ostream &o)
         instr->gen_asm_arm64(o); // Each instruction generates ARM64 code
     }
 
-    if (this->exit_true && !this->exit_false)
+    if (this->exit_true && !this->exit_false && label!="main")
     {
         o << "b _" << this->exit_true->label << endl;
     }
