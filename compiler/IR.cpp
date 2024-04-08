@@ -245,7 +245,8 @@ void IRInstrRet::gen_asm(ostream &o)
 {
     o << "movq " << getValueString(params[0]) << ", %rax" << endl;
     o << "leave" << endl;
-    o << "ret" << endl;
+    o << "ret" << endl
+      << endl;
 }
 
 void IRInstrJumpCond::gen_asm(ostream &o)
@@ -270,9 +271,6 @@ void IRInstrPutChar::gen_asm(ostream &o)
 
 void IRInstrGetchar::gen_asm(ostream &o)
 {
-    // call	getchar@PLT
-    // movb	%al, -9(%rbp)
-    // movsbl	-9(%rbp), %eax
 
     string param = getValueString(params[0]);
 
@@ -297,9 +295,6 @@ void IRInstrCallFunc::gen_asm(ostream &o)
 
 void IRInstrPostIncr::gen_asm(ostream &o)
 {
-    // movq    -8(%rbp), %rax
-    // leaq    1(%rax), %rdx
-    // movq    %rdx, -8(%rbp)
     int index = bb->cfg->get_var_index(params[0]);
 
     o << "movq " << index << "(%rbp), %rax" << endl;
@@ -845,7 +840,8 @@ void CFG::gen_asm_epilogue(ostream &o)
 {
     // Placeholder for generating assembly code epilogue
     o << "leave" << endl;
-    o << "ret" << endl;
+    o << "ret" << endl
+      << endl;
 }
 
 void CFG::gen_asm_prologue_arm64(ostream &o, bool hasCharOp)
