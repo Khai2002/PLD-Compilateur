@@ -323,7 +323,7 @@ public:
 	BasicBlock(CFG *cfg, string entry_label);
 	void gen_asm(ostream &o);		/**< x86 assembly code generation for this basic block (very simple) */
 	void gen_asm_arm64(ostream &o); /**< ARM64 assembly code generation for this basic block (very simple) */
-	void add_IRInstr(IRInstr::Operation op, Type t, vector<string> params);
+	void add_IRInstr(IRInstr::Operation op, Type t, vector<string> params); // Add Intruction to BasicBlock
 	void printBB();
 	// No encapsulation whatsoever here. Feel free to do better.
 	BasicBlock *exit_true;	  /**< pointer to the next basic block, true branch. If nullptr, return from procedure */
@@ -360,18 +360,18 @@ public:
 	void gen_asm(ostream &o, string name);
 
 	string IR_reg_to_asm(string reg); /**< helper method: inputs a IR reg or input variable, returns e.g. "-24(%rbp)" for the proper value of 24 */
-	void gen_asm_prologue(ostream &o);
-	void gen_asm_epilogue(ostream &o);
+	void gen_asm_prologue(ostream &o); // Generate prologue for a CFG
+	void gen_asm_epilogue(ostream &o); // Generate epilogue for a CFG
 
-	void gen_asm_prologue_arm64(ostream &o, bool hasCharOp);
-	void gen_asm_epilogue_arm64(ostream &o, bool hasCharOp);
+	void gen_asm_prologue_arm64(ostream &o, bool hasCharOp); // Generate prologue for a CFG in ARM64
+	void gen_asm_epilogue_arm64(ostream &o, bool hasCharOp); // Generate epilogue for a CFG in ARM64
 
 	// symbol table methods
-	void add_to_symbol_table(string name, Type t);
-	string create_new_tempvar(Type t);
-	int get_var_index(string name);
-	Type get_var_type(string name);
-	int get_type_size(Type type);
+	void add_to_symbol_table(string name, Type t); // Add var <name> into SymbolType and SymbolIndex
+	string create_new_tempvar(Type t); // Create tempvar for linearization
+	int get_var_index(string name); // Get index given var name
+	Type get_var_type(string name); // Get type given var name
+	int get_type_size(Type type); // Get type size
 
 	map<string, Type> getSymbolType() { return SymbolType; }
 	map<string, int> getSymbolIndex() { return SymbolIndex; }
