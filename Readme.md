@@ -59,18 +59,23 @@ Please note that the compiler currently only supports a minimal subset of the C 
    - Verification that a used variable has been declared
    - Verification that a variable is not declared multiple times
    - Verification that a declared variable is used
-   - Propagation de constantes simple
-   - Support en largeur du type de données char (entier 8 bits)
-   - Possibilité d’initialiser une variable lors de sa déclaration
-   - Opérateurs d’affectation +=, -= etc., d’incrémentation ++ et décrémentation --   
+   - Simple constant propagation
+   - Support of the char data type (8-bit integer)
+   - Ability to initialize a variable at the time of its declaration
+   - Assignment operators +=, -=, etc., increment ++ and decrement operators --   
+
 
 
 ## Under development
 - Unary operations: Logical NOT (!) and Negation (-)
 - Support for variable scopes and shadowing
-- Reciblage vers plusieurs architectures : x86, MSP430, ARM
+- Retargeting to multiple architectures: X86 ,  ARM
 ## License
 MIT license
+
+## Tests 
+
+To run the tests please go to the tests Folder and execute the following command: python3 ifcc-test.py [Path to the tests you want to compile]
 
 ## note 
 

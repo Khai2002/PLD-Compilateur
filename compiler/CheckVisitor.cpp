@@ -72,6 +72,12 @@ antlrcpp::Any CheckVisitor::visitFunc_decl(ifccParser::Func_declContext *ctx)
         i++;
     }
 
+    if (F_info.get_number_params() > 6)
+    {
+        cerr << " Sorry we don't support functions with more than 6 parameters" << endl;
+        exit(1);
+    }
+
     this->func_table[ctx->ID(0)->getText()] = F_info;
 
     for (auto line : ctx->line())
@@ -152,8 +158,6 @@ antlrcpp::Any CheckVisitor::visitReturn_stmt(ifccParser::Return_stmtContext *ctx
     }
     return 0;
 }
-
-
 
 antlrcpp::Any CheckVisitor::visitVar(ifccParser::VarContext *ctx)
 {
@@ -357,8 +361,6 @@ antlrcpp::Any CheckVisitor::visitCharConst(ifccParser::CharConstContext *ctx)
     return (INT_Type);
 }
 
-
-
 antlrcpp::Any CheckVisitor::visitFunctionCall(ifccParser::FunctionCallContext *ctx)
 {
     cout << "# visiting function call " << endl;
@@ -367,7 +369,7 @@ antlrcpp::Any CheckVisitor::visitFunctionCall(ifccParser::FunctionCallContext *c
     auto it1 = this->func_table.find(name1);
     if (it1 == this->func_table.end())
     {
-        cout << "# Error  : the function  '" << name1 << "' has already been declare." << endl;
+        cerr << "# Error  : the function  '" << name1 << "' has not been declared." << endl;
         exit(1);
     }
     auto it2 = this->adrTable.find(name1);
