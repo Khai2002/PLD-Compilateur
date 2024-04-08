@@ -369,7 +369,7 @@ antlrcpp::Any CheckVisitor::visitFunctionCall(ifccParser::FunctionCallContext *c
     auto it1 = this->func_table.find(name1);
     if (it1 == this->func_table.end())
     {
-        cout << "# Error  : the function  '" << name1 << "' has already been declare." << endl;
+        cerr << "# Error  : the function  '" << name1 << "' has not been declared." << endl;
         exit(1);
     }
     auto it2 = this->adrTable.find(name1);
