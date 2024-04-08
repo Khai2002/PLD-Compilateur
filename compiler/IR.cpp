@@ -262,7 +262,7 @@ void IRInstrJumpCond::gen_asm(ostream &o)
 
 void IRInstrPutChar::gen_asm(ostream &o)
 {
-    
+
     o << "movq " << getValueString(params[0]) << ", %rax" << endl;
     o << "movq %rax, %rdi" << endl;
     o << "call putchar@PLT" << endl;
@@ -504,7 +504,6 @@ void IRInstrPutChar::gen_asm_arm64(ostream &o)
     // o << "ldr w0, " << getValueString_arm64(params[0]) << endl;
 }
 
-
 void IRInstrGetchar::gen_asm_arm64(ostream &o)
 {
     int param = bb->cfg->get_var_index(params[0]);
@@ -512,14 +511,16 @@ void IRInstrGetchar::gen_asm_arm64(ostream &o)
     o << "str w0, [sp, #" << -param << "]" << endl;
 }
 
-void IRInstrCallFunc::gen_asm_arm64(ostream &o) {
+void IRInstrCallFunc::gen_asm_arm64(ostream &o)
+{
     string func_name = params[0];
     string param = getValueString_arm64(params[1]);
     string return_type = params[2];
 
     o << "bl _" << func_name << endl;
 
-    if (return_type == "int" || return_type == "char") {
+    if (return_type == "int" || return_type == "char")
+    {
         o << "str w0, " << param << endl;
     }
 }
@@ -558,19 +559,10 @@ void IRInstrCallParam::gen_asm_arm64(ostream &o)
     o << "str w8, [sp, #" << param_num * 4 << "]" << endl;
 }
 
-
-
-
-
-
-
-
-
 // ======== BasicBlock ==========================================================================================
 
 // Constructor
 BasicBlock::BasicBlock(CFG *cfg, string entry_label) : cfg(cfg), label(entry_label) {}
-
 
 // Method implementation for gen_asm
 void BasicBlock::gen_asm(ostream &o)
@@ -620,12 +612,10 @@ void BasicBlock::gen_asm_arm64(ostream &o)
     for (IRInstr *instr : instrs)
     {
         // if there's a putchar instr, set the hasCharOp flag to true
-        if (instr->getOperation() == IRInstr::Operation::putchar
-            || instr->getOperation() == IRInstr::Operation::getchar
-            || instr->getOperation() == IRInstr::Operation::call)
+        if (instr->getOperation() == IRInstr::Operation::putchar || instr->getOperation() == IRInstr::Operation::getchar || instr->getOperation() == IRInstr::Operation::call)
         {
             hasCharOp = true;
-        }  
+        }
         // instr->gen_asm_arm64(o); // Each instruction generates ARM64 code
     }
 
@@ -645,7 +635,6 @@ void BasicBlock::gen_asm_arm64(ostream &o)
         o << "b _" << this->exit_true->label << endl;
     }
 
-
     // Generate the epilogue if there are no exit branches
     if (!(this->exit_true && this->exit_false))
     {
@@ -653,9 +642,8 @@ void BasicBlock::gen_asm_arm64(ostream &o)
     }
 }
 
-
 // Method implementation for add_IRInstr
-void BasicBlock::add_IRInstr(IRInstr::Operation op, Type t, vector<string> params)
+void BasicBlock::add_IRInstr(IRInstr::Operation op, vector<string> params)
 {
     // Create a new IRInstr and add it to the instrs vector
     IRInstr *newInstr;
@@ -663,79 +651,79 @@ void BasicBlock::add_IRInstr(IRInstr::Operation op, Type t, vector<string> param
     {
 
     case IRInstr::Operation::ldconst:
-        newInstr = new IRInstrConst(this, op, t, params);
+        newInstr = new IRInstrConst(this, op, params);
         break;
     case IRInstr::Operation::copy:
-        newInstr = new IRInstrCopy(this, op, t, params);
+        newInstr = new IRInstrCopy(this, op, params);
         break;
     case IRInstr::Operation::add:
-        newInstr = new IRInstrAdd(this, op, t, params);
+        newInstr = new IRInstrAdd(this, op, params);
         break;
     case IRInstr::Operation::sub:
-        newInstr = new IRInstrSub(this, op, t, params);
+        newInstr = new IRInstrSub(this, op, params);
         break;
     case IRInstr::Operation::mul:
-        newInstr = new IRInstrMul(this, op, t, params);
+        newInstr = new IRInstrMul(this, op, params);
         break;
     case IRInstr::Operation::div:
-        newInstr = new IRInstrDiv(this, op, t, params);
+        newInstr = new IRInstrDiv(this, op, params);
         break;
     case IRInstr::Operation::mod:
-        newInstr = new IRInstrMod(this, op, t, params);
+        newInstr = new IRInstrMod(this, op, params);
         break;
     case IRInstr::Operation::bit_or:
-        newInstr = new IRInstrOr(this, op, t, params);
+        newInstr = new IRInstrOr(this, op, params);
         break;
     case IRInstr::Operation::bit_and:
-        newInstr = new IRInstrAnd(this, op, t, params);
+        newInstr = new IRInstrAnd(this, op, params);
         break;
     case IRInstr::Operation::bit_xor:
-        newInstr = new IRInstrXor(this, op, t, params);
+        newInstr = new IRInstrXor(this, op, params);
         break;
     case IRInstr::Operation::eq:
-        newInstr = new IRInstrEq(this, op, t, params);
+        newInstr = new IRInstrEq(this, op, params);
         break;
     case IRInstr::Operation::neq:
-        newInstr = new IRInstrNeq(this, op, t, params);
+        newInstr = new IRInstrNeq(this, op, params);
         break;
     case IRInstr::Operation::lt:
-        newInstr = new IRInstrLt(this, op, t, params);
+        newInstr = new IRInstrLt(this, op, params);
         break;
     case IRInstr::Operation::gt:
-        newInstr = new IRInstrGt(this, op, t, params);
+        newInstr = new IRInstrGt(this, op, params);
         break;
     case IRInstr::Operation::neg:
-        newInstr = new IRInstrNeg(this, op, t, params);
+        newInstr = new IRInstrNeg(this, op, params);
         break;
     case IRInstr::Operation::unary_not:
-        newInstr = new IRInstrNot(this, op, t, params);
+        newInstr = new IRInstrNot(this, op, params);
         break;
     case IRInstr::Operation::PostIncr:
-        newInstr = new IRInstrPostIncr(this, op, t, params);
+        newInstr = new IRInstrPostIncr(this, op, params);
         break;
     case IRInstr::Operation::PostDecr:
-        newInstr = new IRInstrPostDecr(this, op, t, params);
+        newInstr = new IRInstrPostDecr(this, op, params);
         break;
     case IRInstr::Operation::ret:
-        newInstr = new IRInstrRet(this, op, t, params);
+        newInstr = new IRInstrRet(this, op, params);
         break;
     case IRInstr::Operation::jmp_cond:
-        newInstr = new IRInstrJumpCond(this, op, t, params);
+        newInstr = new IRInstrJumpCond(this, op, params);
         break;
     case IRInstr::Operation::putchar:
-        newInstr = new IRInstrPutChar(this, op, t, params);
+        newInstr = new IRInstrPutChar(this, op, params);
         break;
     case IRInstr::Operation::getchar:
-        newInstr = new IRInstrGetchar(this, op, t, params);
+        newInstr = new IRInstrGetchar(this, op, params);
         break;
     case IRInstr::Operation::call:
-        newInstr = new IRInstrCallFunc(this, op, t, params);
+        newInstr = new IRInstrCallFunc(this, op, params);
         break;
     case IRInstr::Operation::InsertParam:
-        newInstr = new IRInstrInsertParam(this, op, t, params);
+        newInstr = new IRInstrInsertParam(this, op, params);
         break;
     case IRInstr::Operation::CallParam:
-        newInstr = new IRInstrCallParam(this, op, t, params);
+        newInstr = new IRInstrCallParam(this, op, params);
         break;
     }
 
@@ -743,8 +731,6 @@ void BasicBlock::add_IRInstr(IRInstr::Operation op, Type t, vector<string> param
 
     instrs.push_back(newInstr);
 }
-
-
 
 void BasicBlock::printBB()
 {
@@ -877,10 +863,10 @@ void CFG::gen_asm_prologue_arm64(ostream &o, bool hasCharOp)
     }
     o << "sub sp, sp, #" << alloc_size << endl;
     o << "str wzr, [sp, #" << alloc_size - 4 << "]" << endl;
-    
+
     if (hasCharOp)
     {
-        o << "stp x29, x30, [sp, #16]"<< endl;   
+        o << "stp x29, x30, [sp, #16]" << endl;
     }
     // o << "add	x29, sp, #16" << endl;
 
@@ -906,9 +892,10 @@ void CFG::gen_asm_epilogue_arm64(ostream &o, bool hasCharOp)
     {
         o << "ldp x29, x30, [sp, #16]" << endl;
     }
-    
+
     o << "add sp, sp, #" << alloc_size << endl;
-    o << "ret\n" << endl;
+    o << "ret\n"
+      << endl;
 }
 
 // Method implementation for add_to_symbol_table
