@@ -48,6 +48,7 @@ int main(int argn, const char **argv)
   CheckVisitor CheckVisitor;
 
   CheckVisitor.visit(tree);
+  cout << "# end of the Debug for the CheckVisitor" << endl;
 
   IRVisitor irv;
   irv.visit(tree);

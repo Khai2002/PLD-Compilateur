@@ -64,6 +64,14 @@ public:
          */
         void insertParam(string name, string type);
 
+        /**
+         * Checks if the variable is in adrTable.
+         *  If it's the case it increments the callcount of the variable
+         * Otherwise it exits the program
+         * @param name The name of the variable to be checked.
+         */
+        void checkVariableName(string name);
+
         //-----------------------------------------------------  Visitor nodes
 
         virtual antlrcpp::Any visitProg(ifccParser::ProgContext *ctx) override;

@@ -14,6 +14,17 @@ void CheckVisitor::insertParam(string name, string type)
     this->adrTable[name] = VariableInfo();
 }
 
+void CheckVisitor::checkVariableName(string name)
+{
+    auto it = this->adrTable.find(name);
+    if (it == this->adrTable.end())
+    {
+        cerr << "#Error:  the variable '" << name << "' has not been declared." << endl;
+        exit(1);
+    }
+    it->second.callCount++;
+}
+
 antlrcpp::Any CheckVisitor::visitProg(ifccParser::ProgContext *ctx)
 {
     cout << "# visiting Prog" << endl;
@@ -138,7 +149,12 @@ antlrcpp::Any CheckVisitor::visitDeclareAssign(ifccParser::DeclareAssignContext 
     cout << "# visit Declaration assignement" << endl;
     if (ctx->expr() != nullptr)
     {
-        visit(ctx->expr());
+        auto expr = visit(ctx->expr());
+        if ((string)expr == VOID_Type)
+        {
+            cerr << "wrong Type for the expression assignment " << endl;
+            exit(1);
+        }
     }
 
     insertParam(ctx->ID()->getText(), "int");
@@ -162,37 +178,23 @@ antlrcpp::Any CheckVisitor::visitReturn_stmt(ifccParser::Return_stmtContext *ctx
 antlrcpp::Any CheckVisitor::visitVar(ifccParser::VarContext *ctx)
 {
     cout << "# visitVar" << endl;
-    string name = ctx->ID()->getText();
-    auto it = this->adrTable.find(name);
-    if (it == this->adrTable.end())
-    {
-        cerr << "#Error:  the variable '" << name << "' has already been declared." << endl;
-        exit(1);
-    }
-    it->second.callCount++;
+    checkVariableName(ctx->ID()->getText());
     return (INT_Type);
 }
 
 antlrcpp::Any CheckVisitor::visitVar_Assignment(ifccParser::Var_AssignmentContext *ctx)
 {
     cout << "# visitVar_Assignment" << endl;
-    string name1 = ctx->ID()->getText();
-    auto it1 = this->adrTable.find(name1);
-    if (it1 == this->adrTable.end())
-    {
-        cerr << "#Error:  the variable '" << name1 << "' has already been declared." << endl;
-        exit(1);
-    }
+    checkVariableName(ctx->ID()->getText());
 
-    string expr = visit(ctx->expr());
+    auto expr = visit(ctx->expr());
 
     if ((string)expr == VOID_Type)
     {
-        cerr << "wrong Type for the expresion" << endl;
+        cerr << "wrong Type for the expression assignment" << endl;
         exit(1);
     }
 
-    it1->second.callCount++;
     return INT_Type;
 }
 
@@ -202,7 +204,7 @@ antlrcpp::Any CheckVisitor::visitUnaireExpr(ifccParser::UnaireExprContext *ctx)
     auto expr = visit(ctx->expr());
     if ((string)expr == VOID_Type)
     {
-        cerr << "wrong Type for the expresion" << endl;
+        cerr << "wrong Type for the unary expression" << endl;
         exit(1);
     }
     return (INT_Type);
@@ -216,7 +218,7 @@ antlrcpp::Any CheckVisitor::visitMultDivModExpr(ifccParser::MultDivModExprContex
     auto expr2 = visit(ctx->expr(1));
     if ((string)expr1 == VOID_Type || (string)expr2 == VOID_Type)
     {
-        cerr << "wrong Type for the expresion" << endl;
+        cerr << "wrong Type for at least one of the expressions of Multiplication/Division/ Modulo." << endl;
         exit(1);
     }
 
@@ -231,7 +233,7 @@ antlrcpp::Any CheckVisitor::visitAddSubExpr(ifccParser::AddSubExprContext *ctx)
     auto expr2 = visit(ctx->expr(1));
     if ((string)expr1 == VOID_Type || (string)expr2 == VOID_Type)
     {
-        cerr << "wrong Type for the expresion" << endl;
+        cerr << "wrong Type for at least one of the expressions of addition/substraction" << endl;
         exit(1);
     }
 
@@ -246,7 +248,7 @@ antlrcpp::Any CheckVisitor::visitMoreLessExpr(ifccParser::MoreLessExprContext *c
     auto expr2 = visit(ctx->expr(1));
     if ((string)expr1 == VOID_Type || (string)expr2 == VOID_Type)
     {
-        cerr << "wrong Type for the expresion" << endl;
+        cerr << "wrong Type for at least one of the expressions " << endl;
         exit(1);
     }
 
@@ -261,7 +263,7 @@ antlrcpp::Any CheckVisitor::visitEqualExpr(ifccParser::EqualExprContext *ctx)
     auto expr2 = visit(ctx->expr(1));
     if ((string)expr1 == VOID_Type || (string)expr2 == VOID_Type)
     {
-        cerr << "wrong Type for the expresion" << endl;
+        cerr << "wrong Type for at least one of the  Equal/notEqual expression " << endl;
         exit(1);
     }
 
@@ -276,7 +278,7 @@ antlrcpp::Any CheckVisitor::visitAndExpr(ifccParser::AndExprContext *ctx)
     auto expr2 = visit(ctx->expr(1));
     if ((string)expr1 == VOID_Type || (string)expr2 == VOID_Type)
     {
-        cerr << "wrong Type for the expresion" << endl;
+        cerr << "wrong Type for at least one of the And expression" << endl;
         exit(1);
     }
 
@@ -291,7 +293,7 @@ antlrcpp::Any CheckVisitor::visitXorExpr(ifccParser::XorExprContext *ctx)
     auto expr2 = visit(ctx->expr(1));
     if ((string)expr1 == VOID_Type || (string)expr2 == VOID_Type)
     {
-        cerr << "wrong Type for the expresion" << endl;
+        cerr << "wrong Type for at least one of the Xor expression" << endl;
         exit(1);
     }
 
@@ -306,7 +308,7 @@ antlrcpp::Any CheckVisitor::visitOrExpr(ifccParser::OrExprContext *ctx)
     auto expr2 = visit(ctx->expr(1));
     if ((string)expr1 == VOID_Type || (string)expr2 == VOID_Type)
     {
-        cerr << "wrong Type for the expresion" << endl;
+        cerr << "wrong Type for at least one of the Or expression" << endl;
         exit(1);
     }
 
@@ -321,7 +323,7 @@ antlrcpp::Any CheckVisitor::visitPutchar(ifccParser::PutcharContext *ctx)
 
     if ((string)expr == VOID_Type)
     {
-        cerr << "wrong Type for the expresion" << endl;
+        cerr << "wrong Type for the expression in putchar" << endl;
         exit(1);
     }
 
@@ -342,7 +344,7 @@ antlrcpp::Any CheckVisitor::visitParExpr(ifccParser::ParExprContext *ctx)
 
     if ((string)expr == VOID_Type)
     {
-        cerr << "wrong Type for the expresion" << endl;
+        cerr << "wrong Type for the expression in parenthesis" << endl;
         exit(1);
     }
 
@@ -401,50 +403,59 @@ antlrcpp::Any CheckVisitor::visitFunctionCall(ifccParser::FunctionCallContext *c
 
 antlrcpp::Any CheckVisitor::visitVarPostIncrement(ifccParser::VarPostIncrementContext *ctx)
 {
+    checkVariableName(ctx->ID()->getText());
     return INT_Type;
 }
 
 antlrcpp::Any CheckVisitor::visitVarPostDecrement(ifccParser::VarPostDecrementContext *ctx)
 {
+    checkVariableName(ctx->ID()->getText());
     return INT_Type;
 }
 
 antlrcpp::Any CheckVisitor::visitVarParPostIncrement(ifccParser::VarParPostIncrementContext *ctx)
 {
+    checkVariableName(ctx->ID()->getText());
     return INT_Type;
 }
 
 antlrcpp::Any CheckVisitor::visitVarParPostDecrement(ifccParser::VarParPostDecrementContext *ctx)
 {
+    checkVariableName(ctx->ID()->getText());
     return INT_Type;
 }
 
 antlrcpp::Any CheckVisitor::visitVarPreIncrement(ifccParser::VarPreIncrementContext *ctx)
 {
+    checkVariableName(ctx->ID()->getText());
     return INT_Type;
 }
 
 antlrcpp::Any CheckVisitor::visitVarPreDecrement(ifccParser::VarPreDecrementContext *ctx)
 {
+    checkVariableName(ctx->ID()->getText());
     return INT_Type;
 }
 
 antlrcpp::Any CheckVisitor::visitVarParPreIncrement(ifccParser::VarParPreIncrementContext *ctx)
 {
+    checkVariableName(ctx->ID()->getText());
     return INT_Type;
 }
 
 antlrcpp::Any CheckVisitor::visitVarParPreDecrement(ifccParser::VarParPreDecrementContext *ctx)
 {
+    checkVariableName(ctx->ID()->getText());
     return INT_Type;
 }
 
 antlrcpp::Any CheckVisitor::visitVarAdditionAssignment(ifccParser::VarAdditionAssignmentContext *ctx)
 {
+    checkVariableName(ctx->ID()->getText());
     auto expr = visit(ctx->expr());
     if ((string)expr == VOID_Type)
     {
-        cerr << "wrong Type for the expresion" << endl;
+        cerr << "wrong Type for the expression " << endl;
 
         exit(1);
     }
@@ -453,10 +464,11 @@ antlrcpp::Any CheckVisitor::visitVarAdditionAssignment(ifccParser::VarAdditionAs
 
 antlrcpp::Any CheckVisitor::visitVarSubstractionAssignment(ifccParser::VarSubstractionAssignmentContext *ctx)
 {
+    checkVariableName(ctx->ID()->getText());
     auto expr = visit(ctx->expr());
     if ((string)expr == VOID_Type)
     {
-        cerr << "wrong Type for the expresion" << endl;
+        cerr << "wrong Type for the expression" << endl;
         exit(1);
     }
     return INT_Type;
