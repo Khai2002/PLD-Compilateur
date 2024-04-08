@@ -495,7 +495,7 @@ void IRInstrRet::gen_asm_arm64(ostream &o)
     // if in main block
     if (bb->cfg->getFuncName() == "main" && bb->cfg->getHasCharCallOp())
     {
-        o << "ldp x29, x30, [sp, #16]" << endl;
+        o << "ldp x29, x30, [sp, #" << alloc_size - 16 << "]" << endl;
     }
     o << "add sp, sp, #" << alloc_size << endl;
     o << "ret" << endl;
@@ -538,9 +538,12 @@ void IRInstrCallFunc::gen_asm_arm64(ostream &o)
 
     o << "bl _" << func_name << endl;
 
+    o << "# return type: " << return_type << endl;
+    
     if (return_type == "int" || return_type == "char")
     {
         o << "str w0, " << param << endl;
+    
     }
 }
 
@@ -872,6 +875,7 @@ void CFG::gen_asm_prologue_arm64(ostream &o, bool hasCharCallOp)
 {
     // Actual implementation will depend on your specific requirements
     // o << "nextFreeSymbolIndex" << nextFreeSymbolIndex << endl;
+    
     int alloc_size;
     if (nextFreeSymbolIndex % 16 == 0)
     {
@@ -886,7 +890,8 @@ void CFG::gen_asm_prologue_arm64(ostream &o, bool hasCharCallOp)
 
     if (hasCharCallOp)
     {
-        o << "stp x29, x30, [sp, #16]" << endl;
+        o << "stp x29, x30, [sp, #" << alloc_size - 16 << "]" << endl;
+    
     }
     // o << "add	x29, sp, #16" << endl;
 
@@ -910,7 +915,7 @@ void CFG::gen_asm_epilogue_arm64(ostream &o, bool hasCharCallOp)
     o << "";
     if (hasCharCallOp)
     {
-        o << "ldp x29, x30, [sp, #16]" << endl;
+        o << "ldp x29, x30, [sp, #" << alloc_size - 16 << "]" << endl;
     }
 
     o << "add sp, sp, #" << alloc_size << endl;
