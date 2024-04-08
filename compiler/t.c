@@ -1,4 +1,8 @@
 
+int x(int a, int c, int az, int x, int zz, int aq)
+{
+    return 4;
+}
 
 int main()
 {
