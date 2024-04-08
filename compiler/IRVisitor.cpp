@@ -293,7 +293,7 @@ antlrcpp::Any IRVisitor::visitVar(ifccParser::VarContext *ctx)
 antlrcpp::Any IRVisitor::visitIntConst(ifccParser::IntConstContext *ctx)
 {
 #ifdef __APPLE__
-     cout << "#Visiting IntConst " << endl;
+    cout << "#Visiting IntConst " << endl;
     string value = ctx->INT_CONST()->getText();
     string tempvar = currentCFG->create_new_tempvar(Type::TypeEnum::INT);
     currentCFG->current_bb->add_IRInstr(IRInstr::Operation::ldconst, {tempvar, value});
@@ -605,7 +605,7 @@ antlrcpp::Any IRVisitor::visitMoreLessExpr(ifccParser::MoreLessExprContext *ctx)
 
 antlrcpp::Any IRVisitor::visitOrExpr(ifccParser::OrExprContext *ctx)
 {
-    cout << "visiting or expression..." << endl;
+    cout << "# visiting or expression..." << endl;
     auto left = ctx->expr(0);
     auto right = ctx->expr(1);
     // Visit left and right expressions and get their adress in memory
@@ -657,7 +657,7 @@ antlrcpp::Any IRVisitor::visitGetchar(ifccParser::GetcharContext *ctx)
 antlrcpp::Any IRVisitor::visitFunctionCall(ifccParser::FunctionCallContext *ctx)
 {
 
-     cout << "#visiting function call " << endl;
+    cout << "#visiting function call " << endl;
     int i = 0;
 
     while (ctx->expr(i) != nullptr)
