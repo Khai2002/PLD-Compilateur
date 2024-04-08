@@ -474,7 +474,26 @@ void IRInstrNot::gen_asm_arm64(ostream &o)
 
 void IRInstrRet::gen_asm_arm64(ostream &o)
 {
+    int alloc_size;
+    int nextFreeSymbolIndex = bb->cfg->getNextFreeSymbolIndex();
+    
+    if (nextFreeSymbolIndex % 16 == 0)
+    {
+        alloc_size = -nextFreeSymbolIndex;
+    }
+    else
+    {
+        alloc_size = -nextFreeSymbolIndex + 8;
+    }
     o << "ldr w0, " << getValueString_arm64(params[0]) << endl;
+
+    // if in main block
+    if (bb->cfg->getFuncName() == "main" && bb->cfg->getHasCharCallOp())
+    {
+        o << "ldp x29, x30, [sp, #" << alloc_size - 16 << "]" << endl;
+    }
+    o << "add sp, sp, #" << alloc_size << endl;
+    o << "ret" << endl;
 }
 
 void IRInstrJumpCond::gen_asm_arm64(ostream &o)
@@ -514,9 +533,12 @@ void IRInstrCallFunc::gen_asm_arm64(ostream &o)
 
     o << "bl _" << func_name << endl;
 
+    o << "# return type: " << return_type << endl;
+    
     if (return_type == "int" || return_type == "char")
     {
         o << "str w0, " << param << endl;
+    
     }
 }
 
@@ -602,14 +624,15 @@ void BasicBlock::gen_asm_arm64(ostream &o)
         o << "_" << label << ":\n";
     }
 
-    bool hasCharOp = false;
+
     // Generate ARM64 assembly for each instruction in the basic block
     for (IRInstr *instr : instrs)
     {
-        // if there's a putchar instr, set the hasCharOp flag to true
+        // if there's a putchar instr, set the hasCharCallOp flag to true
         if (instr->getOperation() == IRInstr::Operation::putchar || instr->getOperation() == IRInstr::Operation::getchar || instr->getOperation() == IRInstr::Operation::call)
         {
-            hasCharOp = true;
+            cfg->setHasCharCallOp();
+        
         }
         // instr->gen_asm_arm64(o); // Each instruction generates ARM64 code
     }
@@ -617,7 +640,7 @@ void BasicBlock::gen_asm_arm64(ostream &o)
     // Generate the prologue for the main function only
     if (label == cfg->getFuncName()) // && label == "main")
     {
-        cfg->gen_asm_prologue_arm64(o, hasCharOp); // Generate ARM64 specific prologue for main
+        cfg->gen_asm_prologue_arm64(o, cfg->getHasCharCallOp()); // Generate ARM64 specific prologue for main
     }
 
     for (IRInstr *instr : instrs)
@@ -625,7 +648,7 @@ void BasicBlock::gen_asm_arm64(ostream &o)
         instr->gen_asm_arm64(o); // Each instruction generates ARM64 code
     }
 
-    if (this->exit_true && !this->exit_false)
+    if (this->exit_true && !this->exit_false && label!="main")
     {
         o << "b _" << this->exit_true->label << endl;
     }
@@ -633,7 +656,7 @@ void BasicBlock::gen_asm_arm64(ostream &o)
     // Generate the epilogue if there are no exit branches
     if (!(this->exit_true && this->exit_false))
     {
-        cfg->gen_asm_epilogue_arm64(o, hasCharOp); // Generate ARM64 specific epilogue
+        cfg->gen_asm_epilogue_arm64(o, cfg->getHasCharCallOp()); // Generate ARM64 specific epilogue
     }
 }
 
@@ -844,10 +867,11 @@ void CFG::gen_asm_epilogue(ostream &o)
       << endl;
 }
 
-void CFG::gen_asm_prologue_arm64(ostream &o, bool hasCharOp)
+void CFG::gen_asm_prologue_arm64(ostream &o, bool hasCharCallOp)
 {
     // Actual implementation will depend on your specific requirements
     // o << "nextFreeSymbolIndex" << nextFreeSymbolIndex << endl;
+    
     int alloc_size;
     if (nextFreeSymbolIndex % 16 == 0)
     {
@@ -860,16 +884,17 @@ void CFG::gen_asm_prologue_arm64(ostream &o, bool hasCharOp)
     o << "sub sp, sp, #" << alloc_size << endl;
     o << "str wzr, [sp, #" << alloc_size - 4 << "]" << endl;
 
-    if (hasCharOp)
+    if (hasCharCallOp)
     {
-        o << "stp x29, x30, [sp, #16]" << endl;
+        o << "stp x29, x30, [sp, #" << alloc_size - 16 << "]" << endl;
+    
     }
     // o << "add	x29, sp, #16" << endl;
 
     o << endl;
 }
 
-void CFG::gen_asm_epilogue_arm64(ostream &o, bool hasCharOp)
+void CFG::gen_asm_epilogue_arm64(ostream &o, bool hasCharCallOp)
 {
 
     int alloc_size;
@@ -884,9 +909,9 @@ void CFG::gen_asm_epilogue_arm64(ostream &o, bool hasCharOp)
 
     o << endl;
     o << "";
-    if (hasCharOp)
+    if (hasCharCallOp)
     {
-        o << "ldp x29, x30, [sp, #16]" << endl;
+        o << "ldp x29, x30, [sp, #" << alloc_size - 16 << "]" << endl;
     }
 
     o << "add sp, sp, #" << alloc_size << endl;
