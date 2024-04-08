@@ -45,7 +45,7 @@ antlrcpp::Any IRVisitor::visitFunc_decl(ifccParser::Func_declContext *ctx)
             currentCFG->add_to_symbol_table(name, Type::TypeEnum::CHAR);
         }
 
-        currentCFG->current_bb->add_IRInstr(IRInstr::Operation::InsertParam, currentCFG->getSymbolType()[name], {name, to_string(i)});
+        currentCFG->current_bb->add_IRInstr(IRInstr::Operation::InsertParam, {name, to_string(i)});
         i++;
     }
 
@@ -57,8 +57,8 @@ antlrcpp::Any IRVisitor::visitFunc_decl(ifccParser::Func_declContext *ctx)
     {
         string value = "0";
         string tempvar = currentCFG->create_new_tempvar(Type::TypeEnum::INT);
-        currentCFG->current_bb->add_IRInstr(IRInstr::Operation::ldconst, Type::TypeEnum::INT, {tempvar, value});
-        currentCFG->current_bb->add_IRInstr(IRInstr::Operation::ret, Type::TypeEnum::INT, {tempvar});
+        currentCFG->current_bb->add_IRInstr(IRInstr::Operation::ldconst, {tempvar, value});
+        currentCFG->current_bb->add_IRInstr(IRInstr::Operation::ret, {tempvar});
     }
 
     return 0;
@@ -115,36 +115,11 @@ antlrcpp::Any IRVisitor::visitDeclareAssign(ifccParser::DeclareAssignContext *ct
     if (ctx->expr())
     {
         string expr = visit(ctx->expr());
-        currentCFG->current_bb->add_IRInstr(IRInstr::Operation::copy, currentCFG->getSymbolType()[var_name], {var_name, expr});
+        currentCFG->current_bb->add_IRInstr(IRInstr::Operation::copy, {var_name, expr});
     }
 
     return 0;
 }
-/*
-antlrcpp::Any IRVisitor::visitVar_decl_ass(ifccParser::Var_decl_assContext *ctx)
-{
-    cout << "#visiting variable declarations Assignements..." << endl;
-    //  var_decl : type ID (',' ID)* ';' ;
-
-    string typeName = ctx->type()->getText();
-
-    string name = ctx->ID()->getText();
-    if (typeName == "int")
-    {
-        currentCFG->add_to_symbol_table(name, Type::TypeEnum::INT);
-    }
-    else if (typeName == "char")
-    {
-        currentCFG->add_to_symbol_table(name, Type::TypeEnum::CHAR);
-    }
-
-    string tempvar;
-    string expr = visit(ctx->expr());
-    tempvar = currentCFG->create_new_tempvar(Type::TypeEnum::INT);
-    currentCFG->current_bb->add_IRInstr(IRInstr::Operation::copy, currentCFG->getSymbolType()[name], {name, expr});
-
-    return 0;
-} */
 
 antlrcpp::Any IRVisitor::visitAddSubExpr(ifccParser::AddSubExprContext *ctx)
 {
@@ -188,11 +163,11 @@ antlrcpp::Any IRVisitor::visitAddSubExpr(ifccParser::AddSubExprContext *ctx)
 
     if (op == "+")
     {
-        currentCFG->current_bb->add_IRInstr(IRInstr::Operation::add, Type::TypeEnum::INT, params);
+        currentCFG->current_bb->add_IRInstr(IRInstr::Operation::add, params);
     }
     else if (op == "-")
     {
-        currentCFG->current_bb->add_IRInstr(IRInstr::Operation::sub, Type::TypeEnum::INT, params);
+        currentCFG->current_bb->add_IRInstr(IRInstr::Operation::sub, params);
     }
 
     return tempvar;
@@ -265,15 +240,15 @@ antlrcpp::Any IRVisitor::visitMultDivModExpr(ifccParser::MultDivModExprContext *
 
     if (op == "*")
     {
-        currentCFG->current_bb->add_IRInstr(IRInstr::Operation::mul, Type::TypeEnum::INT, params);
+        currentCFG->current_bb->add_IRInstr(IRInstr::Operation::mul, params);
     }
     else if (op == "/")
     {
-        currentCFG->current_bb->add_IRInstr(IRInstr::Operation::div, Type::TypeEnum::INT, params);
+        currentCFG->current_bb->add_IRInstr(IRInstr::Operation::div, params);
     }
     else if (op == "%")
     {
-        currentCFG->current_bb->add_IRInstr(IRInstr::Operation::mod, Type::TypeEnum::INT, params);
+        currentCFG->current_bb->add_IRInstr(IRInstr::Operation::mod, params);
     }
 
     return tempvar;
@@ -290,7 +265,7 @@ antlrcpp::Any IRVisitor::visitVar_Assignment(ifccParser::Var_AssignmentContext *
     {
         string expr = visit(ctx->expr());
         tempvar = currentCFG->create_new_tempvar(Type::TypeEnum::INT);
-        currentCFG->current_bb->add_IRInstr(IRInstr::Operation::copy, currentCFG->getSymbolType()[name], {name, expr});
+        currentCFG->current_bb->add_IRInstr(IRInstr::Operation::copy, {name, expr});
     }
 
     return name;
@@ -302,7 +277,7 @@ antlrcpp::Any IRVisitor::visitReturn_stmt(ifccParser::Return_stmtContext *ctx)
     auto expr = ctx->expr();
     string name = visit(expr);
     currentCFG->changeReturnPresent();
-    currentCFG->current_bb->add_IRInstr(IRInstr::Operation::ret, Type::TypeEnum::INT, {name});
+    currentCFG->current_bb->add_IRInstr(IRInstr::Operation::ret, {name});
     return 0;
 }
 
@@ -322,7 +297,7 @@ antlrcpp::Any IRVisitor::visitIntConst(ifccParser::IntConstContext *ctx)
     // cout << "#Visiting IntConst " << endl;
     string value = ctx->INT_CONST()->getText();
     string tempvar = currentCFG->create_new_tempvar(Type::TypeEnum::INT);
-    currentCFG->current_bb->add_IRInstr(IRInstr::Operation::ldconst, Type::TypeEnum::INT, {tempvar, value});
+    currentCFG->current_bb->add_IRInstr(IRInstr::Operation::ldconst, {tempvar, value});
 
     // cout << "New Int Const with value [" << value << "] Decl as " << tempvar << endl;
 
@@ -340,7 +315,7 @@ antlrcpp::Any IRVisitor::visitCharConst(ifccParser::CharConstContext *ctx)
     int char_value = (int)ctx->CHAR_CONST()->getText()[1];
     string value = to_string(char_value);
     string tempvar = currentCFG->create_new_tempvar(Type::TypeEnum::CHAR);
-    currentCFG->current_bb->add_IRInstr(IRInstr::Operation::ldconst, Type::TypeEnum::CHAR, {tempvar, value});
+    currentCFG->current_bb->add_IRInstr(IRInstr::Operation::ldconst, {tempvar, value});
     return tempvar;
 #endif
 
@@ -378,7 +353,7 @@ antlrcpp::Any IRVisitor::visitIf_block(ifccParser::If_blockContext *ctx)
     params.push_back(testBB->exit_true->label);
     params.push_back(testBB->exit_false->label);
 
-    testBB->add_IRInstr(IRInstr::Operation::jmp_cond, Type::TypeEnum::INT, params);
+    testBB->add_IRInstr(IRInstr::Operation::jmp_cond, params);
 
     currentCFG->current_bb = thenBB;
     visit(ctx->line());
@@ -425,7 +400,7 @@ antlrcpp::Any IRVisitor::visitWhile_block(ifccParser::While_blockContext *ctx)
     params.push_back(testBB->exit_true->label);
     params.push_back(testBB->exit_false->label);
 
-    testBB->add_IRInstr(IRInstr::Operation::jmp_cond, Type::TypeEnum::INT, params);
+    testBB->add_IRInstr(IRInstr::Operation::jmp_cond, params);
 
     currentCFG->current_bb = bodyBB;
     visit(ctx->line());
@@ -475,7 +450,7 @@ antlrcpp::Any IRVisitor::visitAndExpr(ifccParser::AndExprContext *ctx)
     params.push_back(param3);
     params.push_back(tempvar);
 
-    currentCFG->current_bb->add_IRInstr(IRInstr::Operation::bit_and, Type::TypeEnum::INT, params);
+    currentCFG->current_bb->add_IRInstr(IRInstr::Operation::bit_and, params);
 
     return tempvar;
 }
@@ -512,11 +487,11 @@ antlrcpp::Any IRVisitor::visitEqualExpr(ifccParser::EqualExprContext *ctx)
 
     if (op == "==")
     {
-        currentCFG->current_bb->add_IRInstr(IRInstr::Operation::eq, Type::TypeEnum::INT, params);
+        currentCFG->current_bb->add_IRInstr(IRInstr::Operation::eq, params);
     }
     else if (op == "!=")
     {
-        currentCFG->current_bb->add_IRInstr(IRInstr::Operation::neq, Type::TypeEnum::INT, params);
+        currentCFG->current_bb->add_IRInstr(IRInstr::Operation::neq, params);
     }
 
     return tempvar;
@@ -535,11 +510,11 @@ antlrcpp::Any IRVisitor::visitUnaireExpr(ifccParser::UnaireExprContext *ctx)
 
     if (op == "-")
     {
-        currentCFG->current_bb->add_IRInstr(IRInstr::Operation::neg, Type::TypeEnum::INT, params);
+        currentCFG->current_bb->add_IRInstr(IRInstr::Operation::neg, params);
     }
     else if (op == "!")
     {
-        currentCFG->current_bb->add_IRInstr(IRInstr::Operation::unary_not, Type::TypeEnum::INT, params);
+        currentCFG->current_bb->add_IRInstr(IRInstr::Operation::unary_not, params);
     }
 
     return tempvar;
@@ -575,7 +550,7 @@ antlrcpp::Any IRVisitor::visitXorExpr(ifccParser::XorExprContext *ctx)
     params.push_back(param3);
     params.push_back(tempvar);
 
-    currentCFG->current_bb->add_IRInstr(IRInstr::Operation::bit_xor, Type::TypeEnum::INT, params);
+    currentCFG->current_bb->add_IRInstr(IRInstr::Operation::bit_xor, params);
 
     return tempvar;
 }
@@ -619,11 +594,11 @@ antlrcpp::Any IRVisitor::visitMoreLessExpr(ifccParser::MoreLessExprContext *ctx)
 
     if (op == "<")
     {
-        currentCFG->current_bb->add_IRInstr(IRInstr::Operation::lt, Type::TypeEnum::INT, params);
+        currentCFG->current_bb->add_IRInstr(IRInstr::Operation::lt, params);
     }
     else if (op == ">")
     {
-        currentCFG->current_bb->add_IRInstr(IRInstr::Operation::gt, Type::TypeEnum::INT, params);
+        currentCFG->current_bb->add_IRInstr(IRInstr::Operation::gt, params);
     }
 
     return tempvar;
@@ -659,7 +634,7 @@ antlrcpp::Any IRVisitor::visitOrExpr(ifccParser::OrExprContext *ctx)
     params.push_back(param3);
     params.push_back(tempvar);
 
-    currentCFG->current_bb->add_IRInstr(IRInstr::Operation::bit_or, Type::TypeEnum::INT, params);
+    currentCFG->current_bb->add_IRInstr(IRInstr::Operation::bit_or, params);
 
     return tempvar;
 }
@@ -669,14 +644,14 @@ antlrcpp::Any IRVisitor::visitPutchar(ifccParser::PutcharContext *ctx)
 
     auto expr = ctx->expr();
     string param = visit(expr);
-    currentCFG->current_bb->add_IRInstr(IRInstr::Operation::putchar, Type::TypeEnum::CHAR, {param});
+    currentCFG->current_bb->add_IRInstr(IRInstr::Operation::putchar, {param});
     return param;
 }
 
 antlrcpp::Any IRVisitor::visitGetchar(ifccParser::GetcharContext *ctx)
 {
     string tempvar = currentCFG->create_new_tempvar(Type::TypeEnum::CHAR);
-    currentCFG->current_bb->add_IRInstr(IRInstr::Operation::getchar, Type::TypeEnum::CHAR, {tempvar});
+    currentCFG->current_bb->add_IRInstr(IRInstr::Operation::getchar, {tempvar});
     return tempvar;
 }
 
@@ -690,7 +665,7 @@ antlrcpp::Any IRVisitor::visitFunctionCall(ifccParser::FunctionCallContext *ctx)
     {
 
         string name = visit(ctx->expr(i));
-        currentCFG->current_bb->add_IRInstr(IRInstr::Operation::CallParam, currentCFG->getSymbolType()[name], {name, to_string(i)});
+        currentCFG->current_bb->add_IRInstr(IRInstr::Operation::CallParam, {name, to_string(i)});
         i++;
     }
 
@@ -705,7 +680,7 @@ antlrcpp::Any IRVisitor::visitFunctionCall(ifccParser::FunctionCallContext *ctx)
     {
         return_type = "void";
     }
-    currentCFG->current_bb->add_IRInstr(IRInstr::Operation::call, Type::TypeEnum::CHAR, {func_name, tempvar, return_type});
+    currentCFG->current_bb->add_IRInstr(IRInstr::Operation::call, {func_name, tempvar, return_type});
     return tempvar;
 }
 
@@ -713,8 +688,8 @@ antlrcpp::Any IRVisitor::visitVarPostIncrement(ifccParser::VarPostIncrementConte
 {
     string name = ctx->ID()->getText();
     string tempvar = currentCFG->create_new_tempvar(Type::TypeEnum::INT);
-    currentCFG->current_bb->add_IRInstr(IRInstr::Operation::copy, currentCFG->getSymbolType()[name], {tempvar, name});
-    currentCFG->current_bb->add_IRInstr(IRInstr::Operation::PostIncr, currentCFG->getSymbolType()[name], {name, tempvar});
+    currentCFG->current_bb->add_IRInstr(IRInstr::Operation::copy, {tempvar, name});
+    currentCFG->current_bb->add_IRInstr(IRInstr::Operation::PostIncr, {name, tempvar});
     return tempvar;
 }
 
@@ -722,8 +697,8 @@ antlrcpp::Any IRVisitor::visitVarPostDecrement(ifccParser::VarPostDecrementConte
 {
     string name = ctx->ID()->getText();
     string tempvar = currentCFG->create_new_tempvar(Type::TypeEnum::INT);
-    currentCFG->current_bb->add_IRInstr(IRInstr::Operation::copy, currentCFG->getSymbolType()[name], {tempvar, name});
-    currentCFG->current_bb->add_IRInstr(IRInstr::Operation::PostDecr, currentCFG->getSymbolType()[name], {name, tempvar});
+    currentCFG->current_bb->add_IRInstr(IRInstr::Operation::copy, {tempvar, name});
+    currentCFG->current_bb->add_IRInstr(IRInstr::Operation::PostDecr, {name, tempvar});
     return tempvar;
 }
 
@@ -731,8 +706,8 @@ antlrcpp::Any IRVisitor::visitVarParPostIncrement(ifccParser::VarParPostIncremen
 {
     string name = ctx->ID()->getText();
     string tempvar = currentCFG->create_new_tempvar(Type::TypeEnum::INT);
-    currentCFG->current_bb->add_IRInstr(IRInstr::Operation::copy, currentCFG->getSymbolType()[name], {tempvar, name});
-    currentCFG->current_bb->add_IRInstr(IRInstr::Operation::PostIncr, currentCFG->getSymbolType()[name], {name, tempvar});
+    currentCFG->current_bb->add_IRInstr(IRInstr::Operation::copy, {tempvar, name});
+    currentCFG->current_bb->add_IRInstr(IRInstr::Operation::PostIncr, {name, tempvar});
     return tempvar;
 }
 
@@ -740,8 +715,8 @@ antlrcpp::Any IRVisitor::visitVarParPostDecrement(ifccParser::VarParPostDecremen
 {
     string name = ctx->ID()->getText();
     string tempvar = currentCFG->create_new_tempvar(Type::TypeEnum::INT);
-    currentCFG->current_bb->add_IRInstr(IRInstr::Operation::copy, currentCFG->getSymbolType()[name], {tempvar, name});
-    currentCFG->current_bb->add_IRInstr(IRInstr::Operation::PostDecr, currentCFG->getSymbolType()[name], {name, tempvar});
+    currentCFG->current_bb->add_IRInstr(IRInstr::Operation::copy, {tempvar, name});
+    currentCFG->current_bb->add_IRInstr(IRInstr::Operation::PostDecr, {name, tempvar});
     return tempvar;
 }
 
@@ -750,36 +725,36 @@ antlrcpp::Any IRVisitor::visitVarPreIncrement(ifccParser::VarPreIncrementContext
     // Visit left and right expressions and get their adress in memory
     string value = "1";
     string tempvar = currentCFG->create_new_tempvar(Type::TypeEnum::INT);
-    currentCFG->current_bb->add_IRInstr(IRInstr::Operation::ldconst, Type::TypeEnum::INT, {tempvar, value});
+    currentCFG->current_bb->add_IRInstr(IRInstr::Operation::ldconst, {tempvar, value});
     string name = ctx->ID()->getText();
-    currentCFG->current_bb->add_IRInstr(IRInstr::Operation::add, Type::TypeEnum::INT, {name, tempvar, name});
+    currentCFG->current_bb->add_IRInstr(IRInstr::Operation::add, {name, tempvar, name});
     return name;
 }
 antlrcpp::Any IRVisitor::visitVarPreDecrement(ifccParser::VarPreDecrementContext *ctx)
 {
     string value = "1";
     string tempvar = currentCFG->create_new_tempvar(Type::TypeEnum::INT);
-    currentCFG->current_bb->add_IRInstr(IRInstr::Operation::ldconst, Type::TypeEnum::INT, {tempvar, value});
+    currentCFG->current_bb->add_IRInstr(IRInstr::Operation::ldconst, {tempvar, value});
     string name = ctx->ID()->getText();
-    currentCFG->current_bb->add_IRInstr(IRInstr::Operation::sub, Type::TypeEnum::INT, {name, tempvar, name});
+    currentCFG->current_bb->add_IRInstr(IRInstr::Operation::sub, {name, tempvar, name});
     return name;
 }
 antlrcpp::Any IRVisitor::visitVarParPreIncrement(ifccParser::VarParPreIncrementContext *ctx)
 {
     string value = "1";
     string tempvar = currentCFG->create_new_tempvar(Type::TypeEnum::INT);
-    currentCFG->current_bb->add_IRInstr(IRInstr::Operation::ldconst, Type::TypeEnum::INT, {tempvar, value});
+    currentCFG->current_bb->add_IRInstr(IRInstr::Operation::ldconst, {tempvar, value});
     string name = ctx->ID()->getText();
-    currentCFG->current_bb->add_IRInstr(IRInstr::Operation::add, Type::TypeEnum::INT, {name, tempvar, name});
+    currentCFG->current_bb->add_IRInstr(IRInstr::Operation::add, {name, tempvar, name});
     return name;
 }
 antlrcpp::Any IRVisitor::visitVarParPreDecrement(ifccParser::VarParPreDecrementContext *ctx)
 {
     string value = "1";
     string tempvar = currentCFG->create_new_tempvar(Type::TypeEnum::INT);
-    currentCFG->current_bb->add_IRInstr(IRInstr::Operation::ldconst, Type::TypeEnum::INT, {tempvar, value});
+    currentCFG->current_bb->add_IRInstr(IRInstr::Operation::ldconst, {tempvar, value});
     string name = ctx->ID()->getText();
-    currentCFG->current_bb->add_IRInstr(IRInstr::Operation::sub, Type::TypeEnum::INT, {name, tempvar, name});
+    currentCFG->current_bb->add_IRInstr(IRInstr::Operation::sub, {name, tempvar, name});
     return name;
 }
 
@@ -788,7 +763,7 @@ antlrcpp::Any IRVisitor::visitVarAdditionAssignment(ifccParser::VarAdditionAssig
     auto expr = ctx->expr();
     string param = visit(expr);
     string name = ctx->ID()->getText();
-    currentCFG->current_bb->add_IRInstr(IRInstr::Operation::add, Type::TypeEnum::INT, {name, param, name});
+    currentCFG->current_bb->add_IRInstr(IRInstr::Operation::add, {name, param, name});
     return name;
 }
 
@@ -797,6 +772,6 @@ antlrcpp::Any IRVisitor::visitVarSubstractionAssignment(ifccParser::VarSubstract
     auto expr = ctx->expr();
     string param = visit(expr);
     string name = ctx->ID()->getText();
-    currentCFG->current_bb->add_IRInstr(IRInstr::Operation::sub, Type::TypeEnum::INT, {name, param, name});
+    currentCFG->current_bb->add_IRInstr(IRInstr::Operation::sub, {name, param, name});
     return name;
 }
