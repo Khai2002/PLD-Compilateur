@@ -744,67 +744,7 @@ void BasicBlock::add_IRInstr(IRInstr::Operation op, Type t, vector<string> param
     instrs.push_back(newInstr);
 }
 
-// Method implementation for gen_asm
-void BasicBlock::gen_asm(ostream &o)
-{
-    // Very simple assembly code generation for this basic block
 
-    if (label == cfg->getFuncName())
-    {
-        cfg->gen_asm_prologue(o);
-    }
-    else
-    {
-        o << "\n." << label << ":\n\n";
-    }
-    for (IRInstr *instr : instrs)
-    {
-        instr->gen_asm(o);
-    }
-
-    if (this->exit_true && !this->exit_false)
-    {
-        o << "jmp ." << this->exit_true->label << endl;
-    }
-
-    if (!(this->exit_true || this->exit_false))
-    {
-        cfg->gen_asm_epilogue(o);
-    }
-}
-
-void BasicBlock::gen_asm_arm64(ostream &o)
-{
-    // Check if the label is for the main function
-    if (label == "main")
-    {
-        // For the main function, prepend with an underscore
-        o << "_main:\n";
-    }
-    else
-    {
-        // For other functions or blocks, use the label as is
-        o << label << ":\n";
-    }
-
-    // Generate the prologue for the main function only
-    if (label == cfg->getFuncName() && label == "main")
-    {
-        cfg->gen_asm_prologue_arm64(o); // Generate ARM64 specific prologue for main
-    }
-
-    // Generate ARM64 assembly for each instruction in the basic block
-    for (IRInstr *instr : instrs)
-    {
-        instr->gen_asm_arm64(o); // Each instruction generates ARM64 code
-    }
-
-    // Generate the epilogue if there are no exit branches
-    if (!(this->exit_true && this->exit_false))
-    {
-        cfg->gen_asm_epilogue_arm64(o); // Generate ARM64 specific epilogue
-    }
-}
 
 void BasicBlock::printBB()
 {
