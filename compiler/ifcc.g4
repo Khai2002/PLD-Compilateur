@@ -44,7 +44,6 @@ expr :
     | expr OR expr                      # OrExpr 
     |'putchar''('expr')'                # putchar
     |'getchar()'                        # getchar
-    |'(' expr ')'                       # ParExpr
     | ID'('(expr (',' expr)*)?')'       # FunctionCall
     | ID'++'                            # VarPostIncrement
     | '(' ID ')' '++'                   # VarParPostIncrement
@@ -60,6 +59,7 @@ expr :
     | ID                                # Var
     | INT_CONST                         # IntConst
     | CHAR_CONST                        # CharConst
+    |'(' expr ')'                       # ParExpr
     
     
 ;
