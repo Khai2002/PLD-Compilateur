@@ -27,7 +27,7 @@ void CheckVisitor::checkVariableName(string name)
 
 antlrcpp::Any CheckVisitor::visitProg(ifccParser::ProgContext *ctx)
 {
-    cout << "# visiting Prog" << endl;
+    //cout << "# visiting Prog" << endl;
 
     for (auto func : ctx->func_decl())
     {
@@ -39,7 +39,7 @@ antlrcpp::Any CheckVisitor::visitProg(ifccParser::ProgContext *ctx)
 
 antlrcpp::Any CheckVisitor::visitFunc_decl(ifccParser::Func_declContext *ctx)
 {
-    cout << "# visitFunc_decl ..." << endl;
+    //cout << "# visitFunc_decl ..." << endl;
     Function_info F_info;
     if (ctx->type(0)->getText() == INT_Type)
     {
@@ -135,7 +135,7 @@ antlrcpp::Any CheckVisitor::visitFunc_decl(ifccParser::Func_declContext *ctx)
 
 antlrcpp::Any CheckVisitor::visitVar_decl(ifccParser::Var_declContext *ctx)
 {
-    cout << "# visitVar_decl" << endl;
+    //cout << "# visitVar_decl" << endl;
 
     for (auto Dec : ctx->declareAssign())
     {
@@ -146,7 +146,7 @@ antlrcpp::Any CheckVisitor::visitVar_decl(ifccParser::Var_declContext *ctx)
 
 antlrcpp::Any CheckVisitor::visitDeclareAssign(ifccParser::DeclareAssignContext *ctx)
 {
-    cout << "# visit Declaration assignement" << endl;
+    //cout << "# visit Declaration assignement" << endl;
     if (ctx->expr() != nullptr)
     {
         auto expr = visit(ctx->expr());
@@ -163,8 +163,7 @@ antlrcpp::Any CheckVisitor::visitDeclareAssign(ifccParser::DeclareAssignContext 
 
 antlrcpp::Any CheckVisitor::visitReturn_stmt(ifccParser::Return_stmtContext *ctx)
 {
-    cout << "# visiting return statement" << endl;
-
+    //cout << "# visiting return statement" << endl;
     auto expr = visit(ctx->expr());
 
     if ((string)expr == VOID_Type)
@@ -177,14 +176,14 @@ antlrcpp::Any CheckVisitor::visitReturn_stmt(ifccParser::Return_stmtContext *ctx
 
 antlrcpp::Any CheckVisitor::visitVar(ifccParser::VarContext *ctx)
 {
-    cout << "# visitVar" << endl;
+    //cout << "# visitVar" << endl;
     checkVariableName(ctx->ID()->getText());
     return (INT_Type);
 }
 
 antlrcpp::Any CheckVisitor::visitVar_Assignment(ifccParser::Var_AssignmentContext *ctx)
 {
-    cout << "# visitVar_Assignment" << endl;
+    //cout << "# visitVar_Assignment" << endl;
     checkVariableName(ctx->ID()->getText());
 
     auto expr = visit(ctx->expr());
@@ -200,7 +199,7 @@ antlrcpp::Any CheckVisitor::visitVar_Assignment(ifccParser::Var_AssignmentContex
 
 antlrcpp::Any CheckVisitor::visitUnaireExpr(ifccParser::UnaireExprContext *ctx)
 {
-    cout << "# visitUnaireExpr" << endl;
+    //cout << "# visitUnaireExpr" << endl;
     auto expr = visit(ctx->expr());
     if ((string)expr == VOID_Type)
     {
@@ -212,7 +211,7 @@ antlrcpp::Any CheckVisitor::visitUnaireExpr(ifccParser::UnaireExprContext *ctx)
 
 antlrcpp::Any CheckVisitor::visitMultDivModExpr(ifccParser::MultDivModExprContext *ctx)
 {
-    cout << "# visitMultDivModExpr" << endl;
+    //cout << "# visitMultDivModExpr" << endl;
 
     auto expr1 = visit(ctx->expr(0));
     auto expr2 = visit(ctx->expr(1));
@@ -227,7 +226,7 @@ antlrcpp::Any CheckVisitor::visitMultDivModExpr(ifccParser::MultDivModExprContex
 
 antlrcpp::Any CheckVisitor::visitAddSubExpr(ifccParser::AddSubExprContext *ctx)
 {
-    cout << "# visitAddSubExpr" << endl;
+    //cout << "# visitAddSubExpr" << endl;
 
     auto expr1 = visit(ctx->expr(0));
     auto expr2 = visit(ctx->expr(1));
@@ -242,7 +241,7 @@ antlrcpp::Any CheckVisitor::visitAddSubExpr(ifccParser::AddSubExprContext *ctx)
 
 antlrcpp::Any CheckVisitor::visitMoreLessExpr(ifccParser::MoreLessExprContext *ctx)
 {
-    cout << "# visitMoreLessExpr" << endl;
+    //cout << "# visitMoreLessExpr" << endl;
 
     auto expr1 = visit(ctx->expr(0));
     auto expr2 = visit(ctx->expr(1));
@@ -257,7 +256,7 @@ antlrcpp::Any CheckVisitor::visitMoreLessExpr(ifccParser::MoreLessExprContext *c
 
 antlrcpp::Any CheckVisitor::visitEqualExpr(ifccParser::EqualExprContext *ctx)
 {
-    cout << "# visitEqualExpr" << endl;
+    //cout << "# visitEqualExpr" << endl;
 
     auto expr1 = visit(ctx->expr(0));
     auto expr2 = visit(ctx->expr(1));
@@ -272,7 +271,7 @@ antlrcpp::Any CheckVisitor::visitEqualExpr(ifccParser::EqualExprContext *ctx)
 
 antlrcpp::Any CheckVisitor::visitAndExpr(ifccParser::AndExprContext *ctx)
 {
-    cout << "# visitAndExpr" << endl;
+    //cout << "# visitAndExpr" << endl;
 
     auto expr1 = visit(ctx->expr(0));
     auto expr2 = visit(ctx->expr(1));
@@ -287,7 +286,7 @@ antlrcpp::Any CheckVisitor::visitAndExpr(ifccParser::AndExprContext *ctx)
 
 antlrcpp::Any CheckVisitor::visitXorExpr(ifccParser::XorExprContext *ctx)
 {
-    cout << "# visitXorExpr" << endl;
+    //cout << "# visitXorExpr" << endl;
 
     auto expr1 = visit(ctx->expr(0));
     auto expr2 = visit(ctx->expr(1));
@@ -302,7 +301,7 @@ antlrcpp::Any CheckVisitor::visitXorExpr(ifccParser::XorExprContext *ctx)
 
 antlrcpp::Any CheckVisitor::visitOrExpr(ifccParser::OrExprContext *ctx)
 {
-    cout << "# visitOrExpr" << endl;
+    //cout << "# visitOrExpr" << endl;
 
     auto expr1 = visit(ctx->expr(0));
     auto expr2 = visit(ctx->expr(1));
@@ -317,7 +316,7 @@ antlrcpp::Any CheckVisitor::visitOrExpr(ifccParser::OrExprContext *ctx)
 
 antlrcpp::Any CheckVisitor::visitPutchar(ifccParser::PutcharContext *ctx)
 {
-    // cout << "#visitPutchar" << endl;
+    // //cout << "#visitPutchar" << endl;
 
     auto expr = visit(ctx->expr());
 
@@ -332,13 +331,13 @@ antlrcpp::Any CheckVisitor::visitPutchar(ifccParser::PutcharContext *ctx)
 
 antlrcpp::Any CheckVisitor::visitGetchar(ifccParser::GetcharContext *ctx)
 {
-    cout << "# visitGetChar" << endl;
+    //cout << "# visitGetChar" << endl;
     return (INT_Type);
 }
 
 antlrcpp::Any CheckVisitor::visitParExpr(ifccParser::ParExprContext *ctx)
 {
-    cout << "#visiting ParExpr" << endl;
+    //cout << "#visiting ParExpr" << endl;
 
     auto expr = visit(ctx->expr());
 
@@ -353,19 +352,19 @@ antlrcpp::Any CheckVisitor::visitParExpr(ifccParser::ParExprContext *ctx)
 
 antlrcpp::Any CheckVisitor::visitIntConst(ifccParser::IntConstContext *ctx)
 {
-    cout << "# visiting IntConst" << endl;
+    //cout << "# visiting IntConst" << endl;
     return (INT_Type);
 }
 
 antlrcpp::Any CheckVisitor::visitCharConst(ifccParser::CharConstContext *ctx)
 {
-    cout << "# visiting charConst" << endl;
+    //cout << "# visiting charConst" << endl;
     return (INT_Type);
 }
 
 antlrcpp::Any CheckVisitor::visitFunctionCall(ifccParser::FunctionCallContext *ctx)
 {
-    cout << "# visiting function call " << endl;
+    //cout << "# visiting function call " << endl;
     string name1 = ctx->ID()->getText();
 
     auto it1 = this->func_table.find(name1);

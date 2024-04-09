@@ -77,6 +77,8 @@ MIT license
 
 To run the tests please go to the tests Folder and execute the following command: python3 ifcc-test.py [Path to the tests you want to compile]
 
+For the tests that does contain getchar() functions you will have to enter the same inputs for the ifcc assembly code and the Gcc assembly code to make the tests relevant. 
+
 ## note 
 
 For those who are on WSL : please run this command before running all the tests : 
