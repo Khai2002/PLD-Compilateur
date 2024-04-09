@@ -67,16 +67,41 @@ public:
 
 	/** Actual code generation */
 
-	// virtual void gen_asm(ostream &o); /**< x86 assembly code generation for this IR instruction */
+	/**
+	 * Function to generate the assembly code for the IR instruction in ARM64
+	 * @param o The output stream to write the assembly code to
+	 */
 	virtual void gen_asm_arm64(ostream &o); /**< ARM64 assembly code generation for this IR instruction */
 
+	/**
+	 * Function to generate the assembly code for the IR instruction
+	 * @param o The output stream to write the assembly code to
+	 */
 	virtual void gen_asm(ostream &o) = 0; /**< x86 assembly code generation for this IR instruction */
 
+	/**
+	 * Function to print the IR instruction
+	 */
 	void print_IRInstr();
 
+	/**
+	 * Function to get the string value of the given parameter
+	 * @param s The string to get the value of
+	 * @return The value of the string
+	 */
 	string getValueString(string s);
+
+	/**
+	 * Function to get the string value of the given parameter in ARM64
+	 * @param s The string to get the value of
+	 * @return The value of the string
+	 */
 	string getValueString_arm64(string s);
 
+	/**
+	 * Function to get the operation object of the IR instruction
+	 * @return The operation object of the IR instruction
+	 */
 	Operation getOperation() { return op; }
 
 protected:
@@ -90,6 +115,7 @@ protected:
 class IRInstrConst : public IRInstr
 {
 public:
+
 	IRInstrConst(BasicBlock *bb, Operation op, vector<string> params) : IRInstr(bb, op, params){};
 	void gen_asm(ostream &o) override;
 	void gen_asm_arm64(ostream &o) override;
@@ -98,6 +124,7 @@ public:
 class IRInstrCopy : public IRInstr
 {
 public:
+
 	IRInstrCopy(BasicBlock *bb, Operation op, vector<string> params) : IRInstr(bb, op, params){};
 	void gen_asm(ostream &o) override;
 	void gen_asm_arm64(ostream &o) override;
@@ -106,6 +133,7 @@ public:
 class IRInstrAdd : public IRInstr
 {
 public:
+
 	IRInstrAdd(BasicBlock *bb, Operation op, vector<string> params) : IRInstr(bb, op, params){};
 	void gen_asm(ostream &o) override;
 	void gen_asm_arm64(ostream &o) override;
@@ -114,6 +142,7 @@ public:
 class IRInstrSub : public IRInstr
 {
 public:
+
 	IRInstrSub(BasicBlock *bb, Operation op, vector<string> params) : IRInstr(bb, op, params){};
 	void gen_asm(ostream &o) override;
 	void gen_asm_arm64(ostream &o) override;
@@ -245,7 +274,6 @@ public:
 	IRInstrGetchar(BasicBlock *bb, Operation op, vector<string> params) : IRInstr(bb, op, params){};
 	void gen_asm(ostream &o) override;
 	void gen_asm_arm64(ostream &o) override;
-	// void gen_asm_arm64(ostream &o) override;
 };
 
 class IRInstrCallFunc : public IRInstr
@@ -321,6 +349,8 @@ class BasicBlock
 {
 public:
 	BasicBlock(CFG *cfg, string entry_label);
+
+
 	void gen_asm(ostream &o);										/**< x86 assembly code generation for this basic block (very simple) */
 	void gen_asm_arm64(ostream &o);									/**< ARM64 assembly code generation for this basic block (very simple) */
 	void add_IRInstr(IRInstr::Operation op, vector<string> params); // Add Intruction to BasicBlock
@@ -352,38 +382,152 @@ class CFG
 public:
 	CFG(string funcName);
 
+	/**
+	 * Function to add a new basic block to the CFG
+	 * @param *bb The pointer to the basic block to add to the CFG
+	*/
 	void add_bb(BasicBlock *bb);
 
-	// x86 code generation: could be encapsulated in a processor class in a retargetable compiler
-
+	/**
+	 * Function to generate the x86 assembly code for the CFG
+	 * @param o The output stream to write the assembly code to
+	 */
 	void gen_asm(ostream &o);
+
+	/**
+	 * Function to generate the ARM64 assembly code for the CFG
+	 * @param o The output stream to write the assembly code to
+	 */
 	void gen_asm_arm64(ostream &o);
 
+	/**
+	 * Function to generate the assembly code for the CFG
+	 * @param o The output stream to write the assembly code to
+	 * @param name The name of the function to generate the assembly code for
+	 */
 	void gen_asm(ostream &o, string name);
 
+	/**
+	 * helper function that inputs a IR reg or input variable, returns e.g. "-24(%rbp)" for the proper value of 24
+	 * @param reg The register to convert to assembly
+	 */
 	string IR_reg_to_asm(string reg);  /**< helper method: inputs a IR reg or input variable, returns e.g. "-24(%rbp)" for the proper value of 24 */
+	
+	/**
+	 * Function to generate the prologue assembly code for the CFG in ARM64
+	 * @param o The output stream to write the assembly code to
+	 */
 	void gen_asm_prologue(ostream &o); // Generate prologue for a CFG
+	
+	/**
+	 * Function to generate the epilogue assembly code for the CFG in ARM64
+	 * @param o The output stream to write the assembly code to
+	 */
 	void gen_asm_epilogue(ostream &o); // Generate epilogue for a CFG
 
+	/**
+	 * Function to generate the prologue assembly code for the CFG in ARM64
+	 * @param o The output stream to write the assembly code to
+	 */
 	void gen_asm_prologue_arm64(ostream &o, bool hasCharOp); // Generate prologue for a CFG in ARM64
+	
+	/**
+	 * Function to generate the epilogue assembly code for the CFG in ARM64
+	 * @param o The output stream to write the assembly code to
+	 */
 	void gen_asm_epilogue_arm64(ostream &o, bool hasCharOp); // Generate epilogue for a CFG in ARM64
 
-	// symbol table methods
+
+	/**
+	 * Function to add a new variable to the symbol table
+	 * @param name The name of the variable to add
+	 * @param t The type of the variable to add
+	 */
 	void add_to_symbol_table(string name, Type t); // Add var <name> into SymbolType and SymbolIndex
+	
+	/**
+	 * Function to create a new temporary variable for linearization
+	 * @param t The type of the temporary variable to create
+	 * @return The name of the temporary variable created
+	 */
 	string create_new_tempvar(Type t);			   // Create tempvar for linearization
+	
+	/**
+	 * Function to get the index of a variable given its name
+	 * @param name The name of the variable to get the index of
+	 * @return The index of the variable
+	 */
 	int get_var_index(string name);				   // Get index given var name
+	
+	/**
+	 * Function to get the type of a variable given its name
+	 * @param name The name of the variable to get the type of
+	 * @return The type of the variable
+	 */
 	Type get_var_type(string name);				   // Get type given var name
+	
+	/**
+	 * Function to get the size of a type
+	 * @param type The type to get the size of
+	 * @return The size of the type
+	 */
 	int get_type_size(Type type);				   // Get type size
 
+	/**
+	 * Function to get the symbol type
+	 * @return The symbol type as a map
+	 */
 	map<string, Type> getSymbolType() { return SymbolType; }
+	
+	/**
+	 * Function to get the symbol index
+	 * @return The symbol index as a map
+	 */
 	map<string, int> getSymbolIndex() { return SymbolIndex; }
+	
+	/**
+	 * Function to get the next free symbol index
+	 * @return The next free symbol index
+	 */
 	int getNextFreeSymbolIndex() { return nextFreeSymbolIndex; }
+	
+	/**
+	 * Function to get the next basic block number
+	 * @return The next basic block number
+	 */
 	int getBBNumber() { return nextBBnumber; }
+	
+	/**
+	 * Function to get the function name
+	 * @return The function name
+	 */
 	string getFuncName() { return funcName; }
+	
+	/**
+	 * Function to get the return present
+	 * @return The return present as bool
+	 */
 	bool getReturnPresent() { return ReturnPresent; }
+
+	/**
+	 * Function to change the return present to true
+	 */
 	void changeReturnPresent() { ReturnPresent = true; }
-	void printCFG(); // function for debugging
+	
+	/**
+	 * Function to print the CFG for debugging
+	 */
+	void printCFG(); 
+	
+	/**
+	 * Function to set the has char call operation to true
+	 */
 	void setHasCharCallOp() { hasCharCallOp = true; }
+	
+	/**
+	 * Function to get the has char call operation
+	 * @return The has char call operation as bool
+	 */
 	bool getHasCharCallOp() { return hasCharCallOp; }
 
 
