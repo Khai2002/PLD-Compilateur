@@ -112,6 +112,12 @@ protected:
 						   // if you subclass IRInstr, each IRInstr subclass has its parameters and the previous (very important) comment becomes useless: it would be a better design.
 };
 
+/**
+ * @class IRInstrConst
+ * @brief Represents a constant value instruction in the IR.
+ *
+ * This instruction is used to load a constant value into a register.
+ */
 class IRInstrConst : public IRInstr
 {
 public:
@@ -121,6 +127,12 @@ public:
 	void gen_asm_arm64(ostream &o) override;
 };
 
+/**
+ * @class IRInstrCopy
+ * @brief Represents a copy instruction in the IR.
+ *
+ * This instruction is used to copy the value from one register to another.
+ */
 class IRInstrCopy : public IRInstr
 {
 public:
@@ -130,6 +142,12 @@ public:
 	void gen_asm_arm64(ostream &o) override;
 };
 
+/**
+ * @class IRInstrAdd
+ * @brief Represents an addition instruction in the IR.
+ *
+ * This instruction is used to perform addition between two operands.
+ */
 class IRInstrAdd : public IRInstr
 {
 public:
@@ -139,6 +157,12 @@ public:
 	void gen_asm_arm64(ostream &o) override;
 };
 
+/**
+ * @class IRInstrSub
+ * @brief Represents a subtraction instruction in the IR.
+ *
+ * This instruction is used to perform subtraction between two operands.
+ */
 class IRInstrSub : public IRInstr
 {
 public:
@@ -148,6 +172,12 @@ public:
 	void gen_asm_arm64(ostream &o) override;
 };
 
+/**
+ * @class IRInstrMul
+ * @brief Represents a multiplication instruction in the IR.
+ *
+ * This instruction is used to perform multiplication between two operands.
+ */
 class IRInstrMul : public IRInstr
 {
 public:
@@ -156,6 +186,12 @@ public:
 	void gen_asm_arm64(ostream &o) override;
 };
 
+/**
+ * @class IRInstrDiv
+ * @brief Represents a division instruction in the IR.
+ *
+ * This instruction is used to perform division between two operands.
+ */
 class IRInstrDiv : public IRInstr
 {
 public:
@@ -164,6 +200,12 @@ public:
 	void gen_asm_arm64(ostream &o) override;
 };
 
+/**
+ * @class IRInstrMod
+ * @brief Represents a modulus instruction in the IR.
+ *
+ * This instruction is used to calculate the remainder of a division operation.
+ */
 class IRInstrMod : public IRInstr
 {
 public:
@@ -172,6 +214,12 @@ public:
 	void gen_asm_arm64(ostream &o) override;
 };
 
+/**
+ * @class IRInstrOr
+ * @brief Represents a bitwise OR instruction in the IR.
+ *
+ * This instruction is used to perform a bitwise OR operation between two operands.
+ */
 class IRInstrOr : public IRInstr
 {
 public:
@@ -180,6 +228,12 @@ public:
 	void gen_asm_arm64(ostream &o) override;
 };
 
+/**
+ * @class IRInstrAnd
+ * @brief Represents a bitwise AND instruction in the IR.
+ *
+ * This instruction is used to perform a bitwise AND operation between two operands.
+ */
 class IRInstrAnd : public IRInstr
 {
 public:
@@ -188,6 +242,12 @@ public:
 	void gen_asm_arm64(ostream &o) override;
 };
 
+/**
+ * @class IRInstrXor
+ * @brief Represents a bitwise XOR instruction in the IR.
+ *
+ * This instruction is used to perform a bitwise XOR operation between two operands.
+ */
 class IRInstrXor : public IRInstr
 {
 public:
@@ -196,6 +256,12 @@ public:
 	void gen_asm_arm64(ostream &o) override;
 };
 
+/**
+ * @class IRInstrEq
+ * @brief Represents an equality comparison instruction in the IR.
+ *
+ * This instruction is used to compare two operands for equality.
+ */
 class IRInstrEq : public IRInstr
 {
 public:
@@ -204,6 +270,12 @@ public:
 	void gen_asm_arm64(ostream &o) override;
 };
 
+/**
+ * @class IRInstrNeq
+ * @brief Represents a non-equality comparison instruction in the IR.
+ *
+ * This instruction is used to compare two operands for non-equality.
+ */
 class IRInstrNeq : public IRInstr
 {
 public:
@@ -212,6 +284,12 @@ public:
 	void gen_asm_arm64(ostream &o) override;
 };
 
+/**
+ * @class IRInstrLt
+ * @brief Represents a less-than comparison instruction in the IR.
+ *
+ * This instruction is used to compare two operands to determine if one is less than the other.
+ */
 class IRInstrLt : public IRInstr
 {
 public:
@@ -220,6 +298,12 @@ public:
 	void gen_asm_arm64(ostream &o) override;
 };
 
+/**
+ * @class IRInstrGt
+ * @brief Represents a greater-than comparison instruction in the IR.
+ *
+ * This instruction is used to compare two operands to determine if one is greater than the other.
+ */
 class IRInstrGt : public IRInstr
 {
 public:
@@ -228,6 +312,12 @@ public:
 	void gen_asm_arm64(ostream &o) override;
 };
 
+/**
+ * @class IRInstrNeg
+ * @brief Represents a negation instruction in the IR.
+ *
+ * This instruction is used to negate the value of an operand.
+ */
 class IRInstrNeg : public IRInstr
 {
 public:
@@ -236,6 +326,12 @@ public:
 	void gen_asm_arm64(ostream &o) override;
 };
 
+/**
+ * @class IRInstrNot
+ * @brief Represents a logical NOT instruction in the IR.
+ *
+ * This instruction is used to perform a logical NOT operation on an operand.
+ */
 class IRInstrNot : public IRInstr
 {
 public:
@@ -244,6 +340,12 @@ public:
 	void gen_asm_arm64(ostream &o) override;
 };
 
+/**
+ * @class IRInstrRet
+ * @brief Represents a return instruction in the IR.
+ *
+ * This instruction is used to return from a function.
+ */
 class IRInstrRet : public IRInstr
 {
 public:
@@ -252,6 +354,12 @@ public:
 	void gen_asm_arm64(ostream &o) override;
 };
 
+/**
+ * @class IRInstrJumpCond
+ * @brief Represents a conditional jump instruction in the IR.
+ *
+ * This instruction is used to conditionally jump to another basic block based on a condition.
+ */
 class IRInstrJumpCond : public IRInstr
 {
 public:
@@ -260,6 +368,12 @@ public:
 	void gen_asm_arm64(ostream &o) override;
 };
 
+/**
+ * @class IRInstrPutChar
+ * @brief Represents a putchar instruction in the IR.
+ *
+ * This instruction is used to output a character to the standard output.
+ */
 class IRInstrPutChar : public IRInstr
 {
 public:
@@ -268,6 +382,12 @@ public:
 	void gen_asm_arm64(ostream &o) override;
 };
 
+/**
+ * @class IRInstrGetchar
+ * @brief Represents a getchar instruction in the IR.
+ *
+ * This instruction is used to read a character from the standard input.
+ */
 class IRInstrGetchar : public IRInstr
 {
 public:
@@ -276,6 +396,12 @@ public:
 	void gen_asm_arm64(ostream &o) override;
 };
 
+/**
+ * @class IRInstrCallFunc
+ * @brief Represents a function call instruction in the IR.
+ *
+ * This instruction is used to call a function with specified parameters.
+ */
 class IRInstrCallFunc : public IRInstr
 {
 public:
@@ -284,6 +410,12 @@ public:
 	void gen_asm_arm64(ostream &o) override;
 };
 
+/**
+ * @class IRInstrPostIncr
+ * @brief Represents a post-increment instruction in the IR.
+ *
+ * This instruction is used to increment the value of an operand after its value has been used.
+ */
 class IRInstrPostIncr : public IRInstr
 {
 public:
@@ -292,6 +424,12 @@ public:
 	void gen_asm_arm64(ostream &o) override;
 };
 
+/**
+ * @class IRInstrPostDecr
+ * @brief Represents a post-decrement instruction in the IR.
+ *
+ * This instruction is used to decrement the value of an operand after its value has been used.
+ */
 class IRInstrPostDecr : public IRInstr
 {
 public:
@@ -300,6 +438,12 @@ public:
 	void gen_asm_arm64(ostream &o) override;
 };
 
+/**
+ * @class IRInstrInsertParam
+ * @brief Represents an instruction to insert a parameter into a function call in the IR.
+ *
+ * This instruction is used to prepare parameters for a function call by loading them into registers.
+ */
 class IRInstrInsertParam : public IRInstr
 {
 public:
@@ -310,6 +454,12 @@ public:
 	vector<string> registers_name_arm64 = {"%x0", "%x1", "%x2", "%x3", "%x4", "%x5"};
 };
 
+/**
+ * @class IRInstrCallParam
+ * @brief Represents an instruction to call a function with parameters in the IR.
+ *
+ * This instruction is used to call a function with the parameters that have been prepared by previous instructions.
+ */
 class IRInstrCallParam : public IRInstr
 {
 public:
