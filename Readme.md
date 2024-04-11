@@ -67,7 +67,6 @@ Please note that the compiler currently only supports a minimal subset of the C 
 
 
 ## Under development
-- Unary operations: Logical NOT (!) and Negation (-)
 - Support for variable scopes and shadowing
 - Retargeting to multiple architectures: X86 ,  ARM
 ## License
@@ -78,6 +77,8 @@ MIT license
 To run the tests please go to the tests Folder and execute the following command: python3 ifcc-test.py [Path to the tests you want to compile]
 
 For the tests that does contain getchar() functions you will have to enter the same inputs for the ifcc assembly code and the Gcc assembly code to make the tests relevant. 
+
+Note that the more complex tests will be found in the priorities folder.
 
 ## note 
 
