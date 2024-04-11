@@ -121,7 +121,6 @@ protected:
 class IRInstrConst : public IRInstr
 {
 public:
-
 	IRInstrConst(BasicBlock *bb, Operation op, vector<string> params) : IRInstr(bb, op, params){};
 	void gen_asm(ostream &o) override;
 	void gen_asm_arm64(ostream &o) override;
@@ -136,7 +135,6 @@ public:
 class IRInstrCopy : public IRInstr
 {
 public:
-
 	IRInstrCopy(BasicBlock *bb, Operation op, vector<string> params) : IRInstr(bb, op, params){};
 	void gen_asm(ostream &o) override;
 	void gen_asm_arm64(ostream &o) override;
@@ -151,7 +149,6 @@ public:
 class IRInstrAdd : public IRInstr
 {
 public:
-
 	IRInstrAdd(BasicBlock *bb, Operation op, vector<string> params) : IRInstr(bb, op, params){};
 	void gen_asm(ostream &o) override;
 	void gen_asm_arm64(ostream &o) override;
@@ -166,7 +163,6 @@ public:
 class IRInstrSub : public IRInstr
 {
 public:
-
 	IRInstrSub(BasicBlock *bb, Operation op, vector<string> params) : IRInstr(bb, op, params){};
 	void gen_asm(ostream &o) override;
 	void gen_asm_arm64(ostream &o) override;
@@ -469,37 +465,29 @@ public:
 	vector<string> registers_name = {"%rdi", "%rsi", "%rdx", "%rcx", "%r8", "%r9"};
 	vector<string> registers_name_arm64 = {"%x0", "%x1", "%x2", "%x3", "%x4", "%x5"};
 };
-/**  The class for a basic block */
-
-/* A few important comments.
-	 IRInstr has no jump instructions.
-	 cmp_* instructions behaves as an arithmetic two-operand instruction (add or mult),
-	  returning a boolean value (as an int)
-
-	 Assembly jumps are generated as follows:
-	 BasicBlock::gen_asm() first calls IRInstr::gen_asm() on all its instructions, and then
-			if  exit_true  is a  nullptr,
-			the epilogue is generated
-		else if exit_false is a nullptr,
-		  an unconditional jmp to the exit_true branch is generated
-				else (we have two successors, hence a branch)
-		  an instruction comparing the value of test_var_name to true is generated,
-					followed by a conditional branch to the exit_false branch,
-					followed by an unconditional branch to the exit_true branch
-	 The attribute test_var_name itself is defined when converting
-  the if, while, etc of the AST  to IR.
-
-Possible optimization:
-	 a cmp_* comparison instructions, if it is the last instruction of its block,
-	   generates an actual assembly comparison
-	   followed by a conditional jump to the exit_false branch
-*/
-
+/**
+ * @class BasicBlock
+ * @brief Handles the generation of assembly jumps within a basic block, without including jump instructions in IRInstr.
+ *
+ * @details
+ *  - IRInstr lacks jump instructions.
+ *  - cmp_* instructions act like arithmetic two-operand instructions (e.g., add, mult), returning an integer as a boolean value.
+ *
+ * Assembly Jumps Generation:
+ *  - BasicBlock::gen_asm() first calls IRInstr::gen_asm() on all instructions.
+ *  - It then handles jump generation based on the exit points:
+ *    1. If 'exit_true' is nullptr, it generates the epilogue.
+ *    2. If 'exit_false' is nullptr, it creates an unconditional jump to 'exit_true'.
+ *    3. For two successors, it compares 'test_var_name' to true, followed by a conditional jump to 'exit_false', and an unconditional jump to 'exit_true'.
+ *  - The 'test_var_name' attribute is set during the conversion of if, while, etc., from AST to IR.
+ *
+ * Optimization:
+ *  - A cmp_* instruction, if it's the last in its block, directly generates an assembly comparison and a conditional jump to 'exit_false'.
+ */
 class BasicBlock
 {
 public:
 	BasicBlock(CFG *cfg, string entry_label);
-
 
 	void gen_asm(ostream &o);										/**< x86 assembly code generation for this basic block (very simple) */
 	void gen_asm_arm64(ostream &o);									/**< ARM64 assembly code generation for this basic block (very simple) */
@@ -514,18 +502,21 @@ public:
 	string test_var_name;	  /** < when generating IR code for an if(expr) or while(expr) etc,
 														store here the name of the variable that holds the value of expr */
 
-
 protected:
 };
-
-/** The class for the control flow graph, also includes the symbol table */
-
-/* A few important comments:
-	 The entry block is the one with the same label as the AST function name.
-	   (it could be the first of bbs, or it could be defined by an attribute value)
-	 The exit block is the one with both exit pointers equal to nullptr.
-	 (again it could be identified in a more explicit way)
-
+/**
+ * @class ControlFlowGraph
+ * @brief Represents the control flow graph of a program, incorporating the symbol table as well.
+ *
+ * @details
+ *  - The Control Flow Graph (CFG) is a fundamental structure in the compilation process,
+ *    mapping the flow of control between different blocks of code and also including symbol table management.
+ *
+ * Key Components:
+ *  - Entry Block: Identified as the block with the same label as the AST function name. It can be the first in 'bbs'
+ *    (basic blocks) or determined by a specific attribute value.
+ *  - Exit Block: Recognized as the block where both exit pointers are nullptr. This can also be explicitly identified
+ *    in other ways, depending on the implementation specifics.
  */
 class CFG
 {
@@ -535,7 +526,7 @@ public:
 	/**
 	 * Function to add a new basic block to the CFG
 	 * @param *bb The pointer to the basic block to add to the CFG
-	*/
+	 */
 	void add_bb(BasicBlock *bb);
 
 	/**
@@ -561,14 +552,14 @@ public:
 	 * helper function that inputs a IR reg or input variable, returns e.g. "-24(%rbp)" for the proper value of 24
 	 * @param reg The register to convert to assembly
 	 */
-	string IR_reg_to_asm(string reg);  /**< helper method: inputs a IR reg or input variable, returns e.g. "-24(%rbp)" for the proper value of 24 */
-	
+	string IR_reg_to_asm(string reg); /**< helper method: inputs a IR reg or input variable, returns e.g. "-24(%rbp)" for the proper value of 24 */
+
 	/**
 	 * Function to generate the prologue assembly code for the CFG in ARM64
 	 * @param o The output stream to write the assembly code to
 	 */
 	void gen_asm_prologue(ostream &o); // Generate prologue for a CFG
-	
+
 	/**
 	 * Function to generate the epilogue assembly code for the CFG in ARM64
 	 * @param o The output stream to write the assembly code to
@@ -580,13 +571,12 @@ public:
 	 * @param o The output stream to write the assembly code to
 	 */
 	void gen_asm_prologue_arm64(ostream &o, bool hasCharOp); // Generate prologue for a CFG in ARM64
-	
+
 	/**
 	 * Function to generate the epilogue assembly code for the CFG in ARM64
 	 * @param o The output stream to write the assembly code to
 	 */
 	void gen_asm_epilogue_arm64(ostream &o, bool hasCharOp); // Generate epilogue for a CFG in ARM64
-
 
 	/**
 	 * Function to add a new variable to the symbol table
@@ -594,65 +584,65 @@ public:
 	 * @param t The type of the variable to add
 	 */
 	void add_to_symbol_table(string name, Type t); // Add var <name> into SymbolType and SymbolIndex
-	
+
 	/**
 	 * Function to create a new temporary variable for linearization
 	 * @param t The type of the temporary variable to create
 	 * @return The name of the temporary variable created
 	 */
-	string create_new_tempvar(Type t);			   // Create tempvar for linearization
-	
+	string create_new_tempvar(Type t); // Create tempvar for linearization
+
 	/**
 	 * Function to get the index of a variable given its name
 	 * @param name The name of the variable to get the index of
 	 * @return The index of the variable
 	 */
-	int get_var_index(string name);				   // Get index given var name
-	
+	int get_var_index(string name); // Get index given var name
+
 	/**
 	 * Function to get the type of a variable given its name
 	 * @param name The name of the variable to get the type of
 	 * @return The type of the variable
 	 */
-	Type get_var_type(string name);				   // Get type given var name
-	
+	Type get_var_type(string name); // Get type given var name
+
 	/**
 	 * Function to get the size of a type
 	 * @param type The type to get the size of
 	 * @return The size of the type
 	 */
-	int get_type_size(Type type);				   // Get type size
+	int get_type_size(Type type); // Get type size
 
 	/**
 	 * Function to get the symbol type
 	 * @return The symbol type as a map
 	 */
 	map<string, Type> getSymbolType() { return SymbolType; }
-	
+
 	/**
 	 * Function to get the symbol index
 	 * @return The symbol index as a map
 	 */
 	map<string, int> getSymbolIndex() { return SymbolIndex; }
-	
+
 	/**
 	 * Function to get the next free symbol index
 	 * @return The next free symbol index
 	 */
 	int getNextFreeSymbolIndex() { return nextFreeSymbolIndex; }
-	
+
 	/**
 	 * Function to get the next basic block number
 	 * @return The next basic block number
 	 */
 	int getBBNumber() { return nextBBnumber; }
-	
+
 	/**
 	 * Function to get the function name
 	 * @return The function name
 	 */
 	string getFuncName() { return funcName; }
-	
+
 	/**
 	 * Function to get the return present
 	 * @return The return present as bool
@@ -663,23 +653,22 @@ public:
 	 * Function to change the return present to true
 	 */
 	void changeReturnPresent() { ReturnPresent = true; }
-	
+
 	/**
 	 * Function to print the CFG for debugging
 	 */
-	void printCFG(); 
-	
+	void printCFG();
+
 	/**
 	 * Function to set the has char call operation to true
 	 */
 	void setHasCharCallOp() { hasCharCallOp = true; }
-	
+
 	/**
 	 * Function to get the has char call operation
 	 * @return The has char call operation as bool
 	 */
 	bool getHasCharCallOp() { return hasCharCallOp; }
-
 
 	// basic block management
 	string new_BB_name();
