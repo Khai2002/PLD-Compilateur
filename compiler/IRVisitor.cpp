@@ -379,8 +379,12 @@ antlrcpp::Any IRVisitor::visitWhile_block(ifccParser::While_blockContext *ctx)
     auto pretestBB = currentCFG->current_bb;
     auto testBB = new BasicBlock(currentCFG, currentCFG->new_BB_name());
     auto bodyBB = new BasicBlock(currentCFG, currentCFG->new_BB_name());
+    auto posttestBB = new BasicBlock(currentCFG, currentCFG->new_BB_name());
 
-    testBB->exit_false = pretestBB->exit_true;
+    posttestBB->exit_true = pretestBB->exit_true;
+    posttestBB->exit_false = nullptr;
+
+    testBB->exit_false = posttestBB;
     testBB->exit_true = bodyBB;
     pretestBB->exit_true = testBB;
     pretestBB->exit_false = nullptr;
@@ -389,6 +393,7 @@ antlrcpp::Any IRVisitor::visitWhile_block(ifccParser::While_blockContext *ctx)
 
     currentCFG->add_bb(testBB);
     currentCFG->add_bb(bodyBB);
+    currentCFG->add_bb(posttestBB);
 
     currentCFG->current_bb = testBB;
 
