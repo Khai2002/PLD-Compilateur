@@ -8,7 +8,7 @@
 #include "generated/ifccParser.h"
 #include "generated/ifccBaseVisitor.h"
 
-// #include "CodeGenVisitor.h"
+
 #include "CheckVisitor.h"
 #include "IRVisitor.h"
 
