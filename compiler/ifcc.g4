@@ -4,7 +4,6 @@ axiom : prog EOF ;
 
 prog: func_decl*;
 
-
 func_decl : type ID '('(type ID (',' type ID)*)? ')' '{' line* '}';
 
 line : stmt
@@ -13,8 +12,6 @@ line : stmt
     | while_block 
     | block
     ;
-
-
 
 if_block : 'if' '(' expr ')' line else_block? ;
 
@@ -28,8 +25,6 @@ stmt : var_decl  |  return_stmt ;
 
 var_decl : type declareAssign (',' declareAssign)* ';' ;
 declareAssign : ID ('=' expr)? ;
-
-
 
 return_stmt: RETURN (expr)? ';' ;
 
@@ -53,18 +48,14 @@ expr :
     |'++' '('ID')'                      # VarParPreIncrement
     |'--' ID                            # VarPreDecrement
     |'--' '('ID')'                      # VarParPreDecrement
-    | ID '+=' expr                      #VarAdditionAssignment
-    | ID '-=' expr                      #VarSubstractionAssignment
+    | ID '+=' expr                      # VarAdditionAssignment
+    | ID '-=' expr                      # VarSubstractionAssignment
     | ID '=' expr                       # Var_Assignment
     | ID                                # Var
     | INT_CONST                         # IntConst
     | CHAR_CONST                        # CharConst
     |'(' expr ')'                       # ParExpr
-    
-    
-;
-
-
+    ;
 
 type : 'int' | 'char' | 'void' ;
 
@@ -83,4 +74,4 @@ LINE_COMMENT : '//' .*? '\n' -> skip ;
 DIRECTIVE : '#' .*? '\n' -> skip ;
 
 ID : [a-zA-Z_][a-zA-Z_0-9]* ;
-WS    : [ \t\r\n] -> channel(HIDDEN);
+WS : [ \t\r\n] -> channel(HIDDEN);

@@ -48,7 +48,7 @@ int main(int argn, const char **argv)
   CheckVisitor CheckVisitor;
 
   CheckVisitor.visit(tree);
-  cout << "# end of the Debug for the CheckVisitor" << endl;
+  //cout << "# end of the Debug for the CheckVisitor" << endl;
 
   IRVisitor irv;
   irv.visit(tree);
@@ -65,7 +65,6 @@ int main(int argn, const char **argv)
     // cfg->gen_asm(cout, cfg->getFuncName());
 #ifdef __APPLE__
     cfg->gen_asm_arm64(cout);
-
 #else
     cfg->gen_asm(cout, cfg->getFuncName());
 #endif
